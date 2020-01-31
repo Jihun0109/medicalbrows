@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 
 
-class TblRank extends Model
+class TblClinic extends Model
 {
-    protected $fillable = ['name'];
+    
 }

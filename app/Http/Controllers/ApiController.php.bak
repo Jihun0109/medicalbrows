@@ -1,0 +1,119 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\TblRank;
+use App\TblClinic;
+
+class ApiController extends Controller
+{
+    // Call to this function to render data to a specified json format
+    function makeFormattedJsonList($dataList, $code = 20000)
+    {        
+        return array(
+            'code' => $code,
+            'data' => array(
+                'total' => $dataList->count(),
+                'items' => $dataList
+            )
+        );
+    }
+
+    function makeFormattedJson($data, $code = 20000)
+    {        
+        return array(
+            'code' => $code,
+            'data' => $data            
+        );
+    }
+
+    // Rank List
+    public function rankList(Request $request)
+    {
+        $keyword = $request->input('keyword');
+        $limit = $request->input('limit');
+        $page = $request->input('page');
+
+        $ranks = TblRank::select('id','name')->
+                         where('is_deleted', 0)->
+                         where('name','LIKE','%'.$keyword.'%')->
+                         paginate($limit);
+        return $ranks;
+    }
+
+    // Rank Add
+    public function rankAdd(Request $request)
+    {
+        $payLoad = json_decode($request->getContent(), true);
+        $rankName = $payLoad['item']['name'];
+        $newRank = new TblRank;
+        $newRank->name = $rankName;
+        $newRank->is_deleted = 0;
+        $newRank->save();
+        return $this->makeFormattedJson($newRank);
+    }
+
+    // Rank Remove
+    public function rankRemove(Request $request)
+    {
+        $payLoad = json_decode($request->getContent(), true);
+        $rankId = $payLoad['item']['id'];
+        $rankToRemove = TblRank::where('id', $rankId)->update(['is_deleted' => 1]);
+        return $this->makeFormattedJson($rankToRemove);
+    }
+
+    // Rank Update
+    public function rankUpdate(Request $request)
+    {
+        $payLoad = json_decode($request->getContent(), true);
+        $rankId = $payLoad['item']['id'];
+        $rankNewName = $payLoad['item']['name'];
+        $rankUpdated = TblRank::where('id', $rankId)->update(['name' => $rankNewName]);
+        return $this->makeFormattedJson(TblRank::where('id', $rankId)->first());
+    }
+
+    // Clinic List
+    public function clinicList(Request $request)
+    {
+        $clinics = TblClinic::where('is_deleted',0)->get();
+        return $this->makeFormattedJsonList($clinics);
+    }
+
+    // Clinic Add
+    public function clinicAdd(Request $request)
+    {
+        $payLoad = json_decode($request->getContent(), true);
+        
+        $newClinic = new TblClinic;
+        $newClinic->name = $payLoad['item']['name'];
+        $newClinic->email = $payLoad['item']['email'];
+        $newClinic->address = $payLoad['item']['address'];
+        $newClinic->is_vacation = $payLoad['item']['is_vacation'];
+        $newClinic->save();
+        return $this->makeFormattedJson($newClinic);
+    }
+
+    // Clinic Remove
+    public function clinicRemove(Request $request)
+    {
+        $payLoad = json_decode($request->getContent(), true);
+        $clinicId = $payLoad['item']['id'];
+        $clinicToRemove = TblClinic::where('id', $clinicId)->update(['is_deleted' => 1]);
+        return $this->makeFormattedJson($clinicToRemove);
+    }
+
+    // Clinic Update
+    public function clinicUpdate(Request $request)
+    {
+        $payLoad = json_decode($request->getContent(), true);
+
+        $clinicId = $payLoad['item']['id'];        
+        $clinicUpdated = TblClinic::where('id', $clinicId)->update(['name' => $payLoad['item']['name'], 
+                                                                    'email' => $payLoad['item']['email'],
+                                                                    'address' => $payLoad['item']['address'],
+                                                                    'is_vacation' => $payLoad['item']['is_vacation'],
+                                                                    ]);
+        return $this->makeFormattedJson(TblClinic::where('id', $clinicId)->first());
+    }
+}
