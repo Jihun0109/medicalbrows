@@ -150,7 +150,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <img src="{{asset('img/admin.png')}}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Admin Name</a>
+        <a href="#" class="d-block">{{ Auth::user()->name }}</a>
         </div>
       </div>
 
@@ -177,11 +177,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <ul class="nav nav-treeview">              
                 <li class="nav-item"><router-link to="/settings-clinic" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;クリニツク管理</p></a></li>
                 <li class="nav-item"><router-link to="/settings-rank" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ランク管理</p></a></li>
-                <li class="nav-item"><a href="#" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;スタッフ管理</p></a></li>
-                <li class="nav-item"><a href="#" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;メニュー管理</p></a></li>
-                <li class="nav-item"><a href="#" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;税率管理</p></a></li>
-                <li class="nav-item"><a href="#" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;シフト管理</p></a></li>
-                <li class="nav-item"><a href="#" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ランクスケジュール管理</p></a></li>
+                <li class="nav-item"><router-link to="/settings-staff" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;スタッフ管理</p></a></li>
+                <li class="nav-item"><router-link to="/settings-menu" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;メニュー管理</p></a></li>
+                <li class="nav-item"><router-link to="/settings-tax" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;税率管理</p></a></li>
+                <li class="nav-item"><router-link to="/settings-shift" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;シフト管理</p></a></li>
+                <li class="nav-item"><router-link to="/settings-rank-schedule" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ランクスケジュール管理</p></a></li>
                 <li class="nav-item"><router-link to="/settings-account" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;アカウント管理</p></a></li>
             </ul>
           </li>

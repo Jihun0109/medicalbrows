@@ -17,6 +17,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResources(['rank' => 'API\RankController']);
+Route::apiResources([
+    'rank' => 'API\RankController',
+    'user' => 'API\UserController',
+    'role' => 'API\RoleController'
+    ]);
+Route::apiResources(['tax' => 'API\TaxController']);
 
 

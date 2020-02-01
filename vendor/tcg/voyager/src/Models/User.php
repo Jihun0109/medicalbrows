@@ -11,6 +11,7 @@ class User extends Authenticatable implements UserContract
 {
     use VoyagerUser;
 
+    //protected $fillable = ['user_id','name','password','email','role_id'];
     protected $guarded = [];
 
     public $additional_attributes = ['locale'];
