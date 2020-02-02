@@ -3009,6 +3009,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3122,9 +3126,160 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    console.log('Component mounted.');
+  data: function data() {
+    return {
+      data: {},
+      form: new Form({
+        id: '',
+        name: '',
+        email: '',
+        address: '',
+        is_vacation: 0
+      }),
+      editMode: false
+    };
+  },
+  methods: {
+    loadList: function loadList() {
+      var _this = this;
+
+      axios.get('api/clinic').then(function (_ref) {
+        var data = _ref.data;
+        return _this.data = data.data;
+      });
+    },
+    createData: function createData() {
+      var _this2 = this;
+
+      this.form.post('api/clinic').then(function (result) {
+        toast.fire({
+          icon: "success",
+          title: "A account was created successfully."
+        });
+        $('#modalAddUser').modal('hide');
+
+        _this2.loadList();
+      })["catch"](function () {});
+    },
+    updateRank: function updateRank() {
+      var _this3 = this;
+
+      this.form.put('api/clinic/' + this.form.id).then(function () {
+        toast.fire({
+          icon: "success",
+          title: "Updated successfully!"
+        });
+        $('#modalAddUser').modal('hide');
+
+        _this3.loadList();
+      })["catch"](function () {});
+    },
+    deleteData: function deleteData(id) {
+      var _this4 = this;
+
+      this.form["delete"]('api/clinic/' + id).then(function (result) {
+        //if (result.message){
+        toast.fire({
+          icon: "success",
+          title: "Deleted successfully!"
+        });
+
+        _this4.loadList(); //}
+
+      })["catch"](function () {});
+    },
+    newModal: function newModal() {
+      this.editMode = false;
+      this.form.reset();
+      $('#modalAddUser').modal('show');
+    },
+    editModal: function editModal(data) {
+      this.editMode = true;
+      this.form.fill(data);
+      this.form.password = "";
+      $('#modalAddUser').modal('show');
+    }
+  },
+  created: function created() {
+    this.loadList();
   }
 });
 
@@ -3489,18 +3644,25 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       data: {},
-      roles: {},
+      clinics: {},
+      staff_types: {},
       form: new Form({
         id: '',
-        user_id: '',
-        name: '',
-        email: '',
-        password: '',
-        role_id: '2'
+        full_name: '',
+        staff_type_id: 1,
+        clinic_id: '',
+        is_vacation: 0
       }),
       editMode: false
     };
@@ -3509,24 +3671,28 @@ __webpack_require__.r(__webpack_exports__);
     loadList: function loadList() {
       var _this = this;
 
-      axios.get('api/user').then(function (_ref) {
+      axios.get('api/staff').then(function (_ref) {
         var data = _ref.data;
         return _this.data = data.data;
       });
-      axios.get('api/role').then(function (_ref2) {
+      axios.get('api/clinic').then(function (_ref2) {
         var data = _ref2.data;
-        return _this.roles = data.data;
+        return _this.clinics = data.data;
+      });
+      axios.get('api/staff-type').then(function (_ref3) {
+        var data = _ref3.data;
+        return _this.staff_types = data.data;
       });
     },
     createData: function createData() {
       var _this2 = this;
 
-      this.form.post('api/user').then(function (result) {
+      this.form.post('api/staff').then(function (result) {
         toast.fire({
           icon: "success",
           title: "A account was created successfully."
         });
-        $('#modalAddUser').modal('hide');
+        $('#modalAddStaff').modal('hide');
 
         _this2.loadList();
       })["catch"](function () {});
@@ -3534,12 +3700,12 @@ __webpack_require__.r(__webpack_exports__);
     updateRank: function updateRank() {
       var _this3 = this;
 
-      this.form.put('api/user/' + this.form.id).then(function () {
+      this.form.put('api/staff/' + this.form.id).then(function () {
         toast.fire({
           icon: "success",
           title: "Updated successfully!"
         });
-        $('#modalAddUser').modal('hide');
+        $('#modalAddStaff').modal('hide');
 
         _this3.loadList();
       })["catch"](function () {});
@@ -3547,7 +3713,7 @@ __webpack_require__.r(__webpack_exports__);
     deleteData: function deleteData(id) {
       var _this4 = this;
 
-      this.form["delete"]('api/user/' + id).then(function (result) {
+      this.form["delete"]('api/staff/' + id).then(function (result) {
         //if (result.message){
         toast.fire({
           icon: "success",
@@ -3561,13 +3727,13 @@ __webpack_require__.r(__webpack_exports__);
     newModal: function newModal() {
       this.editMode = false;
       this.form.reset();
-      $('#modalAddUser').modal('show');
+      $('#modalAddStaff').modal('show');
     },
     editModal: function editModal(data) {
       this.editMode = true;
       this.form.fill(data);
       this.form.password = "";
-      $('#modalAddUser').modal('show');
+      $('#modalAddStaff').modal('show');
     }
   },
   created: function created() {
@@ -81483,7 +81649,17 @@ var render = function() {
                   _vm._v(" "),
                   _c("td", [_vm._v(_vm._s(d.email))]),
                   _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(d.role_id))]),
+                  _c(
+                    "td",
+                    _vm._l(_vm.roles, function(r) {
+                      return _c("div", { key: r.id }, [
+                        d.role_id == r.id
+                          ? _c("div", [_vm._v(_vm._s(r.display_name))])
+                          : _vm._e()
+                      ])
+                    }),
+                    0
+                  ),
                   _vm._v(" "),
                   _c("td", [
                     _c(
@@ -81919,28 +82095,408 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "row" }, [
+    _c("div", { staticClass: "col-12" }, [
+      _c("div", { staticClass: "card" }, [
+        _c("div", { staticClass: "card-header" }, [
+          _c("h3", { staticClass: "card-title" }, [_vm._v("アカウント管理")]),
+          _vm._v(" "),
+          _c("div", { staticClass: "card-tools" }, [
+            _c(
+              "button",
+              { staticClass: "btn btn-success", on: { click: _vm.newModal } },
+              [_vm._v("追加 "), _c("i", { staticClass: "fa fa-plus" })]
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "card-body table-responsive p-0" }, [
+          _c("table", { staticClass: "table table-hover" }, [
+            _vm._m(0),
+            _vm._v(" "),
+            _c(
+              "tbody",
+              _vm._l(_vm.data, function(d, index) {
+                return _c("tr", { key: d.id }, [
+                  _c("td", [_vm._v(_vm._s(index + 1))]),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(d.name))]),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(d.email))]),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(d.address))]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _vm._v(_vm._s(_vm._f("isVacation")(d.is_vacation)))
+                  ]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c(
+                      "a",
+                      {
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            return _vm.editModal(d)
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "fa fa-edit" })]
+                    ),
+                    _vm._v("   \n                      "),
+                    _c(
+                      "a",
+                      {
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            return _vm.deleteData(d.id)
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "fa fa-trash" })]
+                    )
+                  ])
+                ])
+              }),
+              0
+            )
+          ])
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "modal fade",
+        attrs: {
+          id: "modalAddUser",
+          tabindex: "-1",
+          role: "dialog",
+          "aria-labelledby": "exampleModalLabel",
+          "aria-hidden": "true"
+        }
+      },
+      [
+        _c(
+          "div",
+          {
+            staticClass: "modal-dialog modal-dialog-centered",
+            attrs: { role: "document" }
+          },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _c("div", { staticClass: "modal-header" }, [
+                _c(
+                  "h5",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.editMode,
+                        expression: "editMode"
+                      }
+                    ],
+                    staticClass: "modal-title",
+                    attrs: { id: "exampleModalLabel" }
+                  },
+                  [_vm._v("アカウント更新")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "h5",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: !_vm.editMode,
+                        expression: "!editMode"
+                      }
+                    ],
+                    staticClass: "modal-title",
+                    attrs: { id: "exampleModalLabel" }
+                  },
+                  [_vm._v("アカウント追加")]
+                ),
+                _vm._v(" "),
+                _vm._m(1)
+              ]),
+              _vm._v(" "),
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      _vm.editMode ? _vm.updateRank() : _vm.createData()
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "modal-body" }, [
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", [_vm._v("クリニツク名")]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.name,
+                              expression: "form.name"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: { "is-invalid": _vm.form.errors.has("name") },
+                          attrs: {
+                            type: "text",
+                            name: "name",
+                            placeholder: "クリニツク名 "
+                          },
+                          domProps: { value: _vm.form.name },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(_vm.form, "name", $event.target.value)
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.form, field: "name" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", [_vm._v("メール")]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.email,
+                              expression: "form.email"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: { "is-invalid": _vm.form.errors.has("email") },
+                          attrs: {
+                            type: "text",
+                            name: "email",
+                            placeholder: "メール"
+                          },
+                          domProps: { value: _vm.form.email },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(_vm.form, "email", $event.target.value)
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.form, field: "email" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", [_vm._v("住所")]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.address,
+                              expression: "form.address"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.form.errors.has("address")
+                          },
+                          attrs: {
+                            type: "text",
+                            name: "address",
+                            placeholder: "住所"
+                          },
+                          domProps: { value: _vm.form.address },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(_vm.form, "address", $event.target.value)
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.form, field: "address" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("体閉鎖")]),
+                      _vm._v(" "),
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.is_vacation,
+                              expression: "form.is_vacation"
+                            }
+                          ],
+                          staticClass: "custom-select",
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.$set(
+                                _vm.form,
+                                "is_vacation",
+                                $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              )
+                            }
+                          }
+                        },
+                        [
+                          _c("option", { domProps: { value: 0 } }, [
+                            _vm._v("開いた")
+                          ]),
+                          _vm._v(" "),
+                          _c("option", { domProps: { value: 1 } }, [
+                            _vm._v("閉鎖")
+                          ])
+                        ]
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "modal-footer" }, [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-secondary",
+                        attrs: { type: "button", "data-dismiss": "modal" }
+                      },
+                      [_vm._v("キャンセル")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: _vm.editMode,
+                            expression: "editMode"
+                          }
+                        ],
+                        staticClass: "btn btn-success",
+                        attrs: { type: "submit" }
+                      },
+                      [_vm._v("更新")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: !_vm.editMode,
+                            expression: "!editMode"
+                          }
+                        ],
+                        staticClass: "btn btn-primary",
+                        attrs: { type: "submit" }
+                      },
+                      [_vm._v("追加")]
+                    )
+                  ])
+                ]
+              )
+            ])
+          ]
+        )
+      ]
+    )
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-12" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "card-header" }, [_vm._v("Clinics")]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _vm._v(
-                "\n                    I'm an Settings component.\n                "
-              )
-            ])
-          ])
-        ])
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("番号")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("クリニツク名 ")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("メール")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("住所")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("体閉鎖")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("編集する")])
       ])
     ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
   }
 ]
 render._withStripped = true
@@ -82402,15 +82958,35 @@ var render = function() {
               "tbody",
               _vm._l(_vm.data, function(d, index) {
                 return _c("tr", { key: d.id }, [
-                  _c("td", [_vm._v(_vm._s(index))]),
+                  _c("td", [_vm._v(_vm._s(index + 1))]),
                   _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(d.user_id))]),
+                  _c("td", [_vm._v(_vm._s(d.full_name))]),
                   _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(d.name))]),
+                  _c(
+                    "td",
+                    _vm._l(_vm.staff_types, function(t) {
+                      return _c("div", { key: t.id }, [
+                        d.staff_type_id == t.id
+                          ? _c("div", [_vm._v(_vm._s(t.name))])
+                          : _vm._e()
+                      ])
+                    }),
+                    0
+                  ),
                   _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(d.email))]),
+                  _c(
+                    "td",
+                    _vm._l(_vm.clinics, function(c) {
+                      return _c("div", { key: c.id }, [
+                        d.clinic_id == c.id
+                          ? _c("div", [_vm._v(_vm._s(c.name))])
+                          : _vm._e()
+                      ])
+                    }),
+                    0
+                  ),
                   _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(d.role_id))]),
+                  _c("td", [_vm._v(_vm._s(d.is_vacation))]),
                   _vm._v(" "),
                   _c("td", [
                     _c(
@@ -82453,7 +83029,7 @@ var render = function() {
       {
         staticClass: "modal fade",
         attrs: {
-          id: "modalAddUser",
+          id: "modalAddStaff",
           tabindex: "-1",
           role: "dialog",
           "aria-labelledby": "exampleModalLabel",
@@ -82523,148 +83099,27 @@ var render = function() {
                       "div",
                       { staticClass: "form-group" },
                       [
-                        _c("label", [_vm._v("ユーザーID")]),
+                        _c("label", [_vm._v("スタツフ名")]),
                         _vm._v(" "),
                         _c("input", {
                           directives: [
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.form.user_id,
-                              expression: "form.user_id"
+                              value: _vm.form.full_name,
+                              expression: "form.full_name"
                             }
                           ],
                           staticClass: "form-control",
                           class: {
-                            "is-invalid": _vm.form.errors.has("user_id")
+                            "is-invalid": _vm.form.errors.has("full_name")
                           },
                           attrs: {
                             type: "text",
-                            name: "user_id",
-                            placeholder: "ユーザーID"
+                            name: "full_name",
+                            placeholder: "スタツフ名"
                           },
-                          domProps: { value: _vm.form.user_id },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
-                              }
-                              _vm.$set(_vm.form, "user_id", $event.target.value)
-                            }
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("has-error", {
-                          attrs: { form: _vm.form, field: "user_id" }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "form-group" },
-                      [
-                        _c("label", [_vm._v("ユーザー名")]),
-                        _vm._v(" "),
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.form.name,
-                              expression: "form.name"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          class: { "is-invalid": _vm.form.errors.has("name") },
-                          attrs: {
-                            type: "text",
-                            name: "name",
-                            placeholder: "ユーザー名"
-                          },
-                          domProps: { value: _vm.form.name },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
-                              }
-                              _vm.$set(_vm.form, "name", $event.target.value)
-                            }
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("has-error", {
-                          attrs: { form: _vm.form, field: "name" }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "form-group" },
-                      [
-                        _c("label", [_vm._v("メール")]),
-                        _vm._v(" "),
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.form.email,
-                              expression: "form.email"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          class: { "is-invalid": _vm.form.errors.has("email") },
-                          attrs: {
-                            type: "text",
-                            name: "email",
-                            placeholder: "メール"
-                          },
-                          domProps: { value: _vm.form.email },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
-                              }
-                              _vm.$set(_vm.form, "email", $event.target.value)
-                            }
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("has-error", {
-                          attrs: { form: _vm.form, field: "email" }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "form-group" },
-                      [
-                        _c("label", [_vm._v("バスワード")]),
-                        _vm._v(" "),
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.form.password,
-                              expression: "form.password"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          class: {
-                            "is-invalid": _vm.form.errors.has("password")
-                          },
-                          attrs: {
-                            type: "password",
-                            placeholder: "バスワード"
-                          },
-                          domProps: { value: _vm.form.password },
+                          domProps: { value: _vm.form.full_name },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
@@ -82672,7 +83127,7 @@ var render = function() {
                               }
                               _vm.$set(
                                 _vm.form,
-                                "password",
+                                "full_name",
                                 $event.target.value
                               )
                             }
@@ -82680,14 +83135,14 @@ var render = function() {
                         }),
                         _vm._v(" "),
                         _c("has-error", {
-                          attrs: { form: _vm.form, field: "password" }
+                          attrs: { form: _vm.form, field: "full_name" }
                         })
                       ],
                       1
                     ),
                     _vm._v(" "),
                     _c("div", { staticClass: "form-group" }, [
-                      _c("label", [_vm._v("アカウントタイブ")]),
+                      _c("label", [_vm._v("区分")]),
                       _vm._v(" "),
                       _c(
                         "select",
@@ -82696,8 +83151,8 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.form.role_id,
-                              expression: "form.role_id"
+                              value: _vm.form.staff_type_id,
+                              expression: "form.staff_type_id"
                             }
                           ],
                           staticClass: "custom-select",
@@ -82713,7 +83168,7 @@ var render = function() {
                                 })
                               _vm.$set(
                                 _vm.form,
-                                "role_id",
+                                "staff_type_id",
                                 $event.target.multiple
                                   ? $$selectedVal
                                   : $$selectedVal[0]
@@ -82721,14 +83176,107 @@ var render = function() {
                             }
                           }
                         },
-                        _vm._l(_vm.roles, function(role) {
+                        _vm._l(_vm.staff_types, function(type) {
                           return _c(
                             "option",
-                            { key: role.id, domProps: { value: role.id } },
-                            [_vm._v(_vm._s(role.display_name))]
+                            { key: type.id, domProps: { value: type.id } },
+                            [_vm._v(_vm._s(type.name))]
                           )
                         }),
                         0
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("クリニック")]),
+                      _vm._v(" "),
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.clinic_id,
+                              expression: "form.clinic_id"
+                            }
+                          ],
+                          staticClass: "custom-select",
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.$set(
+                                _vm.form,
+                                "clinic_id",
+                                $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              )
+                            }
+                          }
+                        },
+                        _vm._l(_vm.clinics, function(clinic) {
+                          return _c(
+                            "option",
+                            { key: clinic.id, domProps: { value: clinic.id } },
+                            [_vm._v(_vm._s(clinic.name))]
+                          )
+                        }),
+                        0
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("体閉鎖")]),
+                      _vm._v(" "),
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.is_vacation,
+                              expression: "form.is_vacation"
+                            }
+                          ],
+                          staticClass: "custom-select",
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.$set(
+                                _vm.form,
+                                "is_vacation",
+                                $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              )
+                            }
+                          }
+                        },
+                        [
+                          _c("option", { domProps: { value: 0 } }, [
+                            _vm._v("開いた")
+                          ]),
+                          _vm._v(" "),
+                          _c("option", { domProps: { value: 1 } }, [
+                            _vm._v("閉鎖")
+                          ])
+                        ]
                       )
                     ])
                   ]),
@@ -82795,13 +83343,13 @@ var staticRenderFns = [
       _c("tr", [
         _c("th", [_vm._v("番号")]),
         _vm._v(" "),
-        _c("th", [_vm._v("ユーザーID")]),
+        _c("th", [_vm._v("スタツフ名")]),
         _vm._v(" "),
-        _c("th", [_vm._v("ユーザー名")]),
+        _c("th", [_vm._v("区分")]),
         _vm._v(" "),
-        _c("th", [_vm._v("メール")]),
+        _c("th", [_vm._v("クリニック")]),
         _vm._v(" "),
-        _c("th", [_vm._v("アカウントタイブ")]),
+        _c("th", [_vm._v("体閉鎖")]),
         _vm._v(" "),
         _c("th", [_vm._v("編集する")])
       ])
@@ -98590,6 +99138,9 @@ Vue.filter("upText", function (data) {
 });
 Vue.filter("upText", function (data) {
   return data.moment(data).format("MMM Do YY"); //Refer to momentjs.com  for detail
+});
+Vue.filter("isVacation", function (data) {
+  return data === 1 ? "閉まっている" : "開いた";
 });
 var app = new Vue({
   el: "#app",

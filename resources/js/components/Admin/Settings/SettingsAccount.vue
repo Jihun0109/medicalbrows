@@ -27,8 +27,12 @@
                       <td>{{ index }}</td>
                       <td>{{ d.user_id }}</td>
                       <td>{{ d.name }}</td>
-                      <td>{{ d.email }}</td>
-                      <td>{{ d.role_id }}</td>
+                      <td>{{ d.email }}</td>                      
+                      <td>
+                          <div v-for="r in roles" :key="r.id">
+                              <div v-if="d.role_id == r.id">{{r.display_name}}</div>
+                          </div>
+                      </td>
                       <td>
                           <a href="#" @click="editModal(d)"><i class="fa fa-edit"></i></a> &nbsp;&nbsp;
                           <a href="#" @click="deleteData(d.id)"><i class="fa fa-trash"></i></a>

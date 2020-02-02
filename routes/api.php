@@ -20,7 +20,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::apiResources([
     'rank' => 'API\RankController',
     'user' => 'API\UserController',
-    'role' => 'API\RoleController'
+    'role' => 'API\RoleController',
+    'clinic' => 'API\ClinicController',
+    'staff' => 'API\StaffController',
+    'staff-type' => 'API\StaffTypeController',
+    'region' => 'API\RegionController',
     ]);
 Route::apiResources(['tax' => 'API\TaxController']);
 

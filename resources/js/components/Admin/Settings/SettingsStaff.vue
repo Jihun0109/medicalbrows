@@ -15,20 +15,28 @@
                   <thead>
                     <tr>
                       <th>番号</th>
-                      <th>ユーザーID</th>
-                      <th>ユーザー名</th>
-                      <th>メール</th>                      
-                      <th>アカウントタイブ</th>
+                      <th>スタツフ名</th>
+                      <th>区分</th>
+                      <th>クリニック</th>
+                      <th>体閉鎖</th>
                       <th>編集する</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="(d, index) in data" :key="d.id">
-                      <td>{{ index }}</td>
-                      <td>{{ d.user_id }}</td>
-                      <td>{{ d.name }}</td>
-                      <td>{{ d.email }}</td>
-                      <td>{{ d.role_id }}</td>
+                      <td>{{ index+1 }}</td>
+                      <td>{{ d.full_name }}</td>                      
+                      <td>
+                          <div v-for="t in staff_types" :key="t.id">
+                              <div v-if="d.staff_type_id == t.id">{{t.name}}</div>
+                          </div>
+                      </td>
+                      <td>
+                          <div v-for="c in clinics" :key="c.id">
+                              <div v-if="d.clinic_id == c.id">{{c.name}}</div>
+                          </div>
+                      </td>
+                      <td>{{ d.is_vacation }}</td>
                       <td>
                           <a href="#" @click="editModal(d)"><i class="fa fa-edit"></i></a> &nbsp;&nbsp;
                           <a href="#" @click="deleteData(d.id)"><i class="fa fa-trash"></i></a>
@@ -43,7 +51,7 @@
           </div>
 
         <!-- Modal -->
-        <div class="modal fade" id="modalAddUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="modalAddStaff" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
@@ -56,29 +64,28 @@
                 <form @submit.prevent="editMode ? updateRank() : createData()">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>ユーザーID</label>
-                        <input v-model="form.user_id" type="text" name="user_id" class="form-control" :class="{'is-invalid':form.errors.has('user_id')}" placeholder="ユーザーID">
-                        <has-error :form="form" field="user_id"></has-error>
+                        <label>スタツフ名</label>
+                        <input v-model="form.full_name" type="text" name="full_name" class="form-control" :class="{'is-invalid':form.errors.has('full_name')}" placeholder="スタツフ名">
+                        <has-error :form="form" field="full_name"></has-error>
                     </div>
                     <div class="form-group">
-                        <label>ユーザー名</label>
-                        <input v-model="form.name" type="text" name="name" class="form-control" :class="{'is-invalid':form.errors.has('name')}" placeholder="ユーザー名">
-                        <has-error :form="form" field="name"></has-error>
+                        <label>区分</label>
+                        <select v-model="form.staff_type_id" class="custom-select">
+                          <option v-for="type in staff_types" :key="type.id" v-bind:value="type.id">{{ type.name }}</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>クリニック</label>
+                        <select v-model="form.clinic_id" class="custom-select">
+                          <option v-for="clinic in clinics" :key="clinic.id" v-bind:value="clinic.id">{{ clinic.name }}</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label>メール</label>
-                        <input v-model="form.email" type="text" name="email" class="form-control" :class="{'is-invalid':form.errors.has('email')}" placeholder="メール">
-                        <has-error :form="form" field="email"></has-error>
-                    </div>
-                    <div class="form-group">
-                        <label>バスワード</label>
-                        <input v-model="form.password" type="password" class="form-control" :class="{'is-invalid':form.errors.has('password')}" placeholder="バスワード">
-                        <has-error :form="form" field="password"></has-error>
-                    </div>
-                    <div class="form-group">
-                        <label>アカウントタイブ</label>
-                        <select v-model="form.role_id" class="custom-select">
-                          <option v-for="role in roles" :key="role.id" v-bind:value="role.id">{{ role.display_name }}</option>
+                        <label>体閉鎖</label>
+                        <select v-model="form.is_vacation" class="custom-select">
+                          <option v-bind:value=0>開いた</option>
+                          <option v-bind:value=1>閉鎖</option>
                         </select>
                     </div>
                 </div>
@@ -99,33 +106,35 @@
         data() {
             return {
                 data: {},
-                roles: {},
+                clinics: {},
+                staff_types : {},
                 form: new Form({
-                    id : '',
-                    user_id : '',
-                    name : '',
-                    email : '',
-                    password : '',
-                    role_id : '2',
+                    id : '',                    
+                    full_name : '',
+                    staff_type_id : 1,
+                    clinic_id : '',
+                    is_vacation : 0,
                 }),
                 editMode: false
             }
         },
         methods: {
             loadList(){
-                axios.get('api/user').
+                axios.get('api/staff').
                     then(({data}) => (this.data = data.data));
-                axios.get('api/role').
-                    then(({data}) => (this.roles = data.data));
+                axios.get('api/clinic').
+                    then(({data}) => (this.clinics = data.data));
+                axios.get('api/staff-type').
+                    then(({data}) => (this.staff_types = data.data));
             },
             createData(){                
-                this.form.post('api/user')
+                this.form.post('api/staff')
                     .then((result)=>{                        
                         toast.fire({
                             icon: "success",
                             title: "A account was created successfully."
                         });
-                        $('#modalAddUser').modal('hide');
+                        $('#modalAddStaff').modal('hide');
                         this.loadList();
                     })
                     .catch(()=>{
@@ -133,13 +142,13 @@
                     });         
             },
             updateRank(){
-                this.form.put('api/user/' + this.form.id)
+                this.form.put('api/staff/' + this.form.id)
                     .then(()=>{
                         toast.fire({
                                 icon: "success",
                                 title: "Updated successfully!"
                             });
-                            $('#modalAddUser').modal('hide');
+                            $('#modalAddStaff').modal('hide');
                             this.loadList();
 
                     })
@@ -148,7 +157,7 @@
                     });
             },
             deleteData(id){
-                this.form.delete('api/user/' + id)
+                this.form.delete('api/staff/' + id)
                     .then((result)=>{
                         //if (result.message){
                             toast.fire({
@@ -165,13 +174,13 @@
             newModal(){
                 this.editMode = false;
                 this.form.reset();                
-                $('#modalAddUser').modal('show');
+                $('#modalAddStaff').modal('show');
             },
             editModal(data){
                 this.editMode = true;
                 this.form.fill(data);
                 this.form.password = "";
-                $('#modalAddUser').modal('show');
+                $('#modalAddStaff').modal('show');
             }
         },
         created() {

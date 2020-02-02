@@ -25,8 +25,7 @@ window.toast = toast;
 
 Vue.use(VueRouter);
 
-let routes = [
-    {
+let routes = [{
         path: "/reservations",
         component: require("./components/Admin/Reservations.vue").default
     },
@@ -115,6 +114,10 @@ Vue.filter("upText", function(data) {
 
 Vue.filter("upText", function(data) {
     return data.moment(data).format("MMM Do YY"); //Refer to momentjs.com  for detail
+});
+
+Vue.filter("isVacation", function(data) {
+    return data === 1 ? "閉まっている" : "開いた";
 });
 
 const app = new Vue({
