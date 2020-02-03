@@ -27,7 +27,7 @@ Vue.use(VueRouter);
 
 let routes = [{
         path: "/reservations",
-        component: require("./components/Admin/Reservations.vue").default
+        component: require("./components/Admin/Reservations/Reservations.vue").default
     },
     {
         path: "/logs",
