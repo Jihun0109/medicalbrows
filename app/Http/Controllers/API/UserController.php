@@ -74,9 +74,9 @@ class UserController extends Controller
         ]);
         $rank = Voyager::model('User')->findOrFail($id);
         if ($request->password)
-            $rank->update(['user_id'=>$request->user_id, 'name'=>$request->name, 'email'=>$request->email,'role_id'=>$request->role_id, 'password'=>Hash::make($request->password)]);
+            $rank->update(['user_id'=>$request->user_id, 'name'=>$request->name, 'email'=>$request->email,'role_id'=>$request->role_id, 'is_active'=>$request->is_active, 'password'=>Hash::make($request->password)]);
         else
-            $rank->update(['user_id'=>$request->user_id, 'name'=>$request->name, 'email'=>$request->email,'role_id'=>$request->role_id]);
+            $rank->update(['user_id'=>$request->user_id, 'name'=>$request->name, 'email'=>$request->email,'role_id'=>$request->role_id, 'is_active'=>$request->is_active,]);
         return $id;
     }
 
