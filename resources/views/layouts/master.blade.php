@@ -178,11 +178,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <li class="nav-item"><router-link to="/settings-clinic" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;クリニツク管理</p></a></li>
                 <li class="nav-item"><router-link to="/settings-rank" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ランク管理</p></a></li>
                 <li class="nav-item"><router-link to="/settings-staff" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;スタッフ管理</p></a></li>
+                <li class="nav-item"><router-link to="/settings-staff-rank" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;スタッフ ランク管理</p></a></li>
                 <li class="nav-item"><router-link to="/settings-menu" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;メニュー管理</p></a></li>
                 <li class="nav-item"><router-link to="/settings-tax" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;税率管理</p></a></li>
                 <li class="nav-item"><router-link to="/settings-shift" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;シフト管理</p></a></li>
                 <li class="nav-item"><router-link to="/settings-rank-schedule" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ランクスケジュール管理</p></a></li>
                 <li class="nav-item"><router-link to="/settings-account" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;アカウント管理</p></a></li>
+                {{-- <li class="nav-item"><router-link to="/settings-order" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; order 管理</p></a></li> --}}
             </ul>
           </li>
           <li class="nav-item">
@@ -234,7 +236,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <footer class="main-footer">
     <!-- To the right -->
     <div class="float-right d-none d-sm-inline">
-      Something to note
+      
     </div>
     <!-- Default to the left -->
     <strong>Copyright &copy; 2020 <a href="/">medicalbrows.com</a>.</strong> All rights reserved.

@@ -11,6 +11,6 @@
 @import "~@fortawesome/fontawesome-free/scss/solid.scss";
 @import "~@fortawesome/fontawesome-free/scss/brands.scss";
 .router-link-exact-active {
-    background-color: lightgrey;
+    background-color: rgba(255, 255, 255, 0.1);
     color: #aaa;
 }

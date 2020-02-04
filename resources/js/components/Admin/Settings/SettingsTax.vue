@@ -91,7 +91,7 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <h6>
-                                    税率名前
+                                    税率名
                                 </h6>
                                 <input
                                     v-model="form.name"
@@ -101,7 +101,7 @@
                                     :class="{
                                         'is-invalid': form.errors.has('name')
                                     }"
-                                    placeholder="税率名前"
+                                    placeholder="税率名"
                                 />
                                 <has-error
                                     :form="form"
@@ -110,7 +110,7 @@
                             </div>
                             <div class="form-group">
                                 <h6>
-                                    量
+                                    税率
                                 </h6>
                                 <input
                                     v-model="form.amount"
@@ -120,7 +120,7 @@
                                     :class="{
                                         'is-invalid': form.errors.has('amount')
                                     }"
-                                    placeholder="量"
+                                    placeholder="税率"
                                 />
                                 <has-error
                                     :form="form"
@@ -129,12 +129,12 @@
                             </div>
                             <div class="form-group">
                                 <h6>
-                                    始まる時間
+                                    適用開始日
                                 </h6>
                                 <datetime
-                                    format="YYYY-MM-DD H:i"
+                                    format="YYYY-MM-DD"
                                     v-model="form.start_time"
-                                    placeholder="始まる時間"
+                                    placeholder="適用開始日"
                                     name="start_time"
                                     :class="{
                                         'is-invalid': form.errors.has(
@@ -149,12 +149,12 @@
                             </div>
                             <div class="form-group">
                                 <h6>
-                                    終了時間
+                                    適用終了日
                                 </h6>
                                 <datetime
-                                    format="YYYY-MM-DD H:i"
+                                    format="YYYY-MM-DD"
                                     v-model="form.end_time"
-                                    placeholder="終了時間"
+                                    placeholder="適用終了日"
                                     name="end_time"
                                     :class="{
                                         'is-invalid': form.errors.has(

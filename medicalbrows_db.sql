@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 04, 2020 at 06:29 AM
+-- Generation Time: Feb 04, 2020 at 11:23 AM
 -- Server version: 10.3.16-MariaDB
 -- PHP Version: 7.3.8
 
@@ -760,12 +760,31 @@ CREATE TABLE `tbl_rank_schedules` (
   `id` int(10) UNSIGNED NOT NULL,
   `rank_id` int(11) DEFAULT NULL,
   `part_id` int(11) DEFAULT NULL,
-  `start_time` timestamp NULL DEFAULT NULL,
-  `end_time` timestamp NULL DEFAULT NULL,
+  `start_time` time DEFAULT NULL,
+  `end_time` time DEFAULT NULL,
   `is_deleted` tinyint(4) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tbl_rank_schedules`
+--
+
+INSERT INTO `tbl_rank_schedules` (`id`, `rank_id`, `part_id`, `start_time`, `end_time`, `is_deleted`, `created_at`, `updated_at`) VALUES
+(1, 1, 0, '10:00:00', '12:00:00', 0, '2020-02-04 08:17:53', '2020-02-04 08:17:56'),
+(2, 1, 0, '12:00:00', '14:00:00', 0, '2020-02-04 08:19:01', '2020-02-04 08:19:04'),
+(3, 1, 0, '15:00:00', '17:00:00', 0, '2020-02-04 08:20:23', '2020-02-04 08:20:26'),
+(4, 1, 0, '17:00:00', '19:00:00', 0, '2020-02-04 08:21:28', '2020-02-04 08:21:31'),
+(5, 2, 0, '10:00:00', '13:00:00', 0, '2020-02-04 08:22:20', '2020-02-04 08:22:24'),
+(6, 2, 0, '14:00:00', '16:30:00', 0, '2020-02-04 08:23:28', '2020-02-04 08:23:31'),
+(7, 2, 0, '16:30:00', '19:00:00', 0, '2020-02-04 08:24:18', '2020-02-04 08:24:21'),
+(8, 3, 0, '10:00:00', '14:00:00', 0, '2020-02-04 08:25:14', '2020-02-04 08:25:17'),
+(9, 3, 0, '15:00:00', '19:30:00', 0, '2020-02-04 08:26:30', '2020-02-04 08:26:33'),
+(10, 5, 0, '09:20:00', '10:00:00', 0, '2020-02-04 08:29:18', '2020-02-04 08:29:21'),
+(11, 5, 0, '11:20:00', '12:00:00', 0, '2020-02-04 08:29:54', '2020-02-04 08:29:56'),
+(12, 5, 0, '14:20:00', '15:00:00', 0, '2020-02-04 08:30:33', '2020-02-04 08:30:36'),
+(13, 5, 0, '16:20:00', '17:00:00', 0, '2020-02-04 08:31:17', '2020-02-04 08:31:19');
 
 -- --------------------------------------------------------
 
@@ -831,6 +850,36 @@ INSERT INTO `tbl_staffs` (`id`, `full_name`, `staff_type_id`, `is_vacation`, `is
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tbl_staff_ranks`
+--
+
+CREATE TABLE `tbl_staff_ranks` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `rank_id` int(11) DEFAULT NULL,
+  `staff_id` int(11) DEFAULT NULL,
+  `part_id` int(11) DEFAULT NULL,
+  `promo_date` date DEFAULT NULL,
+  `is_deleted` tinyint(4) DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tbl_staff_ranks`
+--
+
+INSERT INTO `tbl_staff_ranks` (`id`, `rank_id`, `staff_id`, `part_id`, `promo_date`, `is_deleted`, `created_at`, `updated_at`) VALUES
+(1, 5, 2, NULL, NULL, 0, '2020-02-03 22:35:56', '2020-02-04 01:06:59'),
+(2, 3, 3, NULL, NULL, 0, '2020-02-03 22:38:13', '2020-02-04 01:06:43'),
+(3, 3, 1, NULL, NULL, 1, '2020-02-04 00:11:14', '2020-02-04 00:12:26'),
+(4, 5, 1, NULL, NULL, 1, '2020-02-04 00:44:02', '2020-02-04 00:50:24'),
+(5, 2, 1, NULL, NULL, 1, '2020-02-04 00:44:44', '2020-02-04 00:44:53'),
+(6, 4, 1, NULL, NULL, 1, '2020-02-04 00:50:32', '2020-02-04 01:11:32'),
+(7, 3, 1, NULL, '2020-02-02', 0, '2020-02-04 01:11:49', '2020-02-04 01:39:37');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tbl_staff_types`
 --
 
@@ -860,8 +909,8 @@ CREATE TABLE `tbl_tax_rates` (
   `id` int(10) UNSIGNED NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `amount` float NOT NULL,
-  `start_time` datetime DEFAULT NULL,
-  `end_time` datetime DEFAULT NULL,
+  `start_time` date DEFAULT NULL,
+  `end_time` date DEFAULT NULL,
   `is_deleted` tinyint(4) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -872,9 +921,10 @@ CREATE TABLE `tbl_tax_rates` (
 --
 
 INSERT INTO `tbl_tax_rates` (`id`, `name`, `amount`, `start_time`, `end_time`, `is_deleted`, `created_at`, `updated_at`) VALUES
-(1, 'aasdf', 24, '2020-02-01 20:08:00', '2020-02-28 20:08:00', 0, '2020-02-01 04:25:03', '2020-02-01 04:25:03'),
-(2, 'RedLine155', 7832, '2020-02-27 20:26:00', '2020-02-29 20:59:00', 1, '2020-02-01 04:26:40', '2020-02-01 04:30:54'),
-(3, 'asdfasdfg', 42323, '2020-02-28 20:26:00', '2020-02-29 20:59:00', 0, '2020-02-01 04:29:16', '2020-02-01 06:06:40');
+(1, 'aasdf', 24, '2020-02-01', '2020-02-28', 0, '2020-02-01 04:25:03', '2020-02-01 04:25:03'),
+(2, 'RedLine155', 7832, '2020-02-27', '2020-02-29', 1, '2020-02-01 04:26:40', '2020-02-01 04:30:54'),
+(3, 'asdfasdfg', 42323, '2020-02-28', '2020-02-29', 0, '2020-02-01 04:29:16', '2020-02-01 06:06:40'),
+(4, 'Tax1', 3, '2020-02-01', '2020-02-22', 0, '2020-02-03 23:59:38', '2020-02-03 23:59:38');
 
 -- --------------------------------------------------------
 
@@ -957,8 +1007,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `role_id`, `name`, `email`, `avatar`, `email_verified_at`, `password`, `remember_token`, `settings`, `created_at`, `updated_at`, `user_id`, `is_deleted`, `is_active`) VALUES
-(1, 1, 'Admin', 'admin@admin.com', 'users/default.png', NULL, '$2y$10$swdnObuPvOaOdPE.giyUCOBpNO6Lzu7UU2VyTNLR4nXJP3w.ipHJC', 'd36TYhvgnaFSsYJcNbo2qi9oodHeIo4Ck0VrjufKEbK3AgG1aHdN1SyaQ0Hl', '{\"locale\":\"en\"}', '2020-01-28 07:13:04', '2020-01-28 10:38:14', 'administrator', 0, 1),
-(2, 2, 'Clinic1', 'clinic1@mail.com', 'users/default.png', NULL, '$2y$10$WFzJaFBy.Q5ukA4Fr4pyLOzPZcifBJiSFyfcEvTpZQhAKRrynnxby', NULL, '{\"locale\":\"ja\"}', '2020-01-28 10:32:46', '2020-01-28 10:32:46', 'clinic_1', 0, 1),
+(1, 1, 'Admin', 'admin@admin.com', 'users/default.png', NULL, '$2y$10$swdnObuPvOaOdPE.giyUCOBpNO6Lzu7UU2VyTNLR4nXJP3w.ipHJC', 'd36TYhvgnaFSsYJcNbo2qi9oodHeIo4Ck0VrjufKEbK3AgG1aHdN1SyaQ0Hl', '{\"locale\":\"en\"}', '2020-01-28 07:13:04', '2020-02-03 21:41:07', 'admin', 0, 1),
+(2, 2, 'Clinic1', 'clinic1@mail.com', 'users/default.png', NULL, '$2y$10$WFzJaFBy.Q5ukA4Fr4pyLOzPZcifBJiSFyfcEvTpZQhAKRrynnxby', NULL, '{\"locale\":\"ja\"}', '2020-01-28 10:32:46', '2020-02-04 02:18:03', 'clinic1', 0, 1),
 (3, 1, 'admin', 'admin@mail.com', 'users/default.png', NULL, 'aldjflajdflkajsdfasdf', NULL, NULL, '2020-02-01 05:05:29', '2020-02-01 05:52:04', 'admin1', 1, 1);
 
 -- --------------------------------------------------------
@@ -1130,6 +1180,12 @@ ALTER TABLE `tbl_staffs`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `tbl_staff_ranks`
+--
+ALTER TABLE `tbl_staff_ranks`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `tbl_staff_types`
 --
 ALTER TABLE `tbl_staff_types`
@@ -1274,7 +1330,7 @@ ALTER TABLE `tbl_ranks`
 -- AUTO_INCREMENT for table `tbl_rank_schedules`
 --
 ALTER TABLE `tbl_rank_schedules`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `tbl_regions`
@@ -1295,6 +1351,12 @@ ALTER TABLE `tbl_staffs`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `tbl_staff_ranks`
+--
+ALTER TABLE `tbl_staff_ranks`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
 -- AUTO_INCREMENT for table `tbl_staff_types`
 --
 ALTER TABLE `tbl_staff_types`
@@ -1304,7 +1366,7 @@ ALTER TABLE `tbl_staff_types`
 -- AUTO_INCREMENT for table `tbl_tax_rates`
 --
 ALTER TABLE `tbl_tax_rates`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `translations`

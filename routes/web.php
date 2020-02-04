@@ -35,16 +35,14 @@ Route::get('/', 'HomeController@index')->name('home');
 Route::get('{path}','HomeController@index')->where('path','[A-Za-z0-9_-]+' );
 
 // API
-// Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
-//     // Ranks 
-//     Route::get('/rank/list', 'ApiController@rankList');
-//     Route::post('/rank/add', 'ApiController@rankAdd');
-//     Route::post('/rank/remove', 'ApiController@rankRemove');
-//     Route::post('/rank/update', 'ApiController@rankUpdate');
+Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
+
+    Route::get('/staff/operators', 'API\StaffController@operators');
+    Route::get('/staff/counselors', 'API\StaffController@counselors');
 
 //     // Clinics
 //     Route::get('/clinic/list', 'ApiController@clinicList');
 //     Route::post('/clinic/add', 'ApiController@clinicAdd');
 //     Route::post('/clinic/remove', 'ApiController@clinicRemove');
 //     Route::post('/clinic/update', 'ApiController@clinicUpdate');
-// });
+});

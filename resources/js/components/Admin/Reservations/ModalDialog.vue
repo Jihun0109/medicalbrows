@@ -3,10 +3,10 @@
     <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button @click="updateBtn" type="submit" class="btn btn-primary">s更新</button>
-                <button @click="updateBtn" type="submit" class="btn btn-primary">s更新</button>
-                <button @click="updateBtn" type="submit" class="btn btn-primary">s更新</button>
-                <button @click="updateBtn" type="submit" class="btn btn-primary">s更新</button>
+                <button @click="updateBtn" type="button" class="btn btn-default">asda</button>
+                <button @click="updateBtn" type="button" class="btn btn-primary">s更新</button>
+                <button @click="updateBtn" type="button" class="btn btn-primary">s更新</button>
+                <button @click="updateBtn" type="button" class="btn btn-primary">s更新</button>
             </div>
             <div class="modal-body" v-for="user in users" :key="user._id">
                 <div class="info">

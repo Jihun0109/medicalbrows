@@ -4,21 +4,10 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\TblStaff;
+use App\TblMenu;
 
-class StaffController extends Controller
+class MenuController extends Controller
 {
-    public function operators()
-    {
-        return TblStaff::where([['is_deleted', 0],['staff_type_id', '<>', 7]])->get();
-    }
-
-    public function counselors()
-    {
-        return TblStaff::where([['is_deleted', 0],['staff_type_id', '=', 7]])->get();
-                    
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -26,7 +15,7 @@ class StaffController extends Controller
      */
     public function index()
     {
-        return TblStaff::where('is_deleted', 0)
+        return TblMenu::where('is_deleted', 0)
                     ->latest()                    
                     ->paginate(20);
     }
@@ -40,17 +29,11 @@ class StaffController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'full_name' => 'required|string|max:50',
-            'staff_type_id' => 'required',
-            'clinic_id' => 'required',
-            'is_vacation' => 'required',
+            'name' => 'required|string|max:50',
             //'email' => 'required|string|email|max:120|unique:tbl_clinics',
         ]);
-        return TblStaff::create([
-                            'full_name' => $request->full_name,
-                            'staff_type_id' => $request->staff_type_id,
-                            'clinic_id' => $request->clinic_id,
-                            'is_vacation' => $request->is_vacation,
+        return TblMenu::create([
+                            'name' => $request->name,
                             'is_deleted' => 0
                             ]);
     }
@@ -76,14 +59,11 @@ class StaffController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'full_name' => 'required|string|max:50',
-            'staff_type_id' => 'required',
-            'clinic_id' => 'required',
-            'is_vacation' => 'required',
+            'name' => 'required|string|max:50',
             //'email' => 'required|string|email|max:120|unique:tbl_clinics',
         ]);        
-        $staff = TblStaff::findOrFail($id);
-        $staff->update($request->all());
+        $item = TblMenu::findOrFail($id);
+        $item->update($request->all());
         return $id;
     }
 
@@ -95,10 +75,10 @@ class StaffController extends Controller
      */
     public function destroy($id)
     {
-        $staff = TblStaff::findOrFail($id);
+        $item = TblMenu::findOrFail($id);
         
-        $staff->is_deleted = 1;
-        $staff->save();
-        return ['message' => 'staff deleted'];
+        $item->is_deleted = 1;
+        $item->save();
+        return ['message' => 'menu deleted'];
     }    
 }

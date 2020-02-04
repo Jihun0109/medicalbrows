@@ -49,6 +49,11 @@ let routes = [{
             .default
     },
     {
+        path: "/settings-staff-rank",
+        component: require("./components/Admin/Settings/SettingsStaffRank.vue")
+            .default
+    },
+    {
         path: "/settings-menu",
         component: require("./components/Admin/Settings/SettingsMenu.vue")
             .default
@@ -71,6 +76,11 @@ let routes = [{
     {
         path: "/settings-account",
         component: require("./components/Admin/Settings/SettingsAccount.vue")
+            .default
+    },
+    {
+        path: "/settings-order",
+        component: require("./components/Admin/Settings/SettingsOrder.vue")
             .default
     }
 ];

@@ -3,7 +3,7 @@
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">スタッフ管理</h3>
+                <h3 class="card-title">スタッフ ランク管理</h3>
 
                 <div class="card-tools">
                   <button class="btn btn-success" @click="newModal">追加 <i class="fa fa-plus"></i></button>
@@ -15,28 +15,27 @@
                   <thead>
                     <tr>
                       <th>番号</th>
-                      <th>スタツフ名</th>
-                      <th>区分</th>
-                      <th>クリニック</th>
-                      <th>体閉鎖</th>
+                      <th>ランク</th>
+                      <th>スタッフ</th>
+                      <th>昇格日</th>
                       <th>編集する</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="(d, index) in data" :key="d.id">
                       <td>{{ index+1 }}</td>
-                      <td>{{ d.full_name }}</td>                      
                       <td>
-                          <div v-for="t in staff_types" :key="t.id">
-                              <div v-if="d.staff_type_id == t.id">{{t.name}}</div>
+                          <div v-for="r in ranks" :key="r.id">
+                              <div v-if="d.rank_id == r.id">{{r.name}}</div>
+                          </div>
+                      </td>                      
+                      <td>
+                          <div v-for="s in staffs" :key="s.id">
+                              <div v-if="d.staff_id == s.id">{{s.full_name}}</div>
                           </div>
                       </td>
-                      <td>
-                          <div v-for="c in clinics" :key="c.id">
-                              <div v-if="d.clinic_id == c.id">{{c.name}}</div>
-                          </div>
-                      </td>
-                      <td>{{ d.is_vacation | isVacation}}</td>
+                      <td>{{ d.promo_date }}
+                      </td>  
                       <td>
                           <a href="#" @click="editModal(d)"><i class="fa fa-edit"></i></a> &nbsp;&nbsp;
                           <a href="#" @click="deleteData(d.id)"><i class="fa fa-trash"></i></a>
@@ -51,7 +50,7 @@
           </div>
 
         <!-- Modal -->
-        <div class="modal fade" id="modalAddStaff" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="modalAddStaffRank" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
@@ -64,29 +63,21 @@
                 <form @submit.prevent="editMode ? updateRank() : createData()">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>スタツフ名</label>
-                        <input v-model="form.full_name" type="text" name="full_name" class="form-control" :class="{'is-invalid':form.errors.has('full_name')}" placeholder="スタツフ名">
-                        <has-error :form="form" field="full_name"></has-error>
-                    </div>
-                    <div class="form-group">
-                        <label>区分</label>
-                        <select v-model="form.staff_type_id" class="custom-select">
-                          <option v-for="type in staff_types" :key="type.id" v-bind:value="type.id">{{ type.name }}</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>クリニック</label>
-                        <select v-model="form.clinic_id" class="custom-select">
-                          <option v-for="clinic in clinics" :key="clinic.id" v-bind:value="clinic.id">{{ clinic.name }}</option>
+                        <label>ランク</label>
+                        <select v-model="form.rank_id" class="custom-select">
+                          <option v-for="rank in ranks" :key="rank.id" v-bind:value="rank.id">{{ rank.name }}</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>体閉鎖</label>
-                        <select v-model="form.is_vacation" class="custom-select">
-                          <option v-bind:value=0>開いた</option>
-                          <option v-bind:value=1>閉鎖</option>
+                        <label>スタッフ</label>
+                        <select v-model="form.staff_id" class="custom-select">
+                          <option v-for="staff in staffs" :key="staff.id" v-bind:value="staff.id">{{ staff.full_name }}</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label>昇格日</label>
+                        <datetime format="YYYY-MM-DD" v-model="form.promo_date" placeholder="昇格日" name="promo_date" :class="{'is-invalid': form.errors.has('promo_date')}"></datetime>
+                        <has-error :form="form" field="promo_date"></has-error>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -102,39 +93,42 @@
 </template>
 
 <script>
+import datetime from "vuejs-datetimepicker";
     export default {
+        components: { datetime },
         data() {
             return {
                 data: {},
-                clinics: {},
-                staff_types : {},
+                ranks: {},
+                staffs : {},
                 form: new Form({
                     id : '',                    
-                    full_name : '',
-                    staff_type_id : 1,
-                    clinic_id : '',
-                    is_vacation : 0,
+                    rank_id : '',
+                    staff_id : '',
+                    part_id : '',
+                    promo_date : '',
+                    is_deleted : 0,
                 }),
                 editMode: false
             }
         },
-        methods: {
+        methods: {            
             loadList(){
-                axios.get('api/staff').
+                axios.get('api/staff-rank').
                     then(({data}) => (this.data = data.data));
-                axios.get('api/clinic').
-                    then(({data}) => (this.clinics = data.data));
-                axios.get('api/staff-type').
-                    then(({data}) => (this.staff_types = data));
+                axios.get('api/rank').
+                    then(({data}) => (this.ranks = data));
+                axios.get('api/staff').
+                    then(({data}) => (this.staffs = data.data));
             },
             createData(){                
-                this.form.post('api/staff')
+                this.form.post('api/staff-rank')
                     .then((result)=>{                        
                         toast.fire({
                             icon: "success",
                             title: "A account was created successfully."
                         });
-                        $('#modalAddStaff').modal('hide');
+                        $('#modalAddStaffRank').modal('hide');
                         this.loadList();
                     })
                     .catch(()=>{
@@ -142,13 +136,13 @@
                     });         
             },
             updateRank(){
-                this.form.put('api/staff/' + this.form.id)
+                this.form.put('api/staff-rank/' + this.form.id)
                     .then(()=>{
                         toast.fire({
                                 icon: "success",
                                 title: "Updated successfully!"
                             });
-                            $('#modalAddStaff').modal('hide');
+                            $('#modalAddStaffRank').modal('hide');
                             this.loadList();
 
                     })
@@ -157,7 +151,7 @@
                     });
             },
             deleteData(id){
-                this.form.delete('api/staff/' + id)
+                this.form.delete('api/staff-rank/' + id)
                     .then((result)=>{
                         //if (result.message){
                             toast.fire({
@@ -174,13 +168,13 @@
             newModal(){
                 this.editMode = false;
                 this.form.reset();                
-                $('#modalAddStaff').modal('show');
+                $('#modalAddStaffRank').modal('show');
             },
             editModal(data){
                 this.editMode = true;
                 this.form.fill(data);
                 this.form.password = "";
-                $('#modalAddStaff').modal('show');
+                $('#modalAddStaffRank').modal('show');
             }
         },
         created() {
