@@ -15,9 +15,7 @@ class RankController extends Controller
      */
     public function index()
     {
-        return TblRank::where('is_deleted', 0)->
-                        latest()->
-                        paginate(10);
+        return TblRank::where('is_deleted', 0)->get();
     }
 
     /**
@@ -30,10 +28,11 @@ class RankController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string|max:50',
+            'short_name' => 'required|string|max:5',
             // 'email' => 'required|string|email|max:120|unique:tbl_users',
             // 'password' => 'required|string|min:8'
         ]);
-        return TblRank::create(['name' => $request->name]);
+        return TblRank::create(['name' => $request->name, 'short_name' => $request->short_name]);
     }
 
     /**
@@ -58,6 +57,7 @@ class RankController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string|max:50',
+            'short_name' => 'required|string|max:5',
             // 'email' => 'required|string|email|max:120|unique:tbl_users,email,'.$user->id, //for updating for unique email
             // 'password' => 'required|string|min:8'
         ]);

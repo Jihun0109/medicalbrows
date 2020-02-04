@@ -120,6 +120,10 @@ Vue.filter("isVacation", function(data) {
     return data === 1 ? "閉まっている" : "開いた";
 });
 
+Vue.filter("isActive", function(data) {
+    return data === 1 ? "アクティブ" : "非アクティブ";
+});
+
 const app = new Vue({
     el: "#app",
     router

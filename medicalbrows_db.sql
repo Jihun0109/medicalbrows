@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 03, 2020 at 11:27 PM
+-- Generation Time: Feb 04, 2020 at 06:29 AM
 -- Server version: 10.3.16-MariaDB
 -- PHP Version: 7.3.8
 
@@ -130,9 +130,9 @@ INSERT INTO `data_rows` (`id`, `data_type_id`, `field`, `type`, `display_name`, 
 (55, 6, 'image', 'image', 'Page Image', 0, 1, 1, 1, 1, 1, NULL, 12),
 (72, 11, 'id', 'text', 'Id', 1, 0, 0, 0, 0, 0, '{}', 1),
 (73, 11, 'name', 'text', 'Name', 1, 1, 1, 1, 1, 1, '{}', 2),
-(74, 11, 'is_deleted', 'number', 'Is Deleted', 1, 1, 1, 1, 1, 1, '{}', 3),
-(75, 11, 'created_at', 'timestamp', 'Created At', 0, 1, 1, 1, 0, 1, '{}', 4),
-(76, 11, 'updated_at', 'timestamp', 'Updated At', 0, 0, 0, 0, 0, 0, '{}', 5),
+(74, 11, 'is_deleted', 'number', 'Is Deleted', 0, 1, 1, 1, 1, 1, '{}', 4),
+(75, 11, 'created_at', 'timestamp', 'Created At', 0, 1, 1, 1, 0, 1, '{}', 5),
+(76, 11, 'updated_at', 'timestamp', 'Updated At', 0, 0, 0, 0, 0, 0, '{}', 6),
 (77, 12, 'id', 'text', 'Id', 1, 1, 1, 0, 0, 0, '{}', 1),
 (78, 12, 'name', 'text', 'Name', 0, 1, 1, 1, 1, 1, '{}', 2),
 (79, 12, 'is_deleted', 'text', 'Is Deleted', 0, 1, 1, 1, 1, 1, '{}', 3),
@@ -143,7 +143,12 @@ INSERT INTO `data_rows` (`id`, `data_type_id`, `field`, `type`, `display_name`, 
 (84, 15, 'id', 'text', 'Id', 1, 0, 0, 0, 0, 0, '{}', 1),
 (85, 15, 'rank_id', 'text', 'Rank Id', 0, 1, 1, 1, 1, 1, '{}', 2),
 (86, 15, 'created_at', 'timestamp', 'Created At', 0, 1, 1, 1, 0, 1, '{}', 3),
-(87, 15, 'updated_at', 'timestamp', 'Updated At', 0, 0, 0, 0, 0, 0, '{}', 4);
+(87, 15, 'updated_at', 'timestamp', 'Updated At', 0, 0, 0, 0, 0, 0, '{}', 4),
+(88, 17, 'id', 'text', 'Id', 1, 0, 0, 0, 0, 0, '{}', 1),
+(89, 17, 'name', 'text', 'Name', 0, 1, 1, 1, 1, 1, '{}', 2),
+(90, 17, 'created_at', 'timestamp', 'Created At', 0, 1, 1, 1, 0, 1, '{}', 3),
+(91, 17, 'updated_at', 'timestamp', 'Updated At', 0, 0, 0, 0, 0, 0, '{}', 4),
+(92, 11, 'short_name', 'text', 'Short Name', 0, 1, 1, 1, 1, 1, '{}', 3);
 
 -- --------------------------------------------------------
 
@@ -180,10 +185,11 @@ INSERT INTO `data_types` (`id`, `name`, `slug`, `display_name_singular`, `displa
 (4, 'categories', 'categories', 'Category', 'Categories', 'voyager-categories', 'TCG\\Voyager\\Models\\Category', NULL, '', '', 1, 0, NULL, '2020-01-28 07:13:03', '2020-01-28 07:13:03'),
 (5, 'posts', 'posts', 'Post', 'Posts', 'voyager-news', 'TCG\\Voyager\\Models\\Post', 'TCG\\Voyager\\Policies\\PostPolicy', '', '', 1, 0, NULL, '2020-01-28 07:13:04', '2020-01-28 07:13:04'),
 (6, 'pages', 'pages', 'Page', 'Pages', 'voyager-file-text', 'TCG\\Voyager\\Models\\Page', NULL, '', '', 1, 0, NULL, '2020-01-28 07:13:05', '2020-01-28 07:13:05'),
-(11, 'tbl_ranks', 'tbl-ranks', 'Tbl Rank', 'Tbl Ranks', NULL, 'App\\TblRank', NULL, NULL, NULL, 1, 0, '{\"order_column\":null,\"order_display_column\":null,\"order_direction\":\"asc\",\"default_search_key\":null}', '2020-01-28 13:07:11', '2020-01-28 13:07:11'),
+(11, 'tbl_ranks', 'tbl-ranks', 'Tbl Rank', 'Tbl Ranks', NULL, 'App\\TblRank', NULL, NULL, NULL, 1, 0, '{\"order_column\":null,\"order_display_column\":null,\"order_direction\":\"asc\",\"default_search_key\":null,\"scope\":null}', '2020-01-28 13:07:11', '2020-02-03 20:35:53'),
 (12, 'tbl_staff_types', 'tbl-staff-types', 'Tbl Staff Type', 'Tbl Staff Types', NULL, 'App\\TblStaffType', NULL, NULL, NULL, 1, 0, '{\"order_column\":null,\"order_display_column\":null,\"order_direction\":\"asc\",\"default_search_key\":null,\"scope\":null}', '2020-02-01 06:01:19', '2020-02-02 23:05:01'),
 (14, 'tbl_regions', 'tbl-regions', 'Tbl Region', 'Tbl Regions', NULL, 'App\\TblRegion', NULL, NULL, NULL, 1, 0, '{\"order_column\":null,\"order_display_column\":null,\"order_direction\":\"asc\",\"default_search_key\":null}', '2020-02-01 18:41:52', '2020-02-01 18:41:52'),
-(15, 'tbl_shift_histories', 'tbl-shift-histories', 'Tbl Shift History', 'Tbl Shift Histories', 'voyager-person', 'App\\TblShiftHistory', NULL, NULL, NULL, 1, 0, '{\"order_column\":null,\"order_display_column\":null,\"order_direction\":\"asc\",\"default_search_key\":null}', '2020-02-02 00:18:53', '2020-02-02 00:18:53');
+(15, 'tbl_shift_histories', 'tbl-shift-histories', 'Tbl Shift History', 'Tbl Shift Histories', 'voyager-person', 'App\\TblShiftHistory', NULL, NULL, NULL, 1, 0, '{\"order_column\":null,\"order_display_column\":null,\"order_direction\":\"asc\",\"default_search_key\":null}', '2020-02-02 00:18:53', '2020-02-02 00:18:53'),
+(17, 'tbl_operable_parts', 'tbl-operable-parts', 'Tbl Operable Part', 'Tbl Operable Parts', NULL, 'App\\TblOperablePart', NULL, NULL, NULL, 1, 0, '{\"order_column\":null,\"order_display_column\":null,\"order_direction\":\"asc\",\"default_search_key\":null}', '2020-02-03 19:17:35', '2020-02-03 19:17:35');
 
 -- --------------------------------------------------------
 
@@ -264,7 +270,8 @@ INSERT INTO `menu_items` (`id`, `menu_id`, `title`, `url`, `target`, `icon_class
 (19, 1, 'Tbl Ranks', '', '_self', NULL, NULL, NULL, 15, '2020-01-28 13:07:11', '2020-01-28 13:07:11', 'voyager.tbl-ranks.index', NULL),
 (20, 1, 'Tbl Staff Types', '', '_self', NULL, NULL, NULL, 16, '2020-02-01 06:01:20', '2020-02-01 06:01:20', 'voyager.tbl-staff-types.index', NULL),
 (21, 1, 'Tbl Regions', '', '_self', NULL, NULL, NULL, 17, '2020-02-01 18:41:53', '2020-02-01 18:41:53', 'voyager.tbl-regions.index', NULL),
-(22, 1, 'Tbl Shift Histories', '', '_self', 'voyager-person', NULL, NULL, 18, '2020-02-02 00:18:54', '2020-02-02 00:18:54', 'voyager.tbl-shift-histories.index', NULL);
+(22, 1, 'Tbl Shift Histories', '', '_self', 'voyager-person', NULL, NULL, 18, '2020-02-02 00:18:54', '2020-02-02 00:18:54', 'voyager.tbl-shift-histories.index', NULL),
+(23, 1, 'Tbl Operable Parts', '', '_self', NULL, NULL, NULL, 19, '2020-02-03 19:17:36', '2020-02-03 19:17:36', 'voyager.tbl-operable-parts.index', NULL);
 
 -- --------------------------------------------------------
 
@@ -430,7 +437,12 @@ INSERT INTO `permissions` (`id`, `key`, `table_name`, `created_at`, `updated_at`
 (78, 'read_tbl_shift_histories', 'tbl_shift_histories', '2020-02-02 00:18:54', '2020-02-02 00:18:54'),
 (79, 'edit_tbl_shift_histories', 'tbl_shift_histories', '2020-02-02 00:18:54', '2020-02-02 00:18:54'),
 (80, 'add_tbl_shift_histories', 'tbl_shift_histories', '2020-02-02 00:18:54', '2020-02-02 00:18:54'),
-(81, 'delete_tbl_shift_histories', 'tbl_shift_histories', '2020-02-02 00:18:54', '2020-02-02 00:18:54');
+(81, 'delete_tbl_shift_histories', 'tbl_shift_histories', '2020-02-02 00:18:54', '2020-02-02 00:18:54'),
+(82, 'browse_tbl_operable_parts', 'tbl_operable_parts', '2020-02-03 19:17:35', '2020-02-03 19:17:35'),
+(83, 'read_tbl_operable_parts', 'tbl_operable_parts', '2020-02-03 19:17:35', '2020-02-03 19:17:35'),
+(84, 'edit_tbl_operable_parts', 'tbl_operable_parts', '2020-02-03 19:17:35', '2020-02-03 19:17:35'),
+(85, 'add_tbl_operable_parts', 'tbl_operable_parts', '2020-02-03 19:17:35', '2020-02-03 19:17:35'),
+(86, 'delete_tbl_operable_parts', 'tbl_operable_parts', '2020-02-03 19:17:35', '2020-02-03 19:17:35');
 
 -- --------------------------------------------------------
 
@@ -507,7 +519,12 @@ INSERT INTO `permission_role` (`permission_id`, `role_id`) VALUES
 (78, 1),
 (79, 1),
 (80, 1),
-(81, 1);
+(81, 1),
+(82, 1),
+(83, 1),
+(84, 1),
+(85, 1),
+(86, 1);
 
 -- --------------------------------------------------------
 
@@ -668,6 +685,13 @@ CREATE TABLE `tbl_operable_parts` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `tbl_operable_parts`
+--
+
+INSERT INTO `tbl_operable_parts` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(1, 'アイブロウ', '2020-02-03 19:17:00', '2020-02-03 20:39:38');
+
 -- --------------------------------------------------------
 
 --
@@ -711,51 +735,20 @@ CREATE TABLE `tbl_ranks` (
   `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `is_deleted` tinyint(4) DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `short_name` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `tbl_ranks`
 --
 
-INSERT INTO `tbl_ranks` (`id`, `name`, `is_deleted`, `created_at`, `updated_at`) VALUES
-(1, 'グランドマスタートレイナー', 0, '2020-01-28 13:07:26', '2020-01-28 13:07:26'),
-(2, 'グランドマスター', 0, '2020-01-28 13:08:58', '2020-01-28 13:08:58'),
-(3, 'マスター', 0, '2020-01-28 13:09:44', '2020-01-28 13:09:44'),
-(4, 'ノービスアーテイスト', 1, '2020-01-28 13:12:07', '2020-02-01 04:10:51'),
-(5, 'カウンセラー', 0, '2020-01-28 13:12:17', '2020-01-28 13:12:17'),
-(6, 'hnbnbn', 1, '2020-01-29 10:14:11', '2020-01-29 11:19:42'),
-(7, 'bbbb', 1, '2020-01-29 10:14:17', '2020-01-29 11:23:41'),
-(8, 'fdfd', 1, '2020-01-29 10:17:40', '2020-01-29 11:14:34'),
-(9, 'RTRTRTR', 1, '2020-01-29 10:18:08', '2020-01-29 11:22:12'),
-(10, '7878', 1, '2020-01-29 10:18:57', '2020-01-29 11:19:57'),
-(11, 'ghh', 1, '2020-01-29 10:34:44', '2020-01-29 11:01:35'),
-(12, 'bnb', 1, '2020-01-29 10:38:35', '2020-01-29 11:22:09'),
-(13, 'hghf', 1, '2020-01-29 10:41:25', '2020-01-29 11:09:46'),
-(14, 'weq', 1, '2020-01-29 11:23:50', '2020-01-29 11:39:56'),
-(15, 'hesd', 1, '2020-01-29 11:25:18', '2020-01-31 02:31:21'),
-(16, 'adfasdf', 1, '2020-01-29 11:27:24', '2020-01-29 11:37:35'),
-(17, 'dfg', 1, '2020-01-29 11:27:34', '2020-01-29 11:27:42'),
-(18, 'asdfasdf', 1, '2020-01-29 11:37:56', '2020-01-29 12:36:40'),
-(19, 'ertretet', 1, '2020-01-29 11:38:01', '2020-01-31 02:31:16'),
-(20, 'sdfgsdfg', 1, '2020-01-29 11:38:05', '2020-01-29 12:36:49'),
-(21, 'testtest', 1, '2020-01-29 11:38:09', '2020-01-31 02:31:14'),
-(22, 'wrewwer', 1, '2020-01-29 11:38:14', '2020-01-29 22:32:19'),
-(23, 'mklkmolm', 1, '2020-01-29 21:59:59', '2020-01-29 22:00:07'),
-(24, 'jklhhkjhkjhjk', 1, '2020-01-29 22:31:54', '2020-01-29 22:32:14'),
-(25, 'sd', 1, '2020-01-30 22:50:24', '2020-01-31 00:52:04'),
-(26, 'test', 1, '2020-01-30 23:43:25', '2020-01-31 00:26:50'),
-(27, 'teste', 1, '2020-01-30 23:44:33', '2020-01-31 00:25:23'),
-(28, '11111111', 1, '2020-01-30 23:49:51', '2020-01-31 00:24:21'),
-(29, '2222222222', 1, '2020-01-30 23:50:07', '2020-01-31 00:22:29'),
-(30, '333', 1, '2020-01-30 23:52:12', '2020-01-31 00:22:01'),
-(31, 'sdfsdfsfsdfsdf', 1, '2020-01-30 23:52:29', '2020-01-31 00:21:37'),
-(32, '33333333', 1, '2020-01-30 23:55:44', '2020-01-31 00:19:33'),
-(38, 'testtesttestestetstwssfasdfas', 1, '2020-01-31 04:23:00', '2020-01-31 07:43:19'),
-(39, '45645', 1, '2020-01-31 07:43:18', '2020-01-31 22:39:02'),
-(45, '1234567', 0, '2020-01-31 07:43:36', '2020-01-31 22:38:38'),
-(46, 'RedLine1', 0, '2020-01-31 22:39:10', '2020-01-31 22:39:10'),
-(47, 'jkhkjh', 0, '2020-02-01 02:08:57', '2020-02-01 02:08:57');
+INSERT INTO `tbl_ranks` (`id`, `name`, `is_deleted`, `created_at`, `updated_at`, `short_name`) VALUES
+(1, 'グランドマスタートレイナー', 0, '2020-01-28 13:07:00', '2020-02-03 20:40:58', 'GMT'),
+(2, 'グランドマスター', 0, '2020-01-28 13:08:00', '2020-02-03 20:42:03', 'GM'),
+(3, 'マスター', 0, '2020-01-28 13:09:00', '2020-02-03 20:41:37', 'M'),
+(4, 'ノービスアーテイスト', 0, '2020-01-28 13:12:00', '2020-02-03 20:42:42', 'NA'),
+(5, 'カウンセラー', 0, '2020-01-28 13:12:00', '2020-02-03 20:43:35', 'カウゼ');
 
 -- --------------------------------------------------------
 
@@ -831,7 +824,7 @@ CREATE TABLE `tbl_staffs` (
 --
 
 INSERT INTO `tbl_staffs` (`id`, `full_name`, `staff_type_id`, `is_vacation`, `is_deleted`, `created_at`, `updated_at`, `clinic_id`) VALUES
-(1, 'Gimura', 7, 0, 0, '2020-02-01 21:40:36', '2020-02-01 21:53:20', 5),
+(1, 'Gimura', 1, 0, 0, '2020-02-01 21:40:36', '2020-02-03 21:28:43', 5),
 (2, 'Yamamoto', 2, 0, 0, '2020-02-01 21:53:40', '2020-02-01 21:53:40', 5),
 (3, 'Hanako', 1, 0, 0, '2020-02-01 21:55:14', '2020-02-01 21:55:14', 5);
 
@@ -854,13 +847,8 @@ CREATE TABLE `tbl_staff_types` (
 --
 
 INSERT INTO `tbl_staff_types` (`id`, `name`, `is_deleted`, `created_at`, `updated_at`) VALUES
-(1, 'GMT', 0, '2020-02-01 14:39:09', '2020-02-01 14:39:09'),
-(2, 'M', 0, '2020-02-01 14:39:18', '2020-02-01 14:39:18'),
-(3, 'RA', 0, '2020-02-01 14:39:48', '2020-02-01 14:39:48'),
-(4, 'A', 0, '2020-02-01 14:39:58', '2020-02-01 14:39:58'),
-(5, 'NA', 0, '2020-02-01 14:40:08', '2020-02-01 14:40:08'),
-(6, 'T', 0, '2020-02-01 14:40:16', '2020-02-01 14:40:16'),
-(7, 'カウセ', 0, '2020-02-01 14:41:03', '2020-02-01 14:41:03');
+(1, '医師', 0, '2020-02-01 14:39:00', '2020-02-03 21:15:28'),
+(2, '看護師', 0, '2020-02-01 14:39:00', '2020-02-03 21:15:37');
 
 -- --------------------------------------------------------
 
@@ -960,17 +948,18 @@ CREATE TABLE `users` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `user_id` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `is_deleted` tinyint(4) DEFAULT 0
+  `is_deleted` tinyint(4) DEFAULT 0,
+  `is_active` tinyint(4) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `role_id`, `name`, `email`, `avatar`, `email_verified_at`, `password`, `remember_token`, `settings`, `created_at`, `updated_at`, `user_id`, `is_deleted`) VALUES
-(1, 1, 'Admin', 'admin@admin.com', 'users/default.png', NULL, '$2y$10$swdnObuPvOaOdPE.giyUCOBpNO6Lzu7UU2VyTNLR4nXJP3w.ipHJC', 'd36TYhvgnaFSsYJcNbo2qi9oodHeIo4Ck0VrjufKEbK3AgG1aHdN1SyaQ0Hl', '{\"locale\":\"en\"}', '2020-01-28 07:13:04', '2020-01-28 10:38:14', 'administrator', 0),
-(2, 2, 'Clinic1', 'clinic1@mail.com', 'users/default.png', NULL, '$2y$10$WFzJaFBy.Q5ukA4Fr4pyLOzPZcifBJiSFyfcEvTpZQhAKRrynnxby', NULL, '{\"locale\":\"ja\"}', '2020-01-28 10:32:46', '2020-01-28 10:32:46', 'clinic_1', 0),
-(3, 1, 'admin', 'admin@mail.com', 'users/default.png', NULL, 'aldjflajdflkajsdfasdf', NULL, NULL, '2020-02-01 05:05:29', '2020-02-01 05:52:04', 'admin1', 1);
+INSERT INTO `users` (`id`, `role_id`, `name`, `email`, `avatar`, `email_verified_at`, `password`, `remember_token`, `settings`, `created_at`, `updated_at`, `user_id`, `is_deleted`, `is_active`) VALUES
+(1, 1, 'Admin', 'admin@admin.com', 'users/default.png', NULL, '$2y$10$swdnObuPvOaOdPE.giyUCOBpNO6Lzu7UU2VyTNLR4nXJP3w.ipHJC', 'd36TYhvgnaFSsYJcNbo2qi9oodHeIo4Ck0VrjufKEbK3AgG1aHdN1SyaQ0Hl', '{\"locale\":\"en\"}', '2020-01-28 07:13:04', '2020-01-28 10:38:14', 'administrator', 0, 1),
+(2, 2, 'Clinic1', 'clinic1@mail.com', 'users/default.png', NULL, '$2y$10$WFzJaFBy.Q5ukA4Fr4pyLOzPZcifBJiSFyfcEvTpZQhAKRrynnxby', NULL, '{\"locale\":\"ja\"}', '2020-01-28 10:32:46', '2020-01-28 10:32:46', 'clinic_1', 0, 1),
+(3, 1, 'admin', 'admin@mail.com', 'users/default.png', NULL, 'aldjflajdflkajsdfasdf', NULL, NULL, '2020-02-01 05:05:29', '2020-02-01 05:52:04', 'admin1', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -1189,13 +1178,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `data_rows`
 --
 ALTER TABLE `data_rows`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
 
 --
 -- AUTO_INCREMENT for table `data_types`
 --
 ALTER TABLE `data_types`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -1213,7 +1202,7 @@ ALTER TABLE `menus`
 -- AUTO_INCREMENT for table `menu_items`
 --
 ALTER TABLE `menu_items`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `migrations`
@@ -1231,7 +1220,7 @@ ALTER TABLE `pages`
 -- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
 
 --
 -- AUTO_INCREMENT for table `posts`
@@ -1267,7 +1256,7 @@ ALTER TABLE `tbl_menus`
 -- AUTO_INCREMENT for table `tbl_operable_parts`
 --
 ALTER TABLE `tbl_operable_parts`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `tbl_orders`

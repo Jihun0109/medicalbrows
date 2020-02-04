@@ -36,7 +36,7 @@
                               <div v-if="d.clinic_id == c.id">{{c.name}}</div>
                           </div>
                       </td>
-                      <td>{{ d.is_vacation }}</td>
+                      <td>{{ d.is_vacation | isVacation}}</td>
                       <td>
                           <a href="#" @click="editModal(d)"><i class="fa fa-edit"></i></a> &nbsp;&nbsp;
                           <a href="#" @click="deleteData(d.id)"><i class="fa fa-trash"></i></a>
@@ -125,7 +125,7 @@
                 axios.get('api/clinic').
                     then(({data}) => (this.clinics = data.data));
                 axios.get('api/staff-type').
-                    then(({data}) => (this.staff_types = data.data));
+                    then(({data}) => (this.staff_types = data));
             },
             createData(){                
                 this.form.post('api/staff')

@@ -25,6 +25,7 @@ Route::apiResources([
     'staff' => 'API\StaffController',
     'staff-type' => 'API\StaffTypeController',
     'region' => 'API\RegionController',
+    'operable-part' => 'API\OperablePartController',
     ]);
 Route::apiResources(['tax' => 'API\TaxController']);
 

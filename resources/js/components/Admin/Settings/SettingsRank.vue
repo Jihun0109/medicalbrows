@@ -16,6 +16,7 @@
                     <tr>
                       <th>番号</th>
                       <th>ランク名前</th>
+                      <th>略称</th>
                       <th>編集する</th>
                     </tr>
                   </thead>
@@ -23,6 +24,7 @@
                     <tr v-for="(rank, index) in ranks" :key="rank.id">
                       <td>{{index + 1}}</td>
                       <td>{{rank.name}}</td>
+                      <td>{{rank.short_name}}</td>
                       <td>
                           <a href="#" @click="editModal(rank)"><i class="fa fa-edit"></i></a> &nbsp;&nbsp;
                           <a href="#" @click="deletedRank(rank.id)"><i class="fa fa-trash"></i></a>
@@ -50,9 +52,15 @@
                 <form @submit.prevent="editMode ? updateRank() : createRank()">
                 <div class="modal-body">
                     <div class="form-group">
+                        <label>	ランク名前</label>
                         <input v-model="form.name" type="text" name="name" class="form-control" :class="{'is-invalid':form.errors.has('name')}" placeholder="ランク名前">
                         <has-error :form="form" field="name"></has-error>
-                    </div>                    
+                    </div>
+                    <div class="form-group">
+                        <label>略称</label>
+                        <input v-model="form.short_name" type="text" name="short_name" class="form-control" :class="{'is-invalid':form.errors.has('short_name')}" placeholder="略称">
+                        <has-error :form="form" field="short_name"></has-error>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
@@ -73,7 +81,8 @@
                 ranks: {},
                 form: new Form({
                     id : '',
-                    name : ''
+                    name : '',
+                    short_name : '',
                 }),
                 editMode: false
             }
@@ -81,7 +90,7 @@
         methods: {
             loadRanks(){
                 axios.get('api/rank').
-                    then(({data}) => (this.ranks = data.data));
+                    then(({data}) => (this.ranks = data));
             },
             createRank(){
                 this.form.post('api/rank')

@@ -2206,6 +2206,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2217,7 +2228,8 @@ __webpack_require__.r(__webpack_exports__);
         name: '',
         email: '',
         password: '',
-        role_id: '2'
+        role_id: 2,
+        is_active: 1
       }),
       editMode: false
     };
@@ -2588,13 +2600,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       ranks: {},
       form: new Form({
         id: '',
-        name: ''
+        name: '',
+        short_name: ''
       }),
       editMode: false
     };
@@ -2605,7 +2626,7 @@ __webpack_require__.r(__webpack_exports__);
 
       axios.get('api/rank').then(function (_ref) {
         var data = _ref.data;
-        return _this.ranks = data.data;
+        return _this.ranks = data;
       });
     },
     createRank: function createRank() {
@@ -2874,7 +2895,7 @@ __webpack_require__.r(__webpack_exports__);
       });
       axios.get('api/staff-type').then(function (_ref3) {
         var data = _ref3.data;
-        return _this.staff_types = data.data;
+        return _this.staff_types = data;
       });
     },
     createData: function createData() {
@@ -82019,6 +82040,14 @@ var render = function() {
                   ),
                   _vm._v(" "),
                   _c("td", [
+                    _vm._v(
+                      "\n                      " +
+                        _vm._s(_vm._f("isActive")(d.is_active)) +
+                        "\n                  "
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("td", [
                     _c(
                       "a",
                       {
@@ -82336,6 +82365,53 @@ var render = function() {
                         }),
                         0
                       )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("状態")]),
+                      _vm._v(" "),
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.is_active,
+                              expression: "form.is_active"
+                            }
+                          ],
+                          staticClass: "custom-select",
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.$set(
+                                _vm.form,
+                                "is_active",
+                                $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              )
+                            }
+                          }
+                        },
+                        [
+                          _c("option", { domProps: { value: 0 } }, [
+                            _vm._v("非アクティブ")
+                          ]),
+                          _vm._v(" "),
+                          _c("option", { domProps: { value: 1 } }, [
+                            _vm._v("アクティブ")
+                          ])
+                        ]
+                      )
                     ])
                   ]),
                   _vm._v(" "),
@@ -82408,6 +82484,8 @@ var staticRenderFns = [
         _c("th", [_vm._v("メール")]),
         _vm._v(" "),
         _c("th", [_vm._v("アカウントタイブ")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("状態")]),
         _vm._v(" "),
         _c("th", [_vm._v("編集する")])
       ])
@@ -82949,6 +83027,8 @@ var render = function() {
                   _vm._v(" "),
                   _c("td", [_vm._v(_vm._s(rank.name))]),
                   _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(rank.short_name))]),
+                  _vm._v(" "),
                   _c("td", [
                     _c(
                       "a",
@@ -83060,6 +83140,8 @@ var render = function() {
                       "div",
                       { staticClass: "form-group" },
                       [
+                        _c("label", [_vm._v("\tランク名前")]),
+                        _vm._v(" "),
                         _c("input", {
                           directives: [
                             {
@@ -83089,6 +83171,52 @@ var render = function() {
                         _vm._v(" "),
                         _c("has-error", {
                           attrs: { form: _vm.form, field: "name" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", [_vm._v("略称")]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.short_name,
+                              expression: "form.short_name"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.form.errors.has("short_name")
+                          },
+                          attrs: {
+                            type: "text",
+                            name: "short_name",
+                            placeholder: "略称"
+                          },
+                          domProps: { value: _vm.form.short_name },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.form,
+                                "short_name",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.form, field: "short_name" }
                         })
                       ],
                       1
@@ -83158,6 +83286,8 @@ var staticRenderFns = [
         _c("th", [_vm._v("番号")]),
         _vm._v(" "),
         _c("th", [_vm._v("ランク名前")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("略称")]),
         _vm._v(" "),
         _c("th", [_vm._v("編集する")])
       ])
@@ -83343,7 +83473,9 @@ var render = function() {
                     0
                   ),
                   _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(d.is_vacation))]),
+                  _c("td", [
+                    _vm._v(_vm._s(_vm._f("isVacation")(d.is_vacation)))
+                  ]),
                   _vm._v(" "),
                   _c("td", [
                     _c(
@@ -84143,13 +84275,13 @@ var staticRenderFns = [
       _c("tr", [
         _c("th", [_vm._v("番号")]),
         _vm._v(" "),
-        _c("th", [_vm._v("名前")]),
+        _c("th", [_vm._v("税率名")]),
         _vm._v(" "),
-        _c("th", [_vm._v("量")]),
+        _c("th", [_vm._v("税率")]),
         _vm._v(" "),
-        _c("th", [_vm._v("始まる時間")]),
+        _c("th", [_vm._v("適用開始日")]),
         _vm._v(" "),
-        _c("th", [_vm._v("終了時間")]),
+        _c("th", [_vm._v("適用終了日")]),
         _vm._v(" "),
         _c("th", [_vm._v("編集する")])
       ])
@@ -99498,6 +99630,9 @@ Vue.filter("upText", function (data) {
 });
 Vue.filter("isVacation", function (data) {
   return data === 1 ? "閉まっている" : "開いた";
+});
+Vue.filter("isActive", function (data) {
+  return data === 1 ? "アクティブ" : "非アクティブ";
 });
 var app = new Vue({
   el: "#app",

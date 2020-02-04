@@ -19,6 +19,7 @@
                       <th>ユーザー名</th>
                       <th>メール</th>                      
                       <th>アカウントタイブ</th>
+                      <th>状態</th>
                       <th>編集する</th>
                     </tr>
                   </thead>
@@ -32,6 +33,9 @@
                           <div v-for="r in roles" :key="r.id">
                               <div v-if="d.role_id == r.id">{{r.display_name}}</div>
                           </div>
+                      </td>
+                      <td>
+                          {{ d.is_active | isActive}}
                       </td>
                       <td>
                           <a href="#" @click="editModal(d)"><i class="fa fa-edit"></i></a> &nbsp;&nbsp;
@@ -85,6 +89,13 @@
                           <option v-for="role in roles" :key="role.id" v-bind:value="role.id">{{ role.display_name }}</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label>状態</label>
+                        <select v-model="form.is_active" class="custom-select">
+                          <option v-bind:value=0>非アクティブ</option>
+                          <option v-bind:value=1>アクティブ</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
@@ -110,7 +121,8 @@
                     name : '',
                     email : '',
                     password : '',
-                    role_id : '2',
+                    role_id : 2,
+                    is_active: 1
                 }),
                 editMode: false
             }

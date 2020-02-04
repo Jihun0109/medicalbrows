@@ -18,10 +18,10 @@
                         <thead>
                             <tr>
                                 <th>番号</th>
-                                <th>名前</th>
-                                <th>量</th>
-                                <th>始まる時間</th>
-                                <th>終了時間</th>
+                                <th>税率名</th>
+                                <th>税率</th>
+                                <th>適用開始日</th>
+                                <th>適用終了日</th>
                                 <th>編集する</th>
                             </tr>
                         </thead>

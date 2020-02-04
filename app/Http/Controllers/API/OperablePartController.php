@@ -4,9 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\TblStaffType;
-
-class StaffTypeController extends Controller
+use App\TblOperablePart;
+class OperablePartController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +14,7 @@ class StaffTypeController extends Controller
      */
     public function index()
     {
-        return TblStaffType::where('is_deleted', 0)->get();
+        return TblOperablePart::latest()->get();
     }
 
     /**
@@ -37,7 +36,7 @@ class StaffTypeController extends Controller
      */
     public function show($id)
     {
-        //
+        
     }
 
     /**
