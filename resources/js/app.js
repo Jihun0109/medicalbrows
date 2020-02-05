@@ -131,7 +131,7 @@ Vue.filter("isVacation", function(data) {
 });
 
 Vue.filter("isActive", function(data) {
-    return data === 1 ? "アクティブ" : "非アクティブ";
+    return data === 1 ? "アクティブ" : "閉鎖";
 });
 
 Vue.filter("percentageSign", function(data) {
