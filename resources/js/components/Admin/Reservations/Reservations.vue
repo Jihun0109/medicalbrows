@@ -37,16 +37,17 @@
                 <div id="calendar" class="col-md-4">
                     <Datepicker v-model="current_date"  @selected="dateSelected()" format="YYYY-MM-DD" width="80px"/>
                 </div>
-
+                <!-- 
                 <button type="button" class="el-button  el-button--primary el-button--medium" style="margin-left: 3px; width:80px; background-color:rgb(27, 185, 175); color: black" @click="dateSelected()">
                         <span>confirm</span>
                 </button>
+                -->
 
             </div>
 
         <!--<datetime format="MM/DD/YYYY" width="300px" name='dob'></datetime>-->
         <div class="el-row"> 
-            <button v-for="c in clinics" :key="c.id" type="button" @click="clinicSelected(c.id)" class="el-button  el-button--primary el-button--medium" style="margin-left: 3px; width:80px; background-color:rgb(27, 185, 175); color: black">
+            <button v-for="c in clinics" :key="c.id" type="button" @click="clinicSelected(c.id)" class="el-button  el-button--primary el-button--medium" style="margin-left: 3px; background-color:rgb(27, 185, 175); color: black">
                 <span>{{c.name}}</span>
             </button>
             <!-- 
@@ -73,7 +74,7 @@
                             <grid-item v-for="(item, index) in hdlayout"
                                 :x="item.x"
                                 :y="item.y"
-                                :w="2"
+                                :w="item.w"
                                 :h="item.h"
                                 :i="item.i"
                                 :key="index + '-label'"

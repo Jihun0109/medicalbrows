@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class TblRank extends Model
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['name','short_name'];
 }

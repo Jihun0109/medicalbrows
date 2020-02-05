@@ -84,12 +84,10 @@ export default {
                 console.log(this.current_clinic_id);
             });
         },
-
         loadStaffRanksList() {
             axios.get('v1/reservation/staffs_ranks?clinic_id=' + this.current_clinic_id).
             then(({ data }) => {
                 this.orders = data.staff_layout;
-
                 //console.log(this.orders);
                 //this.timelayout = JSON.parse(JSON.stringify(timeLayout));
                 this.hdlayout = JSON.parse(JSON.stringify(data.staff_layout));

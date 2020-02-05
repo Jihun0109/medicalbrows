@@ -91070,26 +91070,6 @@ var render = function() {
           })
         ],
         1
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "el-button  el-button--primary el-button--medium",
-          staticStyle: {
-            "margin-left": "3px",
-            width: "80px",
-            "background-color": "rgb(27, 185, 175)",
-            color: "black"
-          },
-          attrs: { type: "button" },
-          on: {
-            click: function($event) {
-              return _vm.dateSelected()
-            }
-          }
-        },
-        [_c("span", [_vm._v("confirm")])]
       )
     ]),
     _vm._v(" "),
@@ -91104,7 +91084,6 @@ var render = function() {
             staticClass: "el-button  el-button--primary el-button--medium",
             staticStyle: {
               "margin-left": "3px",
-              width: "80px",
               "background-color": "rgb(27, 185, 175)",
               color: "black"
             },
@@ -91156,7 +91135,7 @@ var render = function() {
                       attrs: {
                         x: item.x,
                         y: item.y,
-                        w: 2,
+                        w: item.w,
                         h: item.h,
                         i: item.i,
                         static: item.static
@@ -110687,7 +110666,7 @@ Vue.filter("isVacation", function (data) {
   return data === 1 ? "閉鎖" : " ";
 });
 Vue.filter("isActive", function (data) {
-  return data === 1 ? "アクティブ" : "非アクティブ";
+  return data === 1 ? "アクティブ" : "閉鎖";
 });
 Vue.filter("percentageSign", function (data) {
   return data + " " + "%";

@@ -22,7 +22,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+        <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>        
       </li>      
     </ul>
 
@@ -78,12 +78,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
       <!-- Sidebar Menu -->
       <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
 
             <li class="nav-item">
-                <router-link to="/reservations" class="nav-link">
+                <!-- <router-link to="/reservations" class="nav-link"> -->
+                <a href="/reservations"  class="nav-link">
                   <i class="nav-icon fas fa-calendar-alt"></i>
                   <p>予約登録 . 変更</p>
                 </a>
@@ -96,21 +97,31 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
-            <ul class="nav nav-treeview">              
-                <li class="nav-item"><router-link to="/settings-clinic" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;クリニツク管理</p></a></li>
-                <li class="nav-item"><router-link to="/settings-rank" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ランク管理</p></a></li>
-                <li class="nav-item"><router-link to="/settings-staff" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;スタッフ管理</p></a></li>
-                <li class="nav-item"><router-link to="/settings-staff-rank" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;スタッフ ランク管理</p></a></li>
-                <li class="nav-item"><router-link to="/settings-menu" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;メニュー管理</p></a></li>
-                <li class="nav-item"><router-link to="/settings-tax" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;税率管理</p></a></li>
-                <li class="nav-item"><router-link to="/settings-shift" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;シフト管理</p></a></li>
-                <li class="nav-item"><router-link to="/settings-rank-schedule" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ランクスケジュール管理</p></a></li>
-                <li class="nav-item"><router-link to="/settings-account" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;アカウント管理</p></a></li>
-                {{-- <li class="nav-item"><router-link to="/settings-order" class="nav-link"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; order 管理</p></a></li> --}}
+            <ul class="nav nav-treeview">
+                <li class="nav-item"><a href="/settings-clinic" class="nav-link"><p>クリニツク管理</p></a></li>
+                <li class="nav-item"><a href="/settings-rank" class="nav-link"><p>ランク管理</p></a></li>
+                <li class="nav-item"><a href="/settings-staff" class="nav-link"><p>スタッフ管理</p></a></li>
+                <li class="nav-item"><a href="/settings-staff-rank" class="nav-link"><p>スタッフ ランク管理</p></a></li>
+                <li class="nav-item"><a href="/settings-menu" class="nav-link"><p>メニュー管理</p></a></li>
+                <li class="nav-item"><a href="/settings-tax" class="nav-link"><p>税率管理</p></a></li>
+                <li class="nav-item"><a href="/settings-shift" class="nav-link"><p>シフト管理</p></a></li>
+                <li class="nav-item"><a href="/settings-rank-schedule" class="nav-link"><p>ランクスケジュール管理</p></a></li>
+                <li class="nav-item"><a href="/settings-account" class="nav-link"><p>アカウント管理</p></a></li>
+                <!-- <li class="nav-item"><router-link to="/settings-clinic" class="nav-link"><p>クリニツク管理</p></a></li>
+                <li class="nav-item"><router-link to="/settings-rank" class="nav-link"><p>ランク管理</p></a></li>
+                <li class="nav-item"><router-link to="/settings-staff" class="nav-link"><p>スタッフ管理</p></a></li>
+                <li class="nav-item"><router-link to="/settings-staff-rank" class="nav-link"><p>スタッフ ランク管理</p></a></li>
+                <li class="nav-item"><router-link to="/settings-menu" class="nav-link"><p>メニュー管理</p></a></li>
+                <li class="nav-item"><router-link to="/settings-tax" class="nav-link"><p>税率管理</p></a></li>
+                <li class="nav-item"><router-link to="/settings-shift" class="nav-link"><p>シフト管理</p></a></li>
+                <li class="nav-item"><router-link to="/settings-rank-schedule" class="nav-link"><p>ランクスケジュール管理</p></a></li>
+                <li class="nav-item"><router-link to="/settings-account" class="nav-link"><p>アカウント管理</p></a></li> -->
+                {{-- <li class="nav-item"><router-link to="/settings-order" class="nav-link"><p>order 管理</p></a></li> --}}
             </ul>
           </li>
           <li class="nav-item">
-            <router-link to="/logs" class="nav-link">
+            <!-- <router-link to="/logs" class="nav-link"> -->
+            <a href="/logs"  class="nav-link">
               <i class="nav-icon fas fa-file-code"></i>
               <p>
                 ログ管理                
@@ -144,15 +155,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
   </div>
   <!-- /.content-wrapper -->
 
-  <!-- Control Sidebar -->
-  <aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-    <div class="p-3">
-      <h5>Title</h5>
-      <p>Sidebar content</p>
-    </div>
-  </aside>
-  <!-- /.control-sidebar -->
 
   <!-- Main Footer -->
   <footer class="main-footer d-flex justify-content-center">

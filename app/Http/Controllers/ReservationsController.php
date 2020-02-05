@@ -39,25 +39,30 @@ class ReservationsController extends Controller
 
         //query
         $staff_rank_names = DB::table('tbl_staffs')
-                ->join('tbl_staff_ranks', 'tbl_staff_ranks.id','tbl_staffs.staff_type_id')  
+                ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id','tbl_staffs.id')  
                 ->join('tbl_ranks', 'tbl_ranks.id','tbl_staff_ranks.rank_id')    
                 ->select('tbl_staffs.full_name','tbl_staff_ranks.rank_id', 'tbl_ranks.short_name')       
                 ->where([['tbl_staffs.is_deleted', 0], ['tbl_staffs.clinic_id', $clinic_id]])  
                 ->get();
+        //return $staff_rank_names;
         for ( $i = 0; $i < sizeof($staff_rank_names); $i++ ){
             $temp = [];
             $rank_schedule = DB::table('tbl_rank_schedules')
                     ->where([['tbl_rank_schedules.is_deleted', 0], ['tbl_rank_schedules.rank_id', $staff_rank_names[$i]->rank_id]])  
-                    ->select(DB::raw('HOUR(tbl_rank_schedules.start_time) as start_hour, HOUR(tbl_rank_schedules.end_time) as end_hour'))       
+                    ->select(DB::raw('HOUR(tbl_rank_schedules.start_time) as start_hour, HOUR(tbl_rank_schedules.end_time) as end_hour, MINUTE(tbl_rank_schedules.start_time) as start_minute, MINUTE(tbl_rank_schedules.end_time) as end_minute'))       
                     ->get();
             $temp = array('staff_name' => $staff_rank_names[$i]->full_name, 'rank_name'=> $staff_rank_names[$i]->short_name,
                                 'time_schedule'=> $rank_schedule);
             array_push($res, $temp);
         }
-        //$res = json_encode($res);
-        //return sizeof($res[0]['time_schedule']);
 
+        //return sizeof($res[0]['time_schedule']);
+        //return $res;
         //create array for layout
+        //width:22-> 2, 3
+        $cell_width = 2;
+        $cell_height = 3;
+
         $idx_arr = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
         $staff = [];
         $layout = [];   
@@ -65,7 +70,7 @@ class ReservationsController extends Controller
         array_push($staff, (object)[
             'x' => 0,
             'y' => 0,
-            'w' => 2,
+            'w' => $cell_width,
             'h' => 2,
             'i' => "",
             'static' =>  true
@@ -75,9 +80,9 @@ class ReservationsController extends Controller
             $content = $idx_arr[$i].':00';
             array_push($layout, (object)[
                 'x' => 0,
-                'y' => $i * 3,
-                'w' => 2,
-                'h' => 3,
+                'y' => $i * $cell_height,
+                'w' => $cell_width,
+                'h' => $cell_height,
                 'i' => $content,
                 'static' =>  false
             ]);
@@ -87,9 +92,9 @@ class ReservationsController extends Controller
         for ( $i = 0; $i < sizeof($res); $i++ ) {
             //rank_layout
             array_push($staff, (object)[
-                'x' => ($i + 1)* 2,
+                'x' => ($i + 1)* $cell_width,
                 'y' => 1,
-                'w' => 2,
+                'w' => $cell_width,
                 'h' => 1,
                 'i' => $res[$i]['rank_name'],
                 'static' =>  true
@@ -99,9 +104,9 @@ class ReservationsController extends Controller
         for ( $i = 0; $i < sizeof($res); $i++ ) {
             //staff_layout
             array_push($staff, (object)[
-                'x' => ($i + 1)* 2,
+                'x' => ($i + 1)* $cell_width,
                 'y' => 0,
-                'w' => 2,
+                'w' => $cell_width,
                 'h' => 1,
                 'i' => $res[$i]['staff_name'],
                 'static' =>  true
@@ -112,7 +117,7 @@ class ReservationsController extends Controller
                 $target_state = false;
                 $content = '';
                 $real_h = 1;
-                $xh = 3;
+                $xh = $cell_height;
                 $add = 0;
                 for ( $k = 0; $k < sizeof($res[$i]['time_schedule']); $k++ ){
                     //Log::error($res[$i]['time_schedule'][$k]->start_hour);
@@ -122,25 +127,34 @@ class ReservationsController extends Controller
                         $target_state = true;
                         $content = '再';
                         $real_h = ($res[$i]['time_schedule'][$k]->end_hour - $res[$i]['time_schedule'][$k]->start_hour);
-                        if($real_h == 1){
+                        if($real_h == 1 && ($res[$i]['time_schedule'][$k]->start_minute == 20 || $res[$i]['time_schedule'][$k]->end_minute == 20)){
                             array_push($layout, (object)[
-                                'x' => ($i + 1) * 2,
-                                'y' => $j *3,
-                                'w' => 2,
+                                'x' => ($i + 1) * $cell_width,
+                                'y' => $j *$cell_height,
+                                'w' => $cell_width,
                                 'h' => $real_h,
                                 'i' => '',
                                 'static' =>  false
                             ]);
-                            $xh = 2;
-                            $add = 1;
-                        }                                 
+                            $xh = ($cell_height - $real_h);
+                            $add = $real_h;
+                        }
+                        else if($res[$i]['time_schedule'][$k]->start_minute == 30){
+                            $real_h -= 0.5;
+                        }    
+                        else if($res[$i]['time_schedule'][$k]->end_minute == 30){
+                            $real_h += 0.5;
+                        }                              
                         break;
                     }                
-                }    
+                }
+                if( $j > sizeof($idx_arr) - 1 ){
+                    $real_h = sizeof($idx_arr) - $j;
+                }   
                 array_push($layout, (object)[
-                    'x' => ($i + 1) * 2,
-                    'y' => $j *3 + $add,
-                    'w' => 2,
+                    'x' => ($i + 1) * $cell_width,
+                    'y' => $j *$cell_height + $add,
+                    'w' => $cell_width,
                     'h' => ($real_h * $xh),
                     'i' => $content,
                     'static' =>  $target_state
