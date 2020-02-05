@@ -19,7 +19,7 @@ class TaxController extends Controller
     {
         return TblTaxRate::where('is_deleted', 0)->
                         latest()->
-                        paginate(10);
+                        get();
     }
 
     /**

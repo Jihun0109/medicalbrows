@@ -1,9 +1,10 @@
 <template>
     <div class="row">
+        <div class="row d-flex justify-content-center" style="width:100%"><div><h3 class="">予約管理システム (スタッフ ランク管理)</h3></div></div>
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">スタッフ ランク管理</h3>
+                <h3 class="card-title"></h3>
 
                 <div class="card-tools">
                   <button class="btn btn-success" @click="newModal">追加 <i class="fa fa-plus"></i></button>
@@ -14,9 +15,10 @@
                 <table class="table table-hover">
                   <thead>
                     <tr>
-                      <th>番号</th>
-                      <th>ランク</th>
-                      <th>スタッフ</th>
+                      <th>スタッフ ランクID</th>
+                      <th>ランク名</th>
+                      <th>スタッフ名</th>
+                      <th>表記名</th>                      
                       <th>昇格日</th>
                       <th>編集する</th>
                     </tr>
@@ -32,6 +34,11 @@
                       <td>
                           <div v-for="s in staffs" :key="s.id">
                               <div v-if="d.staff_id == s.id">{{s.full_name}}</div>
+                          </div>
+                      </td>
+                      <td>
+                          <div v-for="s in staffs" :key="s.id">
+                              <div v-if="d.staff_id == s.id">{{s.alias}}</div>
                           </div>
                       </td>
                       <td>{{ d.promo_date }}
@@ -63,15 +70,15 @@
                 <form @submit.prevent="editMode ? updateRank() : createData()">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>ランク</label>
+                        <label>ランク名</label>
                         <select v-model="form.rank_id" class="custom-select">
                           <option v-for="rank in ranks" :key="rank.id" v-bind:value="rank.id">{{ rank.name }}</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>スタッフ</label>
+                        <label>スタッフ表記名</label>
                         <select v-model="form.staff_id" class="custom-select">
-                          <option v-for="staff in staffs" :key="staff.id" v-bind:value="staff.id">{{ staff.full_name }}</option>
+                          <option v-for="staff in staffs" :key="staff.id" v-bind:value="staff.id">{{ staff.alias }}</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -115,11 +122,11 @@ import datetime from "vuejs-datetimepicker";
         methods: {            
             loadList(){
                 axios.get('api/staff-rank').
-                    then(({data}) => (this.data = data.data));
+                    then(({data}) => (this.data = data));
                 axios.get('api/rank').
                     then(({data}) => (this.ranks = data));
                 axios.get('api/staff').
-                    then(({data}) => (this.staffs = data.data));
+                    then(({data}) => (this.staffs = data));
             },
             createData(){                
                 this.form.post('api/staff-rank')

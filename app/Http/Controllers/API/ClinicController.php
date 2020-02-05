@@ -15,9 +15,8 @@ class ClinicController extends Controller
      */
     public function index()
     {
-        return TblClinic::where('is_deleted', 0)
-                    ->latest()                    
-                    ->paginate(20);
+        return TblClinic::where('is_deleted', 0)->latest()->get();
+                    
     }
 
     /**

@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+        <div class="row d-flex justify-content-center" style="width:100%"><div><h3 class="">ランクスケジュール管理</h3></div></div>
         <div class="row">
             <div class="col-12">
                 <div class="card">

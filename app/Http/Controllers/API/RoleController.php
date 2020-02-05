@@ -17,7 +17,7 @@ class RoleController extends Controller
     public function index()
     {
         return Voyager::model('Role')->latest()->
-                        paginate(10);
+                        get();
     }
 
     /**

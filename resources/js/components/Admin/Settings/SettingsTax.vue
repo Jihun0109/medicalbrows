@@ -1,9 +1,10 @@
 <template>
     <div class="row">
+        <div class="row d-flex justify-content-center" style="width:100%"><div><h3 class="">予約管理システム (税率管理)</h3></div></div>
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">税率管理</h3>
+                    <h3 class="card-title"></h3>
 
                     <div class="card-tools">
                         <button class="btn btn-success" @click="newModal">
@@ -17,11 +18,11 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>番号</th>
+                                <th>税率ID</th>
                                 <th>税率名</th>
                                 <th>税率</th>
-                                <th>適用開始日</th>
-                                <th>適用終了日</th>
+                                <th>運用開始日</th>
+                                <th>運用終了日</th>
                                 <th>編集する</th>
                             </tr>
                         </thead>
@@ -29,7 +30,7 @@
                             <tr v-for="(item, index) in items" :key="item.id">
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ item.name }}</td>
-                                <td>{{ item.amount }}</td>
+                                <td>{{ item.amount | percentageSign}}</td>
                                 <td>{{ item.start_time }}</td>
                                 <td>{{ item.end_time }}</td>
                                 <td>
@@ -90,9 +91,9 @@
                     >
                         <div class="modal-body">
                             <div class="form-group">
-                                <h6>
+                                <label>
                                     税率名
-                                </h6>
+                                </label>
                                 <input
                                     v-model="form.name"
                                     type="text"
@@ -108,13 +109,11 @@
                                     field="name"
                                 ></has-error>
                             </div>
-                            <div class="form-group">
-                                <h6>
-                                    税率
-                                </h6>
+                            <label>税率</label>
+                            <div class="input-group">                            
                                 <input
                                     v-model="form.amount"
-                                    type="number"
+                                    type="text"
                                     name="amount"
                                     class="form-control"
                                     :class="{
@@ -122,15 +121,19 @@
                                     }"
                                     placeholder="税率"
                                 />
+                                <div class="input-group-append">
+                                    <span class="input-group-text">%</span>
+                                </div>
                                 <has-error
                                     :form="form"
                                     field="amount"
                                 ></has-error>
                             </div>
-                            <div class="form-group">
-                                <h6>
-                                    適用開始日
-                                </h6>
+                            
+                            <div class="form-group mt-3">
+                                <label>
+                                    運用開始日
+                                </label>
                                 <datetime
                                     format="YYYY-MM-DD"
                                     v-model="form.start_time"
@@ -148,9 +151,9 @@
                                 ></has-error>
                             </div>
                             <div class="form-group">
-                                <h6>
-                                    適用終了日
-                                </h6>
+                                <label>
+                                    運用終了日
+                                </label>
                                 <datetime
                                     format="YYYY-MM-DD"
                                     v-model="form.end_time"
@@ -218,7 +221,7 @@ export default {
     },
     methods: {
         loadItems() {
-            axios.get("api/tax").then(({ data }) => (this.items = data.data));
+            axios.get("api/tax").then(({ data }) => (this.items = data));
         },
         createItem() {
             this.form

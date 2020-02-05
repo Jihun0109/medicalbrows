@@ -1,9 +1,10 @@
 <template>
     <div class="row">
-          <div class="col-12">
+          <div class="row d-flex justify-content-center" style="width:100%"><div><h3 class="">予約管理システム (クリニツク管理)</h3></div></div>
+          <div class="col-12">              
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">アカウント管理</h3>
+                <h3 class="card-title"></h3>
 
                 <div class="card-tools">
                   <button class="btn btn-success" @click="newModal">追加 <i class="fa fa-plus"></i></button>
@@ -14,11 +15,11 @@
                 <table class="table table-hover">
                   <thead>
                     <tr>
-                      <th>番号</th>
+                      <th>クリニツクID</th>
                       <th>クリニツク名 </th>
                       <th>メール</th>                      
                       <th>住所</th>
-                      <th>体閉鎖</th>
+                      <th>休閉鎖</th>
                       <th>編集する</th>
                     </tr>
                   </thead>
@@ -74,7 +75,7 @@
                     <div class="form-group">
                         <label>体閉鎖</label>
                         <select v-model="form.is_vacation" class="custom-select">
-                          <option v-bind:value=0>開いた</option>
+                          <option v-bind:value=0>アクティブ</option>
                           <option v-bind:value=1>閉鎖</option>
                         </select>
                     </div>
@@ -109,7 +110,7 @@
         methods: {
             loadList(){
                 axios.get('api/clinic').
-                    then(({data}) => (this.data = data.data));
+                    then(({data}) => (this.data = data));
             },
             createData(){                
                 this.form.post('api/clinic')

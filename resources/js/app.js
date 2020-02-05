@@ -127,12 +127,17 @@ Vue.filter("upText", function(data) {
 });
 
 Vue.filter("isVacation", function(data) {
-    return data === 1 ? "閉まっている" : "開いた";
+    return data === 1 ? "閉鎖" : " ";
 });
 
 Vue.filter("isActive", function(data) {
     return data === 1 ? "アクティブ" : "非アクティブ";
 });
+
+Vue.filter("percentageSign", function(data) {
+    return data + " " + "%";
+});
+
 
 const app = new Vue({
     el: "#app",

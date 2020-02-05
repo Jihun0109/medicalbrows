@@ -24,8 +24,8 @@
                         </div>
                         <div class="modal-footer">
                             <button v-show="false" type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
-                            <button @click="updateBtn" v-show="editMode" type="submit" class="btn btn-success">s更新</button>
-                            <button @click="updateBtn" v-show="!editMode" type="submit" class="btn btn-primary">s更新</button>
+                            <button v-show="editMode" type="submit" class="btn btn-success">s更新</button>
+                            <button v-show="!editMode" type="submit" class="btn btn-primary">s更新</button>
                         </div>
                     </form>
                 </div>
@@ -33,7 +33,6 @@
         </div>
 
         <h4 style="text-align: center">予約管理システム（予約管理)</h4>
-
             <div style="display:flex">
                 <div id="calendar" class="col-md-4">
                     <Datepicker v-model="current_date"  @selected="dateSelected()" format="YYYY-MM-DD" width="80px"/>
@@ -71,13 +70,13 @@
                             :margin="[-1, -1]"
                             :use-css-transforms="true"
                         >
-                            <grid-item v-for="item in hdlayout"
+                            <grid-item v-for="(item, index) in hdlayout"
                                 :x="item.x"
                                 :y="item.y"
                                 :w="2"
                                 :h="item.h"
                                 :i="item.i"
-                                :key="item.i"
+                                :key="index + '-label'"
                                 :static="item.static"
                                 >
                                 <span class="text">{{item.i}}</span>
@@ -97,13 +96,13 @@
                             :margin="[-1, -1]"
                             :use-css-transforms="true"
                         >
-                            <grid-item @click.native="onClick($event, item.x, item.y)" v-for="item in conlayout"
+                            <grid-item @click.native="onClick($event, item.x, item.y)" v-for="(item, index) in conlayout"
                                     :x="item.x"
                                     :y="item.y"
                                     :w="item.w"
                                     :h="item.h"
                                     :i="item.i"
-                                    :key="item.i"
+                                    :key="index  + '-separator'"
                                     :static="item.static"
                                     >
                                 <span class="text">{{item.i}}</span>
@@ -182,7 +181,7 @@
         }
     }
     .vue-grid-item .text {
-        font-size: 8px;
+        font-size: 12px;
         text-align: center;
         /*position: absolute;*/
         top: 0;

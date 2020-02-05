@@ -21,7 +21,7 @@ class StaffRankController extends Controller
      */
     public function index()
     {
-        return TblStaffRank::where('is_deleted', 0)->latest()->paginate(20);
+        return TblStaffRank::where('is_deleted', 0)->latest()->get();
     }
 
     /**

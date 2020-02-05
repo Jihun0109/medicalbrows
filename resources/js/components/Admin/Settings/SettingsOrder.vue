@@ -212,7 +212,7 @@
                 axios.get('api/menu').
                     then(({data}) => (this.menus = data.data));
                 axios.get('api/clinic').
-                    then(({data}) => (this.clinics = data.data));
+                    then(({data}) => (this.clinics = data));
             },
             createData(){ 
                 console.log(this.form.is_new, this.form.phone_number, this.form.clinic_id);

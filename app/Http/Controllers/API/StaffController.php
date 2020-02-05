@@ -26,9 +26,7 @@ class StaffController extends Controller
      */
     public function index()
     {
-        return TblStaff::where('is_deleted', 0)
-                    ->latest()                    
-                    ->paginate(20);
+        return TblStaff::where('is_deleted', 0)->get();
     }
 
     /**
@@ -40,7 +38,8 @@ class StaffController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'full_name' => 'required|string|max:50',
+            'full_name' => 'required|string|max:100',
+            'alias' => 'required|string|max:100|unique:tbl_staffs',
             'staff_type_id' => 'required',
             'clinic_id' => 'required',
             'is_vacation' => 'required',
@@ -48,6 +47,7 @@ class StaffController extends Controller
         ]);
         return TblStaff::create([
                             'full_name' => $request->full_name,
+                            'alias' => $request->alias,
                             'staff_type_id' => $request->staff_type_id,
                             'clinic_id' => $request->clinic_id,
                             'is_vacation' => $request->is_vacation,
@@ -76,7 +76,8 @@ class StaffController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'full_name' => 'required|string|max:50',
+            'full_name' => 'required|string|max:100',
+            'alias' => 'required|string|max:100|unique:tbl_staffs,alias,'.$id,
             'staff_type_id' => 'required',
             'clinic_id' => 'required',
             'is_vacation' => 'required',

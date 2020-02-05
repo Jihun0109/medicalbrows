@@ -1,9 +1,10 @@
 <template>
     <div class="row">
+        <div class="row d-flex justify-content-center" style="width:100%"><div><h3 class="">予約管理システム (アカウント管理)</h3></div></div>
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">アカウント管理</h3>
+                <h3 class="card-title"></h3>
 
                 <div class="card-tools">
                   <button class="btn btn-success" @click="newModal">追加 <i class="fa fa-plus"></i></button>
@@ -13,8 +14,7 @@
               <div class="card-body table-responsive p-0">
                 <table class="table table-hover">
                   <thead>
-                    <tr>
-                      <th>番号</th>
+                    <tr>                      
                       <th>ユーザーID</th>
                       <th>ユーザー名</th>
                       <th>メール</th>                      
@@ -24,8 +24,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(d, index) in data" :key="d.id">
-                      <td>{{ index }}</td>
+                    <tr v-for="d in data" :key="d.id">                      
                       <td>{{ d.user_id }}</td>
                       <td>{{ d.name }}</td>
                       <td>{{ d.email }}</td>                      
@@ -130,9 +129,9 @@
         methods: {
             loadList(){
                 axios.get('api/user').
-                    then(({data}) => (this.data = data.data));
+                    then(({data}) => (this.data = data));
                 axios.get('api/role').
-                    then(({data}) => (this.roles = data.data));
+                    then(({data}) => (this.roles = data));
             },
             createData(){                
                 this.form.post('api/user')

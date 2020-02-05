@@ -39,6 +39,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
 
     Route::get('/staff/operators', 'API\StaffController@operators');
     Route::get('/staff/counselors', 'API\StaffController@counselors');
+    Route::get('/reservation/staffs_ranks', 'ReservationsController@staffs_ranks');
 
 //     // Clinics
 //     Route::get('/clinic/list', 'ApiController@clinicList');

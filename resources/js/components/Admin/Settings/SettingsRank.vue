@@ -1,9 +1,10 @@
 <template>
     <div class="row">
+        <div class="row d-flex justify-content-center" style="width:100%"><div><h3 class="">予約管理システム (ランク管理)</h3></div></div>
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">ランク管理</h3>
+                <h3 class="card-title"></h3>
 
                 <div class="card-tools">
                   <button class="btn btn-success" @click="newModal">追加 <i class="fa fa-plus"></i></button>
@@ -14,8 +15,8 @@
                 <table class="table table-hover">
                   <thead>
                     <tr>
-                      <th>番号</th>
-                      <th>ランク名前</th>
+                      <th>ランクID</th>
+                      <th>ランク名</th>
                       <th>略称</th>
                       <th>編集する</th>
                     </tr>
@@ -52,8 +53,8 @@
                 <form @submit.prevent="editMode ? updateRank() : createRank()">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>	ランク名前</label>
-                        <input v-model="form.name" type="text" name="name" class="form-control" :class="{'is-invalid':form.errors.has('name')}" placeholder="ランク名前">
+                        <label>	ランク名</label>
+                        <input v-model="form.name" type="text" name="name" class="form-control" :class="{'is-invalid':form.errors.has('name')}" placeholder="ランク名">
                         <has-error :form="form" field="name"></has-error>
                     </div>
                     <div class="form-group">

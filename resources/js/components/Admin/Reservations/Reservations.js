@@ -57,9 +57,8 @@ export default {
             appointment: {
                 appointmet_date: '', //new Date()
             },
-
-            orders: {},
             clinics: {},
+            orders: {},
             current_date: '',
             current_clinic_id: 0,
         }
@@ -70,26 +69,31 @@ export default {
     },
     created() {
         console.log('Component created.');
-        this.loadList();
-        this.loadOrderList(this.current_clinic_id);
+        this.loadClinicList();
+        console.log(this.current_clinic_id);
+        this.loadStaffRanksList();
     },
 
     methods: {
 
-        loadList() {
+        loadClinicList() {
             axios.get('api/clinic').
-            then(({ data }) => (this.clinics = data.data));
+            then(({ data }) => {
+                this.clinics = data;
+                this.current_clinic_id = this.clinics[0].id;
+                console.log(this.current_clinic_id);
+            });
         },
 
-        loadOrderList() {
-
-            axios.get('api/order?clinic_id=' + this.current_clinic_id).
+        loadStaffRanksList() {
+            axios.get('v1/reservation/staffs_ranks?clinic_id=' + this.current_clinic_id).
             then(({ data }) => {
-                this.orders = data.content_layout;
-                console.log(this.orders);
+                this.orders = data.staff_layout;
+
+                //console.log(this.orders);
                 //this.timelayout = JSON.parse(JSON.stringify(timeLayout));
                 this.hdlayout = JSON.parse(JSON.stringify(data.staff_layout));
-                this.conlayout = JSON.parse(JSON.stringify(this.orders));
+                this.conlayout = JSON.parse(JSON.stringify(data.content_layout));
 
             });
         },
@@ -102,9 +106,7 @@ export default {
 
         clinicSelected(id) {
             this.current_clinic_id = id;
-            this.loadOrderList();
-            console.log(id, 'want to check...');
-            console.log(this.current_clinic_id, 'want to check...');
+            this.loadStaffRanksList();
         },
 
         onClick: function(event, x, y) {

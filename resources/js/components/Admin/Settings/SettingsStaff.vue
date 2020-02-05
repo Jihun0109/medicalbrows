@@ -1,9 +1,10 @@
 <template>
     <div class="row">
+        <div class="row d-flex justify-content-center" style="width:100%"><div><h3 class="">予約管理システム (スタッフ管理)</h3></div></div>
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">スタッフ管理</h3>
+                <h3 class="card-title"></h3>
 
                 <div class="card-tools">
                   <button class="btn btn-success" @click="newModal">追加 <i class="fa fa-plus"></i></button>
@@ -14,18 +15,20 @@
                 <table class="table table-hover">
                   <thead>
                     <tr>
-                      <th>番号</th>
+                      <th>スタッフID</th>
                       <th>スタツフ名</th>
-                      <th>区分</th>
-                      <th>クリニック</th>
-                      <th>体閉鎖</th>
+                      <th>表記名</th>
+                      <th>スタッフ区分</th>
+                      <th>クリニック名</th>
+                      <th>休閉鎖</th>
                       <th>編集する</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="(d, index) in data" :key="d.id">
                       <td>{{ index+1 }}</td>
-                      <td>{{ d.full_name }}</td>                      
+                      <td>{{ d.full_name }}</td>
+                      <td>{{ d.alias }}</td>
                       <td>
                           <div v-for="t in staff_types" :key="t.id">
                               <div v-if="d.staff_type_id == t.id">{{t.name}}</div>
@@ -69,22 +72,28 @@
                         <has-error :form="form" field="full_name"></has-error>
                     </div>
                     <div class="form-group">
-                        <label>区分</label>
+                        <label>表記名</label>
+                        <input v-model="form.alias" type="text" name="alias" class="form-control" :class="{'is-invalid':form.errors.has('alias')}" placeholder="表記名">
+                        <has-error :form="form" field="alias"></has-error>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>スタツフ区分</label>
                         <select v-model="form.staff_type_id" class="custom-select">
                           <option v-for="type in staff_types" :key="type.id" v-bind:value="type.id">{{ type.name }}</option>
                         </select>
                     </div>
                     
                     <div class="form-group">
-                        <label>クリニック</label>
+                        <label>クリニック名</label>
                         <select v-model="form.clinic_id" class="custom-select">
                           <option v-for="clinic in clinics" :key="clinic.id" v-bind:value="clinic.id">{{ clinic.name }}</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>体閉鎖</label>
+                        <label>休閉鎖</label>
                         <select v-model="form.is_vacation" class="custom-select">
-                          <option v-bind:value=0>開いた</option>
+                          <option v-bind:value=0>アクティブ</option>
                           <option v-bind:value=1>閉鎖</option>
                         </select>
                     </div>
@@ -111,6 +120,7 @@
                 form: new Form({
                     id : '',                    
                     full_name : '',
+                    alias : '',
                     staff_type_id : 1,
                     clinic_id : '',
                     is_vacation : 0,
@@ -121,9 +131,9 @@
         methods: {
             loadList(){
                 axios.get('api/staff').
-                    then(({data}) => (this.data = data.data));
+                    then(({data}) => (this.data = data));
                 axios.get('api/clinic').
-                    then(({data}) => (this.clinics = data.data));
+                    then(({data}) => (this.clinics = data));
                 axios.get('api/staff-type').
                     then(({data}) => (this.staff_types = data));
             },
