@@ -28,5 +28,7 @@ Route::apiResources([
     'operable-part' => 'API\OperablePartController',
     'order' => 'API\OrderController',
     'staff-rank' => 'API\StaffRankController',
+    'menu' => 'API\MenuController',
+    'rank-schedule' => 'API\RankScheduleController',
     ]);
 Route::apiResources(['tax' => 'API\TaxController']);

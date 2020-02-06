@@ -1,35 +1,12 @@
 <template>
     <div class="container">
-                <!-- Modal -->
-        <div class="modal fade" id="modalShowInfo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <ModalDialog></ModalDialog>
+        <!-- Info Modal -->
+        <div class="modal fade" id="modalInfoDlg">
+            <ModalInfoDlg v-bind:data="this.senddata"></ModalInfoDlg>
         </div>
-        <!-- Modal -->
-        <div class="modal fade" id="modalShowUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 v-show="editMode" class="modal-title" id="exampleModalLabel">ランク更新</h5>
-                        <h5 v-show="!editMode" class="modal-title" id="exampleModalLabel">ランク追加</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <form @submit.prevent="editMode ? updateBtn() : updateBtn()">
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <input v-model="form.name" type="text" name="name" class="form-control" :class="{'is-invalid':form.errors.has('name')}" placeholder="ランク名前">
-                                <has-error :form="form" field="name"></has-error>
-                            </div>                    
-                        </div>
-                        <div class="modal-footer">
-                            <button v-show="false" type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
-                            <button v-show="editMode" type="submit" class="btn btn-success">s更新</button>
-                            <button v-show="!editMode" type="submit" class="btn btn-primary">s更新</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+        <!-- Update Modal -->
+        <div class="modal fade" id="modalUpdateDlg" data-backdrop="static">
+            <ModalUpdateDlg v-bind:data="this.senddata"></ModalUpdateDlg>
         </div>
 
         <h4 style="text-align: center">予約管理システム（予約管理)</h4>
@@ -37,32 +14,28 @@
                 <div id="calendar" class="col-md-4">
                     <Datepicker v-model="current_date"  @selected="dateSelected()" format="YYYY-MM-DD" width="80px"/>
                 </div>
-                <!-- 
-                <button type="button" class="el-button  el-button--primary el-button--medium" style="margin-left: 3px; width:80px; background-color:rgb(27, 185, 175); color: black" @click="dateSelected()">
-                        <span>confirm</span>
-                </button>
-                -->
-
             </div>
 
         <!--<datetime format="MM/DD/YYYY" width="300px" name='dob'></datetime>-->
         <div class="el-row"> 
-            <button v-for="c in clinics" :key="c.id" type="button" @click="clinicSelected(c.id)" class="el-button  el-button--primary el-button--medium" style="margin-left: 3px; background-color:rgb(27, 185, 175); color: black">
+            <button v-for="c in clinics" 
+                    :key="c.id"                     
+                    type="button" 
+                    @click="clinicSelected(c)" 
+                    class="el-button  el-button--primary el-button--medium" 
+                    :class="['tab-btn', { active: selected_clinic_id === c.id }]"                    
+                    >
                 <span>{{c.name}}</span>
             </button>
-            <!-- 
-            <button type="button" class="el-button el-button--medium" style="margin-left: 3px; width:80px; color: black">
-                <span>六本木</span>
-            </button>-->
         </div>
-
-        <div class="row justify-content-center">
+        
+        <div class="row justify-content-center" >
             <div class="col-12">
                 <div class="card">
                     <div class="headerdiv">
                         <grid-layout 
                             :layout.sync="hdlayout"
-                            :col-num="22"
+                            :col-num="this.colNum"
                             :row-height="30"
                             :is-draggable="false"
                             :is-resizable="false"
@@ -88,7 +61,7 @@
                     <div class="contentdiv">
                         <grid-layout
                             :layout.sync="conlayout"
-                            :col-num="22"
+                            :col-num="this.colNum"
                             :row-height="30"
                             :is-draggable="false"
                             :is-resizable="false"
@@ -97,7 +70,7 @@
                             :margin="[-1, -1]"
                             :use-css-transforms="true"
                         >
-                            <grid-item @click.native="onClick($event, item.x, item.y)" v-for="(item, index) in conlayout"
+                            <grid-item @click.native="onClick($event, item)" v-for="(item, index) in conlayout"
                                     :x="item.x"
                                     :y="item.y"
                                     :w="item.w"
@@ -128,6 +101,22 @@
     #calendar{
         margin: 0 0px 20px 20px;
     }
+    .tab-btn {
+        padding: 6px 10px;
+        background: #ffffff;
+        cursor: pointer;
+        margin-bottom: 3px;//1rem;
+        margin-left: 3px;
+        border: 1px solid #cccccc;
+        outline: none;
+    }
+
+    .active {
+        //border-bottom: 3px solid green;
+        //background: #fcfcfc;
+        background:rgb(27, 185, 175);
+    }
+
     .vue-grid-layout {
         background: #eee;
     }

@@ -1949,10 +1949,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=script&lang=js&":
-/*!*****************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=script&lang=js& ***!
-  \*****************************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=script&lang=js&":
+/*!******************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1997,17 +1997,34 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-var userInfo = [{
-  "lv": 123123,
-  "age": 213,
-  "isCnt": 123,
-  "id": 'AAAAAAAAA',
-  "pwd": "BBBBBBBB"
-}];
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['data'],
   data: function data() {
     return {
-      users: userInfo,
+      tabbtns: ['来院', '会計', '終了', 'キャンセル'],
+      selected: '来院',
+      users: {},
       dialog: false,
       userAges: [],
       userLvs: [],
@@ -2016,7 +2033,12 @@ var userInfo = [{
       userName: '',
       snackbar: false,
       sbMsg: '',
-      putId: ''
+      putId: '',
+      changeMode: false,
+      form: new Form({
+        id: '',
+        name: ''
+      })
     };
   },
   mounted: function mounted() {
@@ -2030,6 +2052,307 @@ var userInfo = [{
 
   },
   methods: {
+    changeBtnClick: function changeBtnClick() {
+      this.changeMode = false;
+      this.form.reset();
+      $('#modalShowUpdate').modal('show');
+    },
+    getUsers: function getUsers() {
+      var _this = this;
+
+      this.$axios.get('manage/user').then(function (r) {
+        _this.users = r.data.users;
+      })["catch"](function (e) {
+        if (!e.response) _this.$store.commit('pop', {
+          msg: e.message,
+          color: 'warning'
+        });
+      });
+    },
+    putDialog: function putDialog(user) {
+      this.putId = user._id;
+      this.dialog = true;
+      this.userName = user.name;
+      this.userLv = user.lv;
+      this.userAge = user.age;
+    },
+    putUser: function putUser() {
+      var _this2 = this;
+
+      this.dialog = false;
+      this.$axios.put("manage/user/".concat(this.putId), {
+        name: this.userName,
+        lv: this.userLv,
+        age: this.userAge
+      }).then(function (r) {
+        _this2.$store.commit('pop', {
+          msg: '사용자 수정 완료',
+          color: 'success'
+        });
+
+        _this2.getUsers();
+      })["catch"](function (e) {
+        if (!e.response) _this2.$store.commit('pop', {
+          msg: e.message,
+          color: 'warning'
+        });
+      });
+    },
+    delUser: function delUser(id) {
+      var _this3 = this;
+
+      this.$axios["delete"]("manage/user/".concat(id)).then(function (r) {
+        _this3.$store.commit('pop', {
+          msg: '사용자 삭제 완료',
+          color: 'success'
+        });
+
+        _this3.getUsers();
+      })["catch"](function (e) {
+        if (!e.response) _this3.$store.commit('pop', {
+          msg: e.message,
+          color: 'warning'
+        });
+      });
+    },
+    pop: function pop(msg) {
+      this.snackbar = true;
+      this.sbMsg = msg;
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=script&lang=js&":
+/*!********************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=script&lang=js& ***!
+  \********************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['data'],
+  data: function data() {
+    return {
+      tabbtns: ['来院', '会計', '終了', 'キャンセル'],
+      selected: '来院',
+      users: {},
+      dialog: false,
+      userAges: [],
+      userLvs: [],
+      userAge: 0,
+      userLv: 0,
+      userName: '',
+      snackbar: false,
+      sbMsg: '',
+      putId: '',
+      changeMode: false,
+      form: new Form({
+        id: '',
+        name: ''
+      })
+    };
+  },
+  mounted: function mounted() {
+    for (var i = 10; i < 40; i++) {
+      this.userAges.push(i);
+    }
+
+    for (var _i = 0; _i < 4; _i++) {
+      this.userLvs.push(_i);
+    } //this.getUsers()
+
+  },
+  methods: {
+    changeBtnClick: function changeBtnClick() {
+      this.changeMode = false;
+      this.form.reset();
+      $('#modalShowUpdate').modal('show');
+    },
     getUsers: function getUsers() {
       var _this = this;
 
@@ -2499,6 +2822,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vuejs_datetimepicker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuejs-datetimepicker */ "./node_modules/vuejs-datetimepicker/src/datetime_picker.vue");
 //
 //
 //
@@ -2516,9 +2840,224 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    console.log('Component mounted.');
+  components: {
+    datetime: vuejs_datetimepicker__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
+  data: function data() {
+    return {
+      data: {},
+      ranks: {},
+      taxs: {},
+      form: new Form({
+        id: '',
+        name: '',
+        rank_id: '',
+        amount: 0,
+        tax_id: '',
+        start_time: '',
+        end_time: '',
+        is_deleted: false
+      }),
+      editMode: false
+    };
+  },
+  methods: {
+    loadList: function loadList() {
+      var _this = this;
+
+      axios.get('api/menu').then(function (_ref) {
+        var data = _ref.data;
+        _this.data = data.data;
+        console.log(_this.data);
+      });
+      axios.get('api/rank').then(function (_ref2) {
+        var data = _ref2.data;
+        return _this.ranks = data;
+      });
+      axios.get('api/tax').then(function (_ref3) {
+        var data = _ref3.data;
+        return _this.taxs = data;
+      });
+    },
+    createData: function createData() {
+      var _this2 = this;
+
+      this.form.post('api/menu').then(function (result) {
+        toast.fire({
+          icon: "success",
+          title: "A menu was created successfully."
+        });
+        $('#modalAddItem').modal('hide');
+
+        _this2.loadList();
+      })["catch"](function () {});
+    },
+    updateRank: function updateRank() {
+      var _this3 = this;
+
+      this.form.put('api/menu/' + this.form.id).then(function () {
+        toast.fire({
+          icon: "success",
+          title: "Updated successfully!"
+        });
+        $('#modalAddItem').modal('hide');
+
+        _this3.loadList();
+      })["catch"](function () {});
+    },
+    deleteData: function deleteData(id) {
+      var _this4 = this;
+
+      this.form["delete"]('api/menu/' + id).then(function (result) {
+        //if (result.message){
+        toast.fire({
+          icon: "success",
+          title: "Deleted successfully!"
+        });
+
+        _this4.loadList(); //}
+
+      })["catch"](function () {});
+    },
+    newModal: function newModal() {
+      this.editMode = false;
+      this.form.reset();
+      $('#modalAddItem').modal('show');
+    },
+    editModal: function editModal(data) {
+      this.editMode = true;
+      this.form.fill(data);
+      $('#modalAddItem').modal('show');
+    }
+  },
+  created: function created() {
+    this.loadList();
   }
 });
 
@@ -3001,6 +3540,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vuejs_datetimepicker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuejs-datetimepicker */ "./node_modules/vuejs-datetimepicker/src/datetime_picker.vue");
 //
 //
 //
@@ -3018,9 +3558,207 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    console.log('Component mounted.');
+  components: {
+    datetime: vuejs_datetimepicker__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
+  data: function data() {
+    return {
+      data: {},
+      ranks: {},
+      parts: [{
+        'id': 0,
+        'name': 'アイブロウ'
+      }],
+      form: new Form({
+        id: '',
+        rank_id: '',
+        part_id: '',
+        start_time: '',
+        end_time: '',
+        is_deleted: false
+      }),
+      editMode: false
+    };
+  },
+  methods: {
+    loadList: function loadList() {
+      var _this = this;
+
+      axios.get('api/rank-schedule').then(function (_ref) {
+        var data = _ref.data;
+        _this.data = data;
+        console.log(_this.data);
+      });
+      axios.get('api/rank').then(function (_ref2) {
+        var data = _ref2.data;
+        return _this.ranks = data;
+      });
+    },
+    createData: function createData() {
+      var _this2 = this;
+
+      this.form.post('api/rank-schedule').then(function (result) {
+        toast.fire({
+          icon: "success",
+          title: "A Rank Schedule was created successfully."
+        });
+        $('#modalAddItem').modal('hide');
+
+        _this2.loadList();
+      })["catch"](function () {});
+    },
+    updateRank: function updateRank() {
+      var _this3 = this;
+
+      this.form.put('api/rank-schedule/' + this.form.id).then(function () {
+        toast.fire({
+          icon: "success",
+          title: "Updated successfully!"
+        });
+        $('#modalAddItem').modal('hide');
+
+        _this3.loadList();
+      })["catch"](function () {});
+    },
+    deleteData: function deleteData(id) {
+      var _this4 = this;
+
+      this.form["delete"]('api/rank-schedule/' + id).then(function (result) {
+        //if (result.message){
+        toast.fire({
+          icon: "success",
+          title: "Deleted successfully!"
+        });
+
+        _this4.loadList(); //}
+
+      })["catch"](function () {});
+    },
+    newModal: function newModal() {
+      this.editMode = false;
+      this.form.reset();
+      $('#modalAddItem').modal('show');
+    },
+    editModal: function editModal(data) {
+      this.editMode = true;
+      this.form.fill(data);
+      $('#modalAddItem').modal('show');
+    }
+  },
+  created: function created() {
+    this.loadList();
   }
 });
 
@@ -3050,6 +3788,56 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+$('#openBtn').click(function () {
+  $('#myModal').modal({
+    show: true
+  });
+});
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {};
@@ -3692,7 +4480,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
@@ -3826,7 +4613,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuejs_datetimepicker__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuejs-datetimepicker */ "./node_modules/vuejs-datetimepicker/src/datetime_picker.vue");
 /* harmony import */ var vue_datetime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-datetime */ "./node_modules/vue-datetime/dist/vue-datetime.js");
 /* harmony import */ var vue_datetime__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(vue_datetime__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _ModalDialog_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ModalDialog.vue */ "./resources/js/components/Admin/Reservations/ModalDialog.vue");
+/* harmony import */ var _ModalInfoDlg_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ModalInfoDlg.vue */ "./resources/js/components/Admin/Reservations/ModalInfoDlg.vue");
+/* harmony import */ var _ModalUpdateDlg_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ModalUpdateDlg.vue */ "./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue");
+
 
 
 
@@ -3945,7 +4734,8 @@ var timeLayout = [{
     GridItem: vue_grid_layout__WEBPACK_IMPORTED_MODULE_0___default.a.GridItem,
     Datepicker: vuejs_datetimepicker__WEBPACK_IMPORTED_MODULE_1__["default"],
     Datetime: vue_datetime__WEBPACK_IMPORTED_MODULE_2___default.a,
-    ModalDialog: _ModalDialog_vue__WEBPACK_IMPORTED_MODULE_3__["default"]
+    ModalInfoDlg: _ModalInfoDlg_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
+    ModalUpdateDlg: _ModalUpdateDlg_vue__WEBPACK_IMPORTED_MODULE_4__["default"]
   },
   data: function data() {
     return {
@@ -3960,21 +4750,27 @@ var timeLayout = [{
       responsive: true,
       preventCollision: false,
       rowHeight: 30,
-      colNum: 22,
+      colNum: 33,
       index: 0,
       editMode: false,
       form: new Form({
         id: '',
         name: ''
       }),
-      appointment: {
-        appointmet_date: '' //new Date()
-
-      },
       clinics: {},
-      orders: {},
+      staffs: {},
       current_date: '',
-      current_clinic_id: 0
+      selected_clinic_id: 0,
+      selected_clinic_name: '',
+      message: "Welcome, Please Wait....",
+      senddata: {
+        date: '',
+        clinic: '',
+        time: '',
+        is_new: '',
+        staff_rank: '',
+        techname: ''
+      }
     };
   },
   mounted: function mounted() {
@@ -3983,53 +4779,79 @@ var timeLayout = [{
   },
   created: function created() {
     console.log('Component created.');
-    this.loadClinicList();
-    console.log(this.current_clinic_id);
-    this.loadStaffRanksList();
+    this.loadClinicList(); //this.loadStaffRanksList();
+
+    this.current_date = this.formatDate(new Date());
   },
   methods: {
+    callFunction: function callFunction() {
+      var currentDate = new Date();
+      console.log(currentDate);
+      var currentDateWithFormat = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
+      console.log(currentDateWithFormat);
+    },
     loadClinicList: function loadClinicList() {
       var _this = this;
 
       axios.get('api/clinic').then(function (_ref) {
         var data = _ref.data;
         _this.clinics = data;
-        _this.current_clinic_id = _this.clinics[0].id;
-        console.log(_this.current_clinic_id);
+        _this.selected_clinic_id = _this.clinics[0].id;
+        _this.selected_clinic_name = _this.clinics[0].name;
+
+        _this.loadStaffRanksList();
       });
     },
     loadStaffRanksList: function loadStaffRanksList() {
       var _this2 = this;
 
-      axios.get('v1/reservation/staffs_ranks?clinic_id=' + this.current_clinic_id).then(function (_ref2) {
+      axios.get('v1/reservation/staffs_ranks?clinic_id=' + this.selected_clinic_id).then(function (_ref2) {
         var data = _ref2.data;
-        _this2.orders = data.staff_layout; //console.log(this.orders);
-        //this.timelayout = JSON.parse(JSON.stringify(timeLayout));
+        _this2.staffs = data.staff_layout; //this.timelayout = JSON.parse(JSON.stringify(timeLayout));                
+
+        if (data.count > 10) {
+          _this2.colNum = (data.count + 1) * 3;
+        }
 
         _this2.hdlayout = JSON.parse(JSON.stringify(data.staff_layout));
         _this2.conlayout = JSON.parse(JSON.stringify(data.content_layout));
       });
     },
+    formatDate: function formatDate(dt) {
+      var month = ('0' + (dt.getMonth() + 1)).slice(-2);
+      var date = ('0' + dt.getDate()).slice(-2);
+      var year = dt.getFullYear();
+      var currentDateWithFormat = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
+      console.log(currentDateWithFormat); //var formattedDate = year + '年' + month + '月' + date + '日';
+
+      var formattedDate = year + '-' + month + '-' + date;
+      return formattedDate;
+    },
     dateSelected: function dateSelected(e) {
-      // console.log(this.appointment.appointmet_date);
-      // this.$nextTick(() => console.log(this.appointment.appointmet_date));
       console.log(this.current_date, 'want to check...');
     },
-    clinicSelected: function clinicSelected(id) {
-      this.current_clinic_id = id;
+    clinicSelected: function clinicSelected(clinic) {
+      this.selected_clinic_id = clinic.id;
+      this.selected_clinic_name = clinic.name;
       this.loadStaffRanksList();
     },
-    onClick: function onClick(event, x, y) {
-      console.log("click i=" + event); //var targetId = event.currentTarget.id;
-      //window.alert("CLICK!" + "(" + x + "," + y + ")");
+    onClick: function onClick(event, item) {
+      console.log("click i=" + "(" + item.x + "," + item.y + ")");
 
-      this.editMode = false;
-      this.form.reset();
-      $('#modalShowInfo').modal('show');
+      if (item.selectable) {
+        this.senddata.date = this.current_date;
+        this.senddata.clinic = this.selected_clinic_name;
+        this.senddata.time = item.time;
+        this.senddata.is_new = item.is_new;
+        this.senddata.staff_rank = item.staff_rank;
+        console.log(this.senddata);
+        this.editMode = false;
+        this.form.reset();
+        $('#modalInfoDlg').modal('show');
+      }
     },
     updateBtn: function updateBtn() {
-      this.editMode = false; //$('#modalShowInfo').modal('hide');
-
+      this.editMode = false;
       $('#modalShowUpdate').modal('show');
     },
     alertVal: function alertVal() {
@@ -8600,10 +9422,10 @@ var timeLayout = [{
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=style&index=0&lang=scss&":
-/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=style&index=0&lang=scss& ***!
-  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=style&index=0&lang=scss&":
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=style&index=0&lang=scss& ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -8613,6 +9435,25 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 // module
 exports.push([module.i, ".info div {\n  padding-left: 10px;\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=style&index=0&lang=scss&":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=style&index=0&lang=scss& ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".container {\n  padding-top: 10px;\n}\n.update p {\n  margin: 7px;\n}\n.update div {\n  margin-bottom: -5px;\n}\n.update .experience {\n  border: 1px solid black;\n  margin: 0 12px 0 12px;\n  padding-bottom: 17px;\n}\n.update .experience div {\n  margin-bottom: -17px;\n}\n.info div {\n  padding-left: 10px;\n}", ""]);
 
 // exports
 
@@ -8631,7 +9472,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, "#app-container {\n  width: 100%;\n  margin-top: 10px;\n}\n#calendar {\n  margin: 0 0px 20px 20px;\n}\n.vue-grid-layout {\n  background: #eee;\n}\n.layoutJSON {\n  background: #ddd;\n  border: 1px solid black;\n  margin-top: 10px;\n  padding: 10px;\n}\n.eventsJSON {\n  background: #ddd;\n  border: 1px solid black;\n  margin-top: 10px;\n  padding: 10px;\n  height: 100px;\n  overflow-y: scroll;\n}\n.columns {\n  -moz-columns: 120px;\n  -webkit-columns: 120px;\n  columns: 120px;\n}\n.vue-grid-item {\n  display: table;\n  background: white;\n}\n.vue-grid-item:not(.vue-grid-placeholder) {\n  /*background: #ccc;*/\n  border: 1px solid black;\n}\n.vue-grid-item.resizing {\n  background: #00b0f0;\n  opacity: 0.9;\n}\n.headerdiv .vue-grid-item.static {\n  background: #00b0f0;\n}\n.contentdiv .vue-grid-item.static {\n  background: #ccc;\n}\n.vue-grid-item .text {\n  font-size: 12px;\n  text-align: center;\n  /*position: absolute;*/\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  margin: auto;\n  height: 100%;\n  width: 100%;\n  display: table-cell;\n  vertical-align: middle;\n}\n.vue-grid-item .no-drag {\n  height: 100%;\n  width: 100%;\n}\n.vue-grid-item .minMax {\n  font-size: 12px;\n}\n.vue-grid-item .add {\n  cursor: pointer;\n}", ""]);
+exports.push([module.i, "#app-container {\n  width: 100%;\n  margin-top: 10px;\n}\n#calendar {\n  margin: 0 0px 20px 20px;\n}\n.tab-btn {\n  padding: 6px 10px;\n  background: #ffffff;\n  cursor: pointer;\n  margin-bottom: 3px;\n  margin-left: 3px;\n  border: 1px solid #cccccc;\n  outline: none;\n}\n.active {\n  background: #1bb9af;\n}\n.vue-grid-layout {\n  background: #eee;\n}\n.layoutJSON {\n  background: #ddd;\n  border: 1px solid black;\n  margin-top: 10px;\n  padding: 10px;\n}\n.eventsJSON {\n  background: #ddd;\n  border: 1px solid black;\n  margin-top: 10px;\n  padding: 10px;\n  height: 100px;\n  overflow-y: scroll;\n}\n.columns {\n  -moz-columns: 120px;\n  -webkit-columns: 120px;\n  columns: 120px;\n}\n.vue-grid-item {\n  display: table;\n  background: white;\n}\n.vue-grid-item:not(.vue-grid-placeholder) {\n  /*background: #ccc;*/\n  border: 1px solid black;\n}\n.vue-grid-item.resizing {\n  background: #00b0f0;\n  opacity: 0.9;\n}\n.headerdiv .vue-grid-item.static {\n  background: #00b0f0;\n}\n.contentdiv .vue-grid-item.static {\n  background: #ccc;\n}\n.vue-grid-item .text {\n  font-size: 12px;\n  text-align: center;\n  /*position: absolute;*/\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  margin: auto;\n  height: 100%;\n  width: 100%;\n  display: table-cell;\n  vertical-align: middle;\n}\n.vue-grid-item .no-drag {\n  height: 100%;\n  width: 100%;\n}\n.vue-grid-item .minMax {\n  font-size: 12px;\n}\n.vue-grid-item .add {\n  cursor: pointer;\n}", ""]);
 
 // exports
 
@@ -67066,15 +67907,45 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
-/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=style&index=0&lang=scss&":
-/*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=style&index=0&lang=scss& ***!
-  \********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=style&index=0&lang=scss&":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=style&index=0&lang=scss& ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../node_modules/css-loader!../../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../../node_modules/postcss-loader/src??ref--7-2!../../../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../../../node_modules/vue-loader/lib??vue-loader-options!./ModalDialog.vue?vue&type=style&index=0&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=style&index=0&lang=scss&");
+var content = __webpack_require__(/*! !../../../../../node_modules/css-loader!../../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../../node_modules/postcss-loader/src??ref--7-2!../../../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../../../node_modules/vue-loader/lib??vue-loader-options!./ModalInfoDlg.vue?vue&type=style&index=0&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=style&index=0&lang=scss&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=style&index=0&lang=scss&":
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=style&index=0&lang=scss& ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../../node_modules/css-loader!../../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../../node_modules/postcss-loader/src??ref--7-2!../../../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../../../node_modules/vue-loader/lib??vue-loader-options!./ModalUpdateDlg.vue?vue&type=style&index=0&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=style&index=0&lang=scss&");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -90702,10 +91573,10 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=template&id=20fd1050&":
-/*!*********************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=template&id=20fd1050& ***!
-  \*********************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=template&id=1726931e&":
+/*!**********************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=template&id=1726931e& ***!
+  \**********************************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -90720,54 +91591,123 @@ var render = function() {
   return _c(
     "div",
     {
-      staticClass: "modal-dialog modal-sm modal-dialog-centered",
-      attrs: { role: "document" }
+      staticClass: "modal-dialog modal-dialog-centered",
+      staticStyle: { width: "400px" }
     },
     [
-      _c(
-        "div",
-        { staticClass: "modal-content" },
-        [
-          _vm._m(0),
+      _c("div", { staticClass: "modal-content" }, [
+        _c("div", { staticClass: "modal-header" }, [
+          _c(
+            "div",
+            { staticClass: "el-row" },
+            _vm._l(_vm.tabbtns, function(tab) {
+              return _c(
+                "button",
+                {
+                  key: tab,
+                  staticClass:
+                    "el-button  el-button--primary el-button--medium",
+                  class: ["tab-btn", { active: _vm.selected === tab }],
+                  attrs: { type: "button" },
+                  on: {
+                    click: function($event) {
+                      _vm.selected = tab
+                    }
+                  }
+                },
+                [_c("span", [_vm._v(_vm._s(tab))])]
+              )
+            }),
+            0
+          ),
           _vm._v(" "),
-          _vm._l(_vm.users, function(user) {
-            return _c("div", { key: user._id, staticClass: "modal-body" }, [
-              _c("div", { staticClass: "info" }, [
-                _c("div", [_vm._v("予約ID : " + _vm._s(user.name))]),
-                _vm._v(" "),
-                _c("div", [_vm._v("施術日 : " + _vm._s(user.lv))]),
-                _vm._v(" "),
-                _c("div", [_vm._v("院名 : " + _vm._s(user.age))]),
-                _vm._v(" "),
-                _c("div", [_vm._v("時間 : " + _vm._s(user.inCnt))]),
-                _vm._v(" "),
-                _c("div", [_vm._v("区分 : " + _vm._s(user._id))]),
-                _vm._v(" "),
-                _c("div", [_vm._v("施術者 : " + _vm._s(user.pwd))]),
-                _vm._v(" "),
-                _c("div", [_vm._v("指名 : " + _vm._s(user.inCnt))]),
-                _vm._v(" "),
-                _c("div", [_vm._v("メニュー : アイブ口ウ2回 ")]),
-                _vm._v(" "),
-                _c("div", [_vm._v("カウンセラー : " + _vm._s(user.pwd))]),
-                _vm._v(" "),
-                _c("div", [_vm._v("お客様各 : " + _vm._s(user.inCnt))]),
-                _vm._v(" "),
-                _c("div", [_vm._v("生年月日 : " + _vm._s(user._id))]),
-                _vm._v(" "),
-                _c("div", [_vm._v("電話番号 : " + _vm._s(user.pwd))]),
-                _vm._v(" "),
-                _c("div", [_vm._v("予約ルー卜 : " + _vm._s(user.inCnt))]),
-                _vm._v(" "),
-                _c("div", [_vm._v("備考 : " + _vm._s(user.pwd))])
-              ])
-            ])
-          }),
+          _vm._m(0)
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "modal-body" }, [
+          _c("div", { staticClass: "info" }, [
+            _c("div", [_vm._v("予約ID : ")]),
+            _vm._v(" "),
+            _c("div", [_vm._v("施術日 : " + _vm._s(_vm.data.date))]),
+            _vm._v(" "),
+            _c("div", [_vm._v("院名 : " + _vm._s(_vm.data.clinic))]),
+            _vm._v(" "),
+            _c("div", [_vm._v("時間 : " + _vm._s(_vm.data.time))]),
+            _vm._v(" "),
+            _c("div", [_vm._v("区分 : " + _vm._s(_vm.data.is_new))]),
+            _vm._v(" "),
+            _c("div", [_vm._v("施術者 : " + _vm._s(_vm.data.staff_rank))]),
+            _vm._v(" "),
+            _c("div", [_vm._v("指名 : " + _vm._s(_vm.data.techname))]),
+            _vm._v(" "),
+            _c("div", [_vm._v("メニュー : ")]),
+            _vm._v(" "),
+            _c("div", [_vm._v("カウンセラー : ")]),
+            _vm._v(" "),
+            _c("br"),
+            _vm._v(" "),
+            _c("div", [_vm._v("お客様各 : ")]),
+            _vm._v(" "),
+            _c("div", [_vm._v("生年月日 : ")]),
+            _vm._v(" "),
+            _c("div", [_vm._v("電話番号 : ")]),
+            _vm._v(" "),
+            _c("div", [_vm._v("予約ルー卜 : ")]),
+            _vm._v(" "),
+            _c("div", [_vm._v("備考 : ")]),
+            _vm._v(" "),
+            _vm._m(1)
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "modal-footer" }, [
+          _c(
+            "button",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.changeMode,
+                  expression: "changeMode"
+                }
+              ],
+              staticClass: "btn btn-secondary",
+              staticStyle: { background: "rgb(197, 224, 180)", color: "black" },
+              attrs: { type: "button", "data-dismiss": "modal" }
+            },
+            [_vm._v("メール送信")]
+          ),
           _vm._v(" "),
-          _vm._m(1)
-        ],
-        2
-      )
+          _c(
+            "button",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.changeMode,
+                  expression: "changeMode"
+                }
+              ],
+              staticClass: "btn btn-secondary",
+              staticStyle: { background: "rgb(197, 224, 180)", color: "black" },
+              attrs: { type: "button", "data-dismiss": "modal" }
+            },
+            [_vm._v("予約取消")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            {
+              staticClass: "btn btn-primary",
+              staticStyle: { background: "rgb(197, 224, 180)", color: "black" },
+              attrs: { "data-toggle": "modal", href: "#modalUpdateDlg" }
+            },
+            [_vm._v("変更")]
+          )
+        ])
+      ])
     ]
   )
 }
@@ -90776,30 +91716,678 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-header" }, [
-      _c(
-        "button",
-        { staticClass: "btn btn-default", attrs: { type: "button" } },
-        [_vm._v("asda")]
-      ),
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "experience" }, [
+      _c("div", [_vm._v("経験 : ")]),
       _vm._v(" "),
-      _c(
-        "button",
-        { staticClass: "btn btn-primary", attrs: { type: "button" } },
-        [_vm._v("s更新")]
-      ),
+      _c("div", [_vm._v("妊娠・授乳・不妊治療 : ")]),
       _vm._v(" "),
-      _c(
-        "button",
-        { staticClass: "btn btn-primary", attrs: { type: "button" } },
-        [_vm._v("s更新")]
-      ),
+      _c("div", [_vm._v("通院歴・薬 : ")]),
       _vm._v(" "),
+      _c("div", [_vm._v("金アレ・アトピー・ケロイド確認 : ")]),
+      _vm._v(" "),
+      _c("div", [_vm._v("眉ブリーチ・炎症・傷跡確認 : ")]),
+      _vm._v(" "),
+      _c("div", [_vm._v("美容サービス・美容整形確認 : ")]),
+      _vm._v(" "),
+      _c("div", [_vm._v("料金・所要時間 : ")]),
+      _vm._v(" "),
+      _c("div", [_vm._v("HP : ")]),
+      _vm._v(" "),
+      _c("div", [_vm._v("キャンセル規約 : ")])
+    ])
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=template&id=66de7bf6&":
+/*!************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=template&id=66de7bf6& ***!
+  \************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "modal-dialog modal-dialog-centered",
+      staticStyle: { width: "440px" }
+    },
+    [
+      _c("div", { staticClass: "modal-content" }, [
+        _vm._m(0),
+        _vm._v(" "),
+        _c("div", { staticClass: "modal-body" }, [
+          _c("form", { staticClass: "update" }, [
+            _vm._m(1),
+            _vm._v(" "),
+            _c("div", { staticClass: "row" }, [
+              _c(
+                "label",
+                { staticClass: "col-sm-3 col-form-label", attrs: { for: "" } },
+                [_vm._v("施術日:")]
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-sm-8" }, [
+                _c("p", [_vm._v(_vm._s(_vm.data.date))])
+              ])
+            ]),
+            _vm._v(" "),
+            _vm._m(2),
+            _vm._v(" "),
+            _c("div", { staticClass: "row" }, [
+              _c(
+                "label",
+                { staticClass: "col-sm-3 col-form-label", attrs: { for: "" } },
+                [_vm._v("院名:")]
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-sm-8" }, [
+                _c("p", [_vm._v(_vm._s(_vm.data.clinic))])
+              ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "fieldset",
+              {
+                staticClass: "form-group",
+                staticStyle: { "margin-bottom": "0px" }
+              },
+              [
+                _c("div", { staticClass: "row" }, [
+                  _c(
+                    "label",
+                    {
+                      staticClass: "col-sm-3 col-form-label",
+                      attrs: { for: "" }
+                    },
+                    [_vm._v("区分:")]
+                  ),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-sm-8" }, [
+                    _c("div", { staticClass: "form-check form-check-inline" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.form.is_new,
+                            expression: "form.is_new"
+                          }
+                        ],
+                        staticClass: "form-check-input",
+                        attrs: {
+                          type: "radio",
+                          name: "in_new",
+                          id: "0",
+                          value: "新規"
+                        },
+                        domProps: { checked: _vm._q(_vm.form.is_new, "新規") },
+                        on: {
+                          change: function($event) {
+                            return _vm.$set(_vm.form, "is_new", "新規")
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "label",
+                        {
+                          staticClass: "form-check-label",
+                          attrs: { for: "1" }
+                        },
+                        [_vm._v("新規")]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-check form-check-inline" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.form.is_new,
+                            expression: "form.is_new"
+                          }
+                        ],
+                        staticClass: "form-check-input",
+                        attrs: {
+                          type: "radio",
+                          name: "in_new",
+                          id: "1",
+                          value: "再診"
+                        },
+                        domProps: { checked: _vm._q(_vm.form.is_new, "再診") },
+                        on: {
+                          change: function($event) {
+                            return _vm.$set(_vm.form, "is_new", "再診")
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "label",
+                        {
+                          staticClass: "form-check-label",
+                          attrs: { for: "inlineRadio2" }
+                        },
+                        [_vm._v("再診")]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-check form-check-inline" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.form.is_new,
+                            expression: "form.is_new"
+                          }
+                        ],
+                        staticClass: "form-check-input",
+                        attrs: {
+                          type: "radio",
+                          name: "in_new",
+                          id: "2",
+                          value: "カウンセリング",
+                          disabled: ""
+                        },
+                        domProps: {
+                          checked: _vm._q(_vm.form.is_new, "カウンセリング")
+                        },
+                        on: {
+                          change: function($event) {
+                            return _vm.$set(
+                              _vm.form,
+                              "is_new",
+                              "カウンセリング"
+                            )
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "label",
+                        {
+                          staticClass: "form-check-label",
+                          attrs: { for: "inlineRadio3" }
+                        },
+                        [_vm._v("カウンセリング")]
+                      )
+                    ])
+                  ])
+                ])
+              ]
+            ),
+            _vm._v(" "),
+            _c("div", { staticClass: "row" }, [
+              _c(
+                "label",
+                { staticClass: "col-sm-3 col-form-label", attrs: { for: "" } },
+                [_vm._v("施術者:")]
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-sm-8" }, [
+                _c(
+                  "select",
+                  {
+                    staticClass: "form-control form-control-sm",
+                    attrs: { id: "exampleFormControlSelect1" }
+                  },
+                  [
+                    _c("option", [_vm._v(_vm._s(_vm.data.staff_rank))]),
+                    _vm._v(" "),
+                    _c("option", [_vm._v("2")]),
+                    _vm._v(" "),
+                    _c("option", [_vm._v("3")]),
+                    _vm._v(" "),
+                    _c("option", [_vm._v("4")]),
+                    _vm._v(" "),
+                    _c("option", [_vm._v("5")])
+                  ]
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _vm._m(3),
+            _vm._v(" "),
+            _vm._m(4),
+            _vm._v(" "),
+            _vm._m(5),
+            _vm._v(" "),
+            _c("br"),
+            _vm._v(" "),
+            _vm._m(6),
+            _vm._v(" "),
+            _vm._m(7),
+            _vm._v(" "),
+            _vm._m(8),
+            _vm._v(" "),
+            _vm._m(9),
+            _vm._v(" "),
+            _vm._m(10),
+            _vm._v(" "),
+            _vm._m(11),
+            _vm._v(" "),
+            _vm._m(12)
+          ])
+        ]),
+        _vm._v(" "),
+        _vm._m(13)
+      ])
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "container" }, [
       _c(
         "button",
-        { staticClass: "btn btn-primary", attrs: { type: "button" } },
-        [_vm._v("s更新")]
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-hidden": "true"
+          }
+        },
+        [_vm._v("×")]
       )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row" }, [
+      _c("label", { staticClass: "col-sm-3 col-form-label" }, [
+        _vm._v("予約ID:")
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-8" }, [
+        _c("p", [_vm._v("010-XXXXXXXXXXXXX")])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row" }, [
+      _c(
+        "label",
+        { staticClass: "col-sm-3 col-form-label", attrs: { for: "hours" } },
+        [_vm._v("時間:")]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-3" }, [
+        _c("input", {
+          staticClass: "form-control form-control-sm",
+          attrs: { type: "text", placeholder: "10:00" }
+        })
+      ]),
+      _vm._v(" "),
+      _c(
+        "label",
+        { staticClass: "col-sm-1 col-form-label", attrs: { for: "" } },
+        [_vm._v("~")]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-3" }, [
+        _c("input", {
+          staticClass: "form-control form-control-sm",
+          attrs: { type: "text", placeholder: "12:00" }
+        })
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "fieldset",
+      { staticClass: "form-group", staticStyle: { "margin-bottom": "0px" } },
+      [
+        _c("div", { staticClass: "row" }, [
+          _c(
+            "label",
+            { staticClass: "col-sm-3 col-form-label", attrs: { for: "" } },
+            [_vm._v("指名:")]
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-sm-8" }, [
+            _c("div", { staticClass: "form-check form-check-inline" }, [
+              _c("input", {
+                staticClass: "form-check-input",
+                attrs: {
+                  type: "radio",
+                  name: "inlineRadioOptions",
+                  id: "3",
+                  value: "あり"
+                }
+              }),
+              _vm._v(" "),
+              _c(
+                "label",
+                { staticClass: "form-check-label", attrs: { for: "3" } },
+                [_vm._v("あり")]
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-check form-check-inline" }, [
+              _c("input", {
+                staticClass: "form-check-input",
+                attrs: {
+                  type: "radio",
+                  name: "inlineRadioOptions",
+                  id: "4",
+                  value: "なし"
+                }
+              }),
+              _vm._v(" "),
+              _c(
+                "label",
+                { staticClass: "form-check-label", attrs: { for: "4" } },
+                [_vm._v("なし")]
+              )
+            ])
+          ])
+        ])
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row" }, [
+      _c(
+        "label",
+        { staticClass: "col-sm-3 col-form-label", attrs: { for: "" } },
+        [_vm._v("メニュー:")]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-8" }, [
+        _c(
+          "select",
+          {
+            staticClass: "form-control form-control-sm",
+            attrs: { id: "exampleFormControlSelect1" }
+          },
+          [
+            _c("option", [_vm._v("アイブロウ２回 2/2")]),
+            _vm._v(" "),
+            _c("option", [_vm._v("2")]),
+            _vm._v(" "),
+            _c("option", [_vm._v("3")]),
+            _vm._v(" "),
+            _c("option", [_vm._v("4")]),
+            _vm._v(" "),
+            _c("option", [_vm._v("5")])
+          ]
+        )
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row" }, [
+      _c(
+        "label",
+        {
+          staticClass: "col-sm-3 col-form-label",
+          staticStyle: { "letter-spacing": "-1.8px" },
+          attrs: { for: "" }
+        },
+        [_vm._v("カウンセラー:")]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-8" }, [
+        _c(
+          "select",
+          {
+            staticClass: "form-control form-control-sm",
+            attrs: { id: "exampleFormControlSelect1" }
+          },
+          [
+            _c("option", [_vm._v("09:20〜10:00 加野")]),
+            _vm._v(" "),
+            _c("option", [_vm._v("2")]),
+            _vm._v(" "),
+            _c("option", [_vm._v("3")]),
+            _vm._v(" "),
+            _c("option", [_vm._v("4")]),
+            _vm._v(" "),
+            _c("option", [_vm._v("5")])
+          ]
+        )
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row" }, [
+      _c(
+        "label",
+        { staticClass: "col-sm-3 col-form-label", attrs: { for: "hours" } },
+        [_vm._v("お客様各:")]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-8" }, [
+        _c("input", {
+          staticClass: "form-control form-control-sm",
+          attrs: { type: "text", placeholder: "プレミアム 花子" }
+        })
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row" }, [
+      _c(
+        "label",
+        { staticClass: "col-sm-3 col-form-label", attrs: { for: "hours" } },
+        [_vm._v("フリガナ:")]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-8" }, [
+        _c("input", {
+          staticClass: "form-control form-control-sm",
+          attrs: { type: "text", id: "time", placeholder: "プレミアム ハナコ" }
+        })
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row" }, [
+      _c(
+        "label",
+        { staticClass: "col-sm-3 col-form-label", attrs: { for: "hours" } },
+        [_vm._v("生年月日:")]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-8" }, [
+        _c("input", {
+          staticClass: "form-control form-control-sm",
+          attrs: { type: "text", placeholder: "2002/6/8" }
+        })
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row" }, [
+      _c(
+        "label",
+        { staticClass: "col-sm-3 col-form-label", attrs: { for: "hours" } },
+        [_vm._v("電話番号:")]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-8" }, [
+        _c("input", {
+          staticClass: "form-control form-control-sm",
+          attrs: { type: "text", placeholder: "080-xxx-xxxx" }
+        })
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row" }, [
+      _c(
+        "label",
+        { staticClass: "col-sm-3 col-form-label", attrs: { for: "" } },
+        [_vm._v("予約ルー卜:")]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-8" }, [
+        _c(
+          "select",
+          {
+            staticClass: "form-control form-control-sm",
+            attrs: { id: "exampleFormControlSelect1" }
+          },
+          [
+            _c("option", [_vm._v("システム")]),
+            _vm._v(" "),
+            _c("option", [_vm._v("2")]),
+            _vm._v(" "),
+            _c("option", [_vm._v("3")]),
+            _vm._v(" "),
+            _c("option", [_vm._v("4")]),
+            _vm._v(" "),
+            _c("option", [_vm._v("5")])
+          ]
+        )
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", [
+      _c(
+        "label",
+        { staticClass: "col-sm-3 col-form-label", attrs: { for: "" } },
+        [_vm._v("経験:")]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "experience" }, [
+      _c("div", [
+        _c(
+          "label",
+          { staticClass: "col-sm-8 col-form-label", attrs: { for: "" } },
+          [_vm._v("妊娠・授乳・不妊治療 :")]
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", [
+        _c(
+          "label",
+          { staticClass: "col-sm-8 col-form-label", attrs: { for: "" } },
+          [_vm._v("通院歴・薬 :")]
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", [
+        _c(
+          "label",
+          { staticClass: "col-sm-8 col-form-label", attrs: { for: "" } },
+          [_vm._v("金アレ・アトピー・ケロイド確認 :")]
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", [
+        _c(
+          "label",
+          { staticClass: "col-sm-8 col-form-label", attrs: { for: "" } },
+          [_vm._v("眉ブリーチ・炎症・傷跡確認 :")]
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", [
+        _c(
+          "label",
+          { staticClass: "col-sm-8 col-form-label", attrs: { for: "" } },
+          [_vm._v("美容サービス・美容整形確認 :")]
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", [
+        _c(
+          "label",
+          { staticClass: "col-sm-8 col-form-label", attrs: { for: "" } },
+          [_vm._v("料金・所要時間 :")]
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", [
+        _c(
+          "label",
+          { staticClass: "col-sm-8 col-form-label", attrs: { for: "" } },
+          [_vm._v("HP :")]
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", [
+        _c(
+          "label",
+          { staticClass: "col-sm-8 col-form-label", attrs: { for: "" } },
+          [_vm._v("キャンセル規約 :")]
+        )
+      ])
     ])
   },
   function() {
@@ -90808,30 +92396,19 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "modal-footer" }, [
       _c(
-        "button",
-        {
-          staticClass: "btn btn-secondary",
-          attrs: { type: "button", "data-dismiss": "modal" }
-        },
-        [_vm._v("メール送信")]
+        "a",
+        { staticClass: "btn", attrs: { href: "#", "data-dismiss": "modal" } },
+        [_vm._v("取消")]
       ),
       _vm._v(" "),
       _c(
-        "button",
+        "a",
         {
-          staticClass: "btn btn-secondary",
-          attrs: { type: "button", "data-dismiss": "modal" }
+          staticClass: "btn btn-primary",
+          staticStyle: { background: "rgb(197, 224, 180)", color: "black" },
+          attrs: { href: "#" }
         },
-        [_vm._v("予約取消")]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-secondary",
-          attrs: { type: "button", "data-dismiss": "modal" }
-        },
-        [_vm._v("変更")]
+        [_vm._v("登録")]
       )
     ])
   }
@@ -90860,17 +92437,8 @@ var render = function() {
   return _c("div", { staticClass: "container" }, [
     _c(
       "div",
-      {
-        staticClass: "modal fade",
-        attrs: {
-          id: "modalShowInfo",
-          tabindex: "-1",
-          role: "dialog",
-          "aria-labelledby": "exampleModalLabel",
-          "aria-hidden": "true"
-        }
-      },
-      [_c("ModalDialog")],
+      { staticClass: "modal fade", attrs: { id: "modalInfoDlg" } },
+      [_c("ModalInfoDlg", { attrs: { data: this.senddata } })],
       1
     ),
     _vm._v(" "),
@@ -90878,170 +92446,10 @@ var render = function() {
       "div",
       {
         staticClass: "modal fade",
-        attrs: {
-          id: "modalShowUpdate",
-          tabindex: "-1",
-          role: "dialog",
-          "aria-labelledby": "exampleModalLabel",
-          "aria-hidden": "true"
-        }
+        attrs: { id: "modalUpdateDlg", "data-backdrop": "static" }
       },
-      [
-        _c(
-          "div",
-          {
-            staticClass: "modal-dialog modal-sm modal-dialog-centered",
-            attrs: { role: "document" }
-          },
-          [
-            _c("div", { staticClass: "modal-content" }, [
-              _c("div", { staticClass: "modal-header" }, [
-                _c(
-                  "h5",
-                  {
-                    directives: [
-                      {
-                        name: "show",
-                        rawName: "v-show",
-                        value: _vm.editMode,
-                        expression: "editMode"
-                      }
-                    ],
-                    staticClass: "modal-title",
-                    attrs: { id: "exampleModalLabel" }
-                  },
-                  [_vm._v("ランク更新")]
-                ),
-                _vm._v(" "),
-                _c(
-                  "h5",
-                  {
-                    directives: [
-                      {
-                        name: "show",
-                        rawName: "v-show",
-                        value: !_vm.editMode,
-                        expression: "!editMode"
-                      }
-                    ],
-                    staticClass: "modal-title",
-                    attrs: { id: "exampleModalLabel" }
-                  },
-                  [_vm._v("ランク追加")]
-                ),
-                _vm._v(" "),
-                _vm._m(0)
-              ]),
-              _vm._v(" "),
-              _c(
-                "form",
-                {
-                  on: {
-                    submit: function($event) {
-                      $event.preventDefault()
-                      _vm.editMode ? _vm.updateBtn() : _vm.updateBtn()
-                    }
-                  }
-                },
-                [
-                  _c("div", { staticClass: "modal-body" }, [
-                    _c(
-                      "div",
-                      { staticClass: "form-group" },
-                      [
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.form.name,
-                              expression: "form.name"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          class: { "is-invalid": _vm.form.errors.has("name") },
-                          attrs: {
-                            type: "text",
-                            name: "name",
-                            placeholder: "ランク名前"
-                          },
-                          domProps: { value: _vm.form.name },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
-                              }
-                              _vm.$set(_vm.form, "name", $event.target.value)
-                            }
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("has-error", {
-                          attrs: { form: _vm.form, field: "name" }
-                        })
-                      ],
-                      1
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "modal-footer" }, [
-                    _c(
-                      "button",
-                      {
-                        directives: [
-                          {
-                            name: "show",
-                            rawName: "v-show",
-                            value: false,
-                            expression: "false"
-                          }
-                        ],
-                        staticClass: "btn btn-secondary",
-                        attrs: { type: "button", "data-dismiss": "modal" }
-                      },
-                      [_vm._v("キャンセル")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "button",
-                      {
-                        directives: [
-                          {
-                            name: "show",
-                            rawName: "v-show",
-                            value: _vm.editMode,
-                            expression: "editMode"
-                          }
-                        ],
-                        staticClass: "btn btn-success",
-                        attrs: { type: "submit" }
-                      },
-                      [_vm._v("s更新")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "button",
-                      {
-                        directives: [
-                          {
-                            name: "show",
-                            rawName: "v-show",
-                            value: !_vm.editMode,
-                            expression: "!editMode"
-                          }
-                        ],
-                        staticClass: "btn btn-primary",
-                        attrs: { type: "submit" }
-                      },
-                      [_vm._v("s更新")]
-                    )
-                  ])
-                ]
-              )
-            ])
-          ]
-        )
-      ]
+      [_c("ModalUpdateDlg", { attrs: { data: this.senddata } })],
+      1
     ),
     _vm._v(" "),
     _c("h4", { staticStyle: { "text-align": "center" } }, [
@@ -91082,15 +92490,11 @@ var render = function() {
           {
             key: c.id,
             staticClass: "el-button  el-button--primary el-button--medium",
-            staticStyle: {
-              "margin-left": "3px",
-              "background-color": "rgb(27, 185, 175)",
-              color: "black"
-            },
+            class: ["tab-btn", { active: _vm.selected_clinic_id === c.id }],
             attrs: { type: "button" },
             on: {
               click: function($event) {
-                return _vm.clinicSelected(c.id)
+                return _vm.clinicSelected(c)
               }
             }
           },
@@ -91112,7 +92516,7 @@ var render = function() {
                 {
                   attrs: {
                     layout: _vm.hdlayout,
-                    "col-num": 22,
+                    "col-num": this.colNum,
                     "row-height": 30,
                     "is-draggable": false,
                     "is-resizable": false,
@@ -91163,7 +92567,7 @@ var render = function() {
                 {
                   attrs: {
                     layout: _vm.conlayout,
-                    "col-num": 22,
+                    "col-num": this.colNum,
                     "row-height": 30,
                     "is-draggable": false,
                     "is-resizable": false,
@@ -91193,7 +92597,7 @@ var render = function() {
                       },
                       nativeOn: {
                         click: function($event) {
-                          return _vm.onClick($event, item.x, item.y)
+                          return _vm.onClick($event, item)
                         }
                       }
                     },
@@ -91214,25 +92618,7 @@ var render = function() {
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass: "close",
-        attrs: {
-          type: "button",
-          "data-dismiss": "modal",
-          "aria-label": "Close"
-        }
-      },
-      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-    )
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -92239,41 +93625,516 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "row" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { staticClass: "col-12" }, [
+      _c("div", { staticClass: "card" }, [
+        _c("div", { staticClass: "card-header" }, [
+          _c("h3", { staticClass: "card-title" }),
+          _vm._v(" "),
+          _c("div", { staticClass: "card-tools" }, [
+            _c(
+              "button",
+              { staticClass: "btn btn-success", on: { click: _vm.newModal } },
+              [_vm._v("追加 "), _c("i", { staticClass: "fa fa-plus" })]
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "card-body table-responsive p-0" }, [
+          _c("table", { staticClass: "table table-hover" }, [
+            _vm._m(1),
+            _vm._v(" "),
+            _c(
+              "tbody",
+              _vm._l(_vm.data, function(d, index) {
+                return _c("tr", { key: d.id }, [
+                  _c("td", [_vm._v(_vm._s(index + 1))]),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(d.name))]),
+                  _vm._v(" "),
+                  _c(
+                    "td",
+                    _vm._l(_vm.ranks, function(r) {
+                      return _c("div", { key: r.id }, [
+                        d.rank_id == r.id
+                          ? _c("div", [_vm._v(_vm._s(r.name))])
+                          : _vm._e()
+                      ])
+                    }),
+                    0
+                  ),
+                  _vm._v(" "),
+                  _c("td", [_vm._v("¥" + _vm._s(d.amount))]),
+                  _vm._v(" "),
+                  _c(
+                    "td",
+                    _vm._l(_vm.taxs, function(t) {
+                      return _c("div", { key: t.id }, [
+                        d.tax_id == t.id
+                          ? _c("div", [_vm._v(_vm._s(t.name))])
+                          : _vm._e()
+                      ])
+                    }),
+                    0
+                  ),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(d.start_time))]),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(d.end_time))]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c(
+                      "a",
+                      {
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            return _vm.editModal(d)
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "fa fa-edit" })]
+                    ),
+                    _vm._v("   \n                      "),
+                    _c(
+                      "a",
+                      {
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            return _vm.deleteData(d.id)
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "fa fa-trash" })]
+                    )
+                  ])
+                ])
+              }),
+              0
+            )
+          ])
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "modal fade",
+        attrs: {
+          id: "modalAddItem",
+          tabindex: "-1",
+          role: "dialog",
+          "aria-labelledby": "exampleModalLabel",
+          "aria-hidden": "true"
+        }
+      },
+      [
+        _c(
+          "div",
+          {
+            staticClass: "modal-dialog modal-dialog-centered",
+            attrs: { role: "document" }
+          },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _c("div", { staticClass: "modal-header" }, [
+                _c(
+                  "h5",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.editMode,
+                        expression: "editMode"
+                      }
+                    ],
+                    staticClass: "modal-title",
+                    attrs: { id: "exampleModalLabel" }
+                  },
+                  [_vm._v("メニュー更新")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "h5",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: !_vm.editMode,
+                        expression: "!editMode"
+                      }
+                    ],
+                    staticClass: "modal-title",
+                    attrs: { id: "exampleModalLabel" }
+                  },
+                  [_vm._v("メニュー追加")]
+                ),
+                _vm._v(" "),
+                _vm._m(2)
+              ]),
+              _vm._v(" "),
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      _vm.editMode ? _vm.updateRank() : _vm.createData()
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "modal-body" }, [
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", [_vm._v("メニュー名")]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.name,
+                              expression: "form.name"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: { "is-invalid": _vm.form.errors.has("name") },
+                          attrs: {
+                            type: "text",
+                            name: "name",
+                            placeholder: "メニュー名 "
+                          },
+                          domProps: { value: _vm.form.name },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(_vm.form, "name", $event.target.value)
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.form, field: "name" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("ランク名")]),
+                      _vm._v(" "),
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.rank_id,
+                              expression: "form.rank_id"
+                            }
+                          ],
+                          staticClass: "custom-select",
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.$set(
+                                _vm.form,
+                                "rank_id",
+                                $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              )
+                            }
+                          }
+                        },
+                        _vm._l(_vm.ranks, function(r) {
+                          return _c(
+                            "option",
+                            { key: r.id, domProps: { value: r.id } },
+                            [_vm._v(_vm._s(r.name))]
+                          )
+                        }),
+                        0
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", [_vm._v("料金")]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.amount,
+                              expression: "form.amount"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.form.errors.has("amount")
+                          },
+                          attrs: {
+                            type: "number",
+                            name: "amount",
+                            placeholder: "料金"
+                          },
+                          domProps: { value: _vm.form.amount },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(_vm.form, "amount", $event.target.value)
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.form, field: "amount" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("税率")]),
+                      _vm._v(" "),
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.tax_id,
+                              expression: "form.tax_id"
+                            }
+                          ],
+                          staticClass: "custom-select",
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.$set(
+                                _vm.form,
+                                "tax_id",
+                                $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              )
+                            }
+                          }
+                        },
+                        _vm._l(_vm.taxs, function(t) {
+                          return _c(
+                            "option",
+                            { key: t.id, domProps: { value: t.id } },
+                            [_vm._v(_vm._s(t.name))]
+                          )
+                        }),
+                        0
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("h6", [_vm._v("運用開始日")]),
+                        _vm._v(" "),
+                        _c("datetime", {
+                          class: {
+                            "is-invalid": _vm.form.errors.has("start_time")
+                          },
+                          attrs: {
+                            format: "YYYY-MM-DD H:i",
+                            placeholder: "運用開始日",
+                            name: "start_time"
+                          },
+                          model: {
+                            value: _vm.form.start_time,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "start_time", $$v)
+                            },
+                            expression: "form.start_time"
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.form, field: "start_time" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("h6", [_vm._v("運用終了日")]),
+                        _vm._v(" "),
+                        _c("datetime", {
+                          class: {
+                            "is-invalid": _vm.form.errors.has("end_time")
+                          },
+                          attrs: {
+                            format: "YYYY-MM-DD H:i",
+                            placeholder: "運用終了日",
+                            name: "end_time"
+                          },
+                          model: {
+                            value: _vm.form.end_time,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "end_time", $$v)
+                            },
+                            expression: "form.end_time"
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.form, field: "end_time" }
+                        })
+                      ],
+                      1
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "modal-footer" }, [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-secondary",
+                        attrs: { type: "button", "data-dismiss": "modal" }
+                      },
+                      [_vm._v("キャンセル")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: _vm.editMode,
+                            expression: "editMode"
+                          }
+                        ],
+                        staticClass: "btn btn-success",
+                        attrs: { type: "submit" }
+                      },
+                      [_vm._v("更新")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: !_vm.editMode,
+                            expression: "!editMode"
+                          }
+                        ],
+                        staticClass: "btn btn-primary",
+                        attrs: { type: "submit" }
+                      },
+                      [_vm._v("追加")]
+                    )
+                  ])
+                ]
+              )
+            ])
+          ]
+        )
+      ]
+    )
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "row" }, [
-        _c(
-          "div",
-          {
-            staticClass: "row d-flex justify-content-center",
-            staticStyle: { width: "100%" }
-          },
-          [
-            _c("div", [
-              _c("h3", {}, [_vm._v("予約管理システム (メニュー管理)")])
-            ])
-          ]
-        ),
+    return _c(
+      "div",
+      {
+        staticClass: "row d-flex justify-content-center",
+        staticStyle: { width: "100%" }
+      },
+      [_c("div", [_c("h3", {}, [_vm._v("予約管理システム (メニュー管理)")])])]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("メニューID")]),
         _vm._v(" "),
-        _c("div", { staticClass: "col-12" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "card-header" }, [_vm._v("Menu")]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _vm._v(
-                "\n                    I'm an Settings component.\n                "
-              )
-            ])
-          ])
-        ])
+        _c("th", [_vm._v("メニュー名 ")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("ランク名")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("料金")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("税率")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("運用開始日")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("運用終了日")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("編集する")])
       ])
     ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
   }
 ]
 render._withStripped = true
@@ -93416,37 +95277,430 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "row" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { staticClass: "col-12" }, [
+      _c("div", { staticClass: "card" }, [
+        _c("div", { staticClass: "card-header" }, [
+          _c("h3", { staticClass: "card-title" }),
+          _vm._v(" "),
+          _c("div", { staticClass: "card-tools" }, [
+            _c(
+              "button",
+              { staticClass: "btn btn-success", on: { click: _vm.newModal } },
+              [_vm._v("追加 "), _c("i", { staticClass: "fa fa-plus" })]
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "card-body table-responsive p-0" }, [
+          _c("table", { staticClass: "table table-hover" }, [
+            _vm._m(1),
+            _vm._v(" "),
+            _c(
+              "tbody",
+              _vm._l(_vm.data, function(d, index) {
+                return _c("tr", { key: d.id }, [
+                  _c("td", [_vm._v(_vm._s(index + 1))]),
+                  _vm._v(" "),
+                  _c(
+                    "td",
+                    _vm._l(_vm.ranks, function(r) {
+                      return _c("div", { key: r.id }, [
+                        d.rank_id == r.id
+                          ? _c("div", [_vm._v(_vm._s(r.name))])
+                          : _vm._e()
+                      ])
+                    }),
+                    0
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "td",
+                    _vm._l(_vm.parts, function(p) {
+                      return _c("div", { key: p.id }, [
+                        d.part_id == p.id
+                          ? _c("div", [_vm._v(_vm._s(p.name))])
+                          : _vm._e()
+                      ])
+                    }),
+                    0
+                  ),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(d.start_time))]),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(d.end_time))]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c(
+                      "a",
+                      {
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            return _vm.editModal(d)
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "fa fa-edit" })]
+                    ),
+                    _vm._v("   \n                      "),
+                    _c(
+                      "a",
+                      {
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            return _vm.deleteData(d.id)
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "fa fa-trash" })]
+                    )
+                  ])
+                ])
+              }),
+              0
+            )
+          ])
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "modal fade",
+        attrs: {
+          id: "modalAddItem",
+          tabindex: "-1",
+          role: "dialog",
+          "aria-labelledby": "exampleModalLabel",
+          "aria-hidden": "true"
+        }
+      },
+      [
+        _c(
+          "div",
+          {
+            staticClass: "modal-dialog modal-dialog-centered",
+            attrs: { role: "document" }
+          },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _c("div", { staticClass: "modal-header" }, [
+                _c(
+                  "h5",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.editMode,
+                        expression: "editMode"
+                      }
+                    ],
+                    staticClass: "modal-title",
+                    attrs: { id: "exampleModalLabel" }
+                  },
+                  [_vm._v("ランクスケジュール更新")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "h5",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: !_vm.editMode,
+                        expression: "!editMode"
+                      }
+                    ],
+                    staticClass: "modal-title",
+                    attrs: { id: "exampleModalLabel" }
+                  },
+                  [_vm._v("ランクスケジュール追加")]
+                ),
+                _vm._v(" "),
+                _vm._m(2)
+              ]),
+              _vm._v(" "),
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      _vm.editMode ? _vm.updateRank() : _vm.createData()
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "modal-body" }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("ランク名")]),
+                      _vm._v(" "),
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.rank_id,
+                              expression: "form.rank_id"
+                            }
+                          ],
+                          staticClass: "custom-select",
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.$set(
+                                _vm.form,
+                                "rank_id",
+                                $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              )
+                            }
+                          }
+                        },
+                        _vm._l(_vm.ranks, function(r) {
+                          return _c(
+                            "option",
+                            { key: r.id, domProps: { value: r.id } },
+                            [_vm._v(_vm._s(r.name))]
+                          )
+                        }),
+                        0
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("部位")]),
+                      _vm._v(" "),
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.part_id,
+                              expression: "form.part_id"
+                            }
+                          ],
+                          staticClass: "custom-select",
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.$set(
+                                _vm.form,
+                                "part_id",
+                                $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              )
+                            }
+                          }
+                        },
+                        _vm._l(_vm.parts, function(t) {
+                          return _c(
+                            "option",
+                            { key: t.id, domProps: { value: t.id } },
+                            [_vm._v(_vm._s(t.name))]
+                          )
+                        }),
+                        0
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("h6", [_vm._v("開始時間")]),
+                        _vm._v(" "),
+                        _c("datetime", {
+                          class: {
+                            "is-invalid": _vm.form.errors.has("start_time")
+                          },
+                          attrs: {
+                            format: "H:i",
+                            placeholder: "開始時間",
+                            name: "start_time"
+                          },
+                          model: {
+                            value: _vm.form.start_time,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "start_time", $$v)
+                            },
+                            expression: "form.start_time"
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.form, field: "start_time" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("h6", [_vm._v("終了時間")]),
+                        _vm._v(" "),
+                        _c("datetime", {
+                          class: {
+                            "is-invalid": _vm.form.errors.has("end_time")
+                          },
+                          attrs: {
+                            format: "H:i",
+                            placeholder: "終了時間",
+                            name: "end_time"
+                          },
+                          model: {
+                            value: _vm.form.end_time,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "end_time", $$v)
+                            },
+                            expression: "form.end_time"
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.form, field: "end_time" }
+                        })
+                      ],
+                      1
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "modal-footer" }, [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-secondary",
+                        attrs: { type: "button", "data-dismiss": "modal" }
+                      },
+                      [_vm._v("キャンセル")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: _vm.editMode,
+                            expression: "editMode"
+                          }
+                        ],
+                        staticClass: "btn btn-success",
+                        attrs: { type: "submit" }
+                      },
+                      [_vm._v("更新")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: !_vm.editMode,
+                            expression: "!editMode"
+                          }
+                        ],
+                        staticClass: "btn btn-primary",
+                        attrs: { type: "submit" }
+                      },
+                      [_vm._v("追加")]
+                    )
+                  ])
+                ]
+              )
+            ])
+          ]
+        )
+      ]
+    )
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c(
-        "div",
-        {
-          staticClass: "row d-flex justify-content-center",
-          staticStyle: { width: "100%" }
-        },
-        [_c("div", [_c("h3", {}, [_vm._v("ランクスケジュール管理")])])]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-12" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "card-header" }, [_vm._v("RankSchedule")]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _vm._v(
-                "\n                    I'm an Settings component.\n                "
-              )
-            ])
-          ])
+    return _c(
+      "div",
+      {
+        staticClass: "row d-flex justify-content-center",
+        staticStyle: { width: "100%" }
+      },
+      [
+        _c("div", [
+          _c("h3", {}, [_vm._v("予約管理システム (ランクスケジュール管理)")])
         ])
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("ランクスケジュールID")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("ランク名")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("部位")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("開始時間")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("終了時間")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("編集する")])
       ])
     ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
   }
 ]
 render._withStripped = true
@@ -93481,7 +95735,152 @@ var staticRenderFns = [
       _c("div", { staticClass: "row" }, [
         _c("div", { staticClass: "col-12" }, [
           _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "example" }, [_c("h3", [_vm._v("Date")])])
+            _c("div", { staticClass: "example" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "btn btn-primary",
+                  attrs: { "data-toggle": "modal", href: "#myModal" }
+                },
+                [_vm._v("Launch modal")]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "modal fade", attrs: { id: "myModal" } },
+                [
+                  _c(
+                    "div",
+                    { staticClass: "modal-dialog modal-dialog-centered" },
+                    [
+                      _c("div", { staticClass: "modal-content" }, [
+                        _c("div", { staticClass: "modal-header" }, [
+                          _c("h4", { staticClass: "modal-title" }, [
+                            _vm._v("Modal title")
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "button",
+                            {
+                              staticClass: "close",
+                              attrs: {
+                                type: "button",
+                                "data-dismiss": "modal",
+                                "aria-hidden": "true"
+                              }
+                            },
+                            [_vm._v("×")]
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "container" }),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "modal-body" }, [
+                          _vm._v(
+                            "\n                                Content for the dialog / modal goes here.\n                                "
+                          ),
+                          _c(
+                            "a",
+                            {
+                              staticClass: "btn btn-primary",
+                              attrs: { "data-toggle": "modal" }
+                            },
+                            [_vm._v("Launch modal")]
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "modal-footer" }, [
+                          _c(
+                            "a",
+                            {
+                              staticClass: "btn",
+                              attrs: { href: "#", "data-dismiss": "modal" }
+                            },
+                            [_vm._v("Close")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "a",
+                            {
+                              staticClass: "btn btn-primary",
+                              attrs: {
+                                "data-toggle": "modal",
+                                href: "#myModal2"
+                              }
+                            },
+                            [_vm._v("Save changes")]
+                          )
+                        ])
+                      ])
+                    ]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "modal fade",
+                  attrs: { id: "myModal2", "data-backdrop": "static" }
+                },
+                [
+                  _c(
+                    "div",
+                    { staticClass: "modal-dialog modal-dialog-centered" },
+                    [
+                      _c("div", { staticClass: "modal-content" }, [
+                        _c("div", { staticClass: "modal-header" }, [
+                          _c("h4", { staticClass: "modal-title" }, [
+                            _vm._v("2nd Modal title")
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "button",
+                            {
+                              staticClass: "close",
+                              attrs: {
+                                type: "button",
+                                "data-dismiss": "modal",
+                                "aria-hidden": "true"
+                              }
+                            },
+                            [_vm._v("×")]
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "container" }),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "modal-body" }, [
+                          _vm._v(
+                            "\n                                Content for the dialog / modal goes here.\n                                Content for the dialog / modal goes here.\n                                Content for the dialog / modal goes here.\n                                Content for the dialog / modal goes here.\n                                Content for the dialog / modal goes here.\n                                "
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "modal-footer" }, [
+                          _c(
+                            "a",
+                            {
+                              staticClass: "btn",
+                              attrs: { href: "#", "data-dismiss": "modal" }
+                            },
+                            [_vm._v("Close")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "a",
+                            {
+                              staticClass: "btn btn-primary",
+                              attrs: { href: "#" }
+                            },
+                            [_vm._v("Save changes")]
+                          )
+                        ])
+                      ])
+                    ]
+                  )
+                ]
+              )
+            ])
           ])
         ])
       ])
@@ -110794,18 +113193,18 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/Admin/Reservations/ModalDialog.vue":
-/*!********************************************************************!*\
-  !*** ./resources/js/components/Admin/Reservations/ModalDialog.vue ***!
-  \********************************************************************/
+/***/ "./resources/js/components/Admin/Reservations/ModalInfoDlg.vue":
+/*!*********************************************************************!*\
+  !*** ./resources/js/components/Admin/Reservations/ModalInfoDlg.vue ***!
+  \*********************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _ModalDialog_vue_vue_type_template_id_20fd1050___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ModalDialog.vue?vue&type=template&id=20fd1050& */ "./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=template&id=20fd1050&");
-/* harmony import */ var _ModalDialog_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ModalDialog.vue?vue&type=script&lang=js& */ "./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _ModalDialog_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ModalDialog.vue?vue&type=style&index=0&lang=scss& */ "./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=style&index=0&lang=scss&");
+/* harmony import */ var _ModalInfoDlg_vue_vue_type_template_id_1726931e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ModalInfoDlg.vue?vue&type=template&id=1726931e& */ "./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=template&id=1726931e&");
+/* harmony import */ var _ModalInfoDlg_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ModalInfoDlg.vue?vue&type=script&lang=js& */ "./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _ModalInfoDlg_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ModalInfoDlg.vue?vue&type=style&index=0&lang=scss& */ "./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=style&index=0&lang=scss&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -110816,9 +113215,9 @@ __webpack_require__.r(__webpack_exports__);
 /* normalize component */
 
 var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
-  _ModalDialog_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _ModalDialog_vue_vue_type_template_id_20fd1050___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _ModalDialog_vue_vue_type_template_id_20fd1050___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  _ModalInfoDlg_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _ModalInfoDlg_vue_vue_type_template_id_1726931e___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _ModalInfoDlg_vue_vue_type_template_id_1726931e___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
   null,
   null,
@@ -110828,54 +113227,141 @@ var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_
 
 /* hot reload */
 if (false) { var api; }
-component.options.__file = "resources/js/components/Admin/Reservations/ModalDialog.vue"
+component.options.__file = "resources/js/components/Admin/Reservations/ModalInfoDlg.vue"
 /* harmony default export */ __webpack_exports__["default"] = (component.exports);
 
 /***/ }),
 
-/***/ "./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=script&lang=js&":
-/*!*********************************************************************************************!*\
-  !*** ./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=script&lang=js& ***!
-  \*********************************************************************************************/
+/***/ "./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=script&lang=js&":
+/*!**********************************************************************************************!*\
+  !*** ./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=script&lang=js& ***!
+  \**********************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalDialog_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib??ref--4-0!../../../../../node_modules/vue-loader/lib??vue-loader-options!./ModalDialog.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalDialog_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalInfoDlg_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib??ref--4-0!../../../../../node_modules/vue-loader/lib??vue-loader-options!./ModalInfoDlg.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalInfoDlg_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 
-/***/ "./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=style&index=0&lang=scss&":
-/*!******************************************************************************************************!*\
-  !*** ./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=style&index=0&lang=scss& ***!
-  \******************************************************************************************************/
+/***/ "./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=style&index=0&lang=scss&":
+/*!*******************************************************************************************************!*\
+  !*** ./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=style&index=0&lang=scss& ***!
+  \*******************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalDialog_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/style-loader!../../../../../node_modules/css-loader!../../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../../node_modules/postcss-loader/src??ref--7-2!../../../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../../../node_modules/vue-loader/lib??vue-loader-options!./ModalDialog.vue?vue&type=style&index=0&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=style&index=0&lang=scss&");
-/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalDialog_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalDialog_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalDialog_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalDialog_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
- /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalDialog_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalInfoDlg_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/style-loader!../../../../../node_modules/css-loader!../../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../../node_modules/postcss-loader/src??ref--7-2!../../../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../../../node_modules/vue-loader/lib??vue-loader-options!./ModalInfoDlg.vue?vue&type=style&index=0&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=style&index=0&lang=scss&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalInfoDlg_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalInfoDlg_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalInfoDlg_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalInfoDlg_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalInfoDlg_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
 
 /***/ }),
 
-/***/ "./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=template&id=20fd1050&":
-/*!***************************************************************************************************!*\
-  !*** ./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=template&id=20fd1050& ***!
-  \***************************************************************************************************/
+/***/ "./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=template&id=1726931e&":
+/*!****************************************************************************************************!*\
+  !*** ./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=template&id=1726931e& ***!
+  \****************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalDialog_vue_vue_type_template_id_20fd1050___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../../node_modules/vue-loader/lib??vue-loader-options!./ModalDialog.vue?vue&type=template&id=20fd1050& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalDialog.vue?vue&type=template&id=20fd1050&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalDialog_vue_vue_type_template_id_20fd1050___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalInfoDlg_vue_vue_type_template_id_1726931e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../../node_modules/vue-loader/lib??vue-loader-options!./ModalInfoDlg.vue?vue&type=template&id=1726931e& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalInfoDlg.vue?vue&type=template&id=1726931e&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalInfoDlg_vue_vue_type_template_id_1726931e___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalDialog_vue_vue_type_template_id_20fd1050___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalInfoDlg_vue_vue_type_template_id_1726931e___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue":
+/*!***********************************************************************!*\
+  !*** ./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue ***!
+  \***********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _ModalUpdateDlg_vue_vue_type_template_id_66de7bf6___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ModalUpdateDlg.vue?vue&type=template&id=66de7bf6& */ "./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=template&id=66de7bf6&");
+/* harmony import */ var _ModalUpdateDlg_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ModalUpdateDlg.vue?vue&type=script&lang=js& */ "./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _ModalUpdateDlg_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ModalUpdateDlg.vue?vue&type=style&index=0&lang=scss& */ "./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=style&index=0&lang=scss&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _ModalUpdateDlg_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _ModalUpdateDlg_vue_vue_type_template_id_66de7bf6___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _ModalUpdateDlg_vue_vue_type_template_id_66de7bf6___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/Admin/Reservations/ModalUpdateDlg.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=script&lang=js&":
+/*!************************************************************************************************!*\
+  !*** ./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=script&lang=js& ***!
+  \************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalUpdateDlg_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib??ref--4-0!../../../../../node_modules/vue-loader/lib??vue-loader-options!./ModalUpdateDlg.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalUpdateDlg_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=style&index=0&lang=scss&":
+/*!*********************************************************************************************************!*\
+  !*** ./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=style&index=0&lang=scss& ***!
+  \*********************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalUpdateDlg_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/style-loader!../../../../../node_modules/css-loader!../../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../../node_modules/postcss-loader/src??ref--7-2!../../../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../../../node_modules/vue-loader/lib??vue-loader-options!./ModalUpdateDlg.vue?vue&type=style&index=0&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=style&index=0&lang=scss&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalUpdateDlg_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalUpdateDlg_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalUpdateDlg_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalUpdateDlg_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalUpdateDlg_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=template&id=66de7bf6&":
+/*!******************************************************************************************************!*\
+  !*** ./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=template&id=66de7bf6& ***!
+  \******************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalUpdateDlg_vue_vue_type_template_id_66de7bf6___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../../node_modules/vue-loader/lib??vue-loader-options!./ModalUpdateDlg.vue?vue&type=template&id=66de7bf6& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Admin/Reservations/ModalUpdateDlg.vue?vue&type=template&id=66de7bf6&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalUpdateDlg_vue_vue_type_template_id_66de7bf6___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalUpdateDlg_vue_vue_type_template_id_66de7bf6___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

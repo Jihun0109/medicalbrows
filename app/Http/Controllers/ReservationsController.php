@@ -41,7 +41,7 @@ class ReservationsController extends Controller
         $staff_rank_names = DB::table('tbl_staffs')
                 ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id','tbl_staffs.id')  
                 ->join('tbl_ranks', 'tbl_ranks.id','tbl_staff_ranks.rank_id')    
-                ->select('tbl_staffs.full_name','tbl_staff_ranks.rank_id', 'tbl_ranks.short_name')       
+                ->select('tbl_staffs.full_name','tbl_staff_ranks.rank_id', 'tbl_ranks.short_name','tbl_ranks.name')       
                 ->where([['tbl_staffs.is_deleted', 0], ['tbl_staffs.clinic_id', $clinic_id]])  
                 ->get();
         //return $staff_rank_names;
@@ -51,7 +51,7 @@ class ReservationsController extends Controller
                     ->where([['tbl_rank_schedules.is_deleted', 0], ['tbl_rank_schedules.rank_id', $staff_rank_names[$i]->rank_id]])  
                     ->select(DB::raw('HOUR(tbl_rank_schedules.start_time) as start_hour, HOUR(tbl_rank_schedules.end_time) as end_hour, MINUTE(tbl_rank_schedules.start_time) as start_minute, MINUTE(tbl_rank_schedules.end_time) as end_minute'))       
                     ->get();
-            $temp = array('staff_name' => $staff_rank_names[$i]->full_name, 'rank_name'=> $staff_rank_names[$i]->short_name,
+            $temp = array('staff_name' => $staff_rank_names[$i]->full_name, 'rank_name'=> $staff_rank_names[$i]->short_name,                               'rank_full_name'=> $staff_rank_names[$i]->name,
                                 'time_schedule'=> $rank_schedule);
             array_push($res, $temp);
         }
@@ -60,8 +60,8 @@ class ReservationsController extends Controller
         //return $res;
         //create array for layout
         //width:22-> 2, 3
-        $cell_width = 2;
-        $cell_height = 3;
+        $cell_width = 3;
+        $cell_height = 4;
 
         $idx_arr = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
         $staff = [];
@@ -73,7 +73,11 @@ class ReservationsController extends Controller
             'w' => $cell_width,
             'h' => 2,
             'i' => "",
-            'static' =>  true
+            'static' =>  true,
+            'selectable' => false,
+            'time' => '',
+            'is_new' => '',
+            'staff_rank' => '',
         ]);
         //time
         for ( $i = 0; $i < sizeof($idx_arr); $i++ ){
@@ -84,7 +88,11 @@ class ReservationsController extends Controller
                 'w' => $cell_width,
                 'h' => $cell_height,
                 'i' => $content,
-                'static' =>  false
+                'static' =>  false,
+                'selectable' => false,
+                'time' => '',
+                'is_new' => '',
+                'staff_rank' => '',
             ]);
         }
 
@@ -97,7 +105,11 @@ class ReservationsController extends Controller
                 'w' => $cell_width,
                 'h' => 1,
                 'i' => $res[$i]['rank_name'],
-                'static' =>  true
+                'static' =>  true,
+                'selectable' => false,
+                'time' => '',
+                'is_new' => '',
+                'staff_rank' => '',
             ]);
         }
 
@@ -109,7 +121,11 @@ class ReservationsController extends Controller
                 'w' => $cell_width,
                 'h' => 1,
                 'i' => $res[$i]['staff_name'],
-                'static' =>  true
+                'static' =>  true,
+                'selectable' => false,
+                'time' => '',
+                'is_new' => '',
+                'staff_rank' => '',
             ]);
     
             $j = 0;
@@ -119,30 +135,53 @@ class ReservationsController extends Controller
                 $real_h = 1;
                 $xh = $cell_height;
                 $add = 0;
+                $time = '';
+                $is_new = '';
+                $selectable = false;
                 for ( $k = 0; $k < sizeof($res[$i]['time_schedule']); $k++ ){
                     //Log::error($res[$i]['time_schedule'][$k]->start_hour);
                     //Log::error($idx_arr[$j]);
+                    $start_minute = $res[$i]['time_schedule'][$k]->start_minute;
+                    $end_minute = $res[$i]['time_schedule'][$k]->end_minute;
+                    if($start_minute == 0){
+                        $start_minute = '00';
+                    }
+                    if($end_minute == 0){
+                        $end_minute = '00';
+                    }
+                    $time = $res[$i]['time_schedule'][$k]->start_hour.":".$start_minute.'~'. 
+                                $res[$i]['time_schedule'][$k]->end_hour.":".$end_minute;
+
                     if ( $idx_arr[$j] >= $res[$i]['time_schedule'][$k]->start_hour 
                             && $idx_arr[$j] < $res[$i]['time_schedule'][$k]->end_hour){
+
+                        $real_h = ($res[$i]['time_schedule'][$k]->end_hour - $res[$i]['time_schedule'][$k]->start_hour);
                         $target_state = true;
                         $content = '再';
-                        $real_h = ($res[$i]['time_schedule'][$k]->end_hour - $res[$i]['time_schedule'][$k]->start_hour);
-                        if($real_h == 1 && ($res[$i]['time_schedule'][$k]->start_minute == 20 || $res[$i]['time_schedule'][$k]->end_minute == 20)){
+                        $is_new = '再診';
+                        $selectable = true;
+                        if($real_h == 1 && ($start_minute == 20 || $end_minute == 20)){
                             array_push($layout, (object)[
                                 'x' => ($i + 1) * $cell_width,
                                 'y' => $j *$cell_height,
                                 'w' => $cell_width,
                                 'h' => $real_h,
                                 'i' => '',
-                                'static' =>  false
+                                'static' =>  false,
+                                'selectable' => false,
+                                'time' => '',
+                                'is_new' => '',
+                                'staff_rank' => '',
                             ]);
                             $xh = ($cell_height - $real_h);
                             $add = $real_h;
+                            $is_new = '新規';
+                            $content = '新';
                         }
-                        else if($res[$i]['time_schedule'][$k]->start_minute == 30){
+                        else if($start_minute == 30){
                             $real_h -= 0.5;
                         }    
-                        else if($res[$i]['time_schedule'][$k]->end_minute == 30){
+                        else if($end_minute == 30){
                             $real_h += 0.5;
                         }                              
                         break;
@@ -157,13 +196,17 @@ class ReservationsController extends Controller
                     'w' => $cell_width,
                     'h' => ($real_h * $xh),
                     'i' => $content,
-                    'static' =>  $target_state
+                    'static' =>  $target_state,
+                    'selectable' => $selectable,
+                    'time' => $time,
+                    'is_new' => $is_new,
+                    'staff_rank' => $res[$i]['staff_name'].$res[$i]['rank_full_name'],
                 ]);
                 $j = $j + $real_h;         
                   
             }
         }
-        $ret = array('staff_layout' => $staff, 'content_layout'=> $layout);
+        $ret = array('count'=>sizeof($res), 'staff_layout' => $staff, 'content_layout'=> $layout);
         return $ret;
     }
 }

@@ -1,8 +1,8 @@
 import VueGridLayout from 'vue-grid-layout';
 import Datepicker from 'vuejs-datetimepicker';
 import Datetime from 'vue-datetime';
-import ModalDialog from './ModalDialog.vue';
-
+import ModalInfoDlg from './ModalInfoDlg.vue';
+import ModalUpdateDlg from './ModalUpdateDlg.vue';
 var hdLayout = [
     { "x": 0, "y": 0, "w": 2, "h": 2, "i": "", "static": true },
 
@@ -34,7 +34,8 @@ export default {
         GridItem: VueGridLayout.GridItem,
         Datepicker,
         Datetime,
-        ModalDialog,
+        ModalInfoDlg,
+        ModalUpdateDlg,
     },
     data() {
         return {
@@ -47,20 +48,27 @@ export default {
             responsive: true,
             preventCollision: false,
             rowHeight: 30,
-            colNum: 22,
+            colNum: 33,
             index: 0,
             editMode: false,
             form: new Form({
                 id: '',
                 name: ''
             }),
-            appointment: {
-                appointmet_date: '', //new Date()
-            },
             clinics: {},
-            orders: {},
+            staffs: {},
             current_date: '',
-            current_clinic_id: 0,
+            selected_clinic_id: 0,
+            selected_clinic_name: '',
+            message: "Welcome, Please Wait....",
+            senddata: {
+                date: '',
+                clinic: '',
+                time: '',
+                is_new: '',
+                staff_rank: '',
+                techname: '',
+            }
         }
     },
     mounted() {
@@ -70,54 +78,78 @@ export default {
     created() {
         console.log('Component created.');
         this.loadClinicList();
-        console.log(this.current_clinic_id);
-        this.loadStaffRanksList();
+        //this.loadStaffRanksList();
+        this.current_date = this.formatDate(new Date());
     },
 
     methods: {
+        callFunction: function() {
+            var currentDate = new Date();
+            console.log(currentDate);
+            var currentDateWithFormat = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
+            console.log(currentDateWithFormat);
 
+        },
         loadClinicList() {
             axios.get('api/clinic').
             then(({ data }) => {
                 this.clinics = data;
-                this.current_clinic_id = this.clinics[0].id;
-                console.log(this.current_clinic_id);
+                this.selected_clinic_id = this.clinics[0].id;
+                this.selected_clinic_name = this.clinics[0].name;
+                this.loadStaffRanksList();
             });
         },
         loadStaffRanksList() {
-            axios.get('v1/reservation/staffs_ranks?clinic_id=' + this.current_clinic_id).
+            axios.get('v1/reservation/staffs_ranks?clinic_id=' + this.selected_clinic_id).
             then(({ data }) => {
-                this.orders = data.staff_layout;
-                //console.log(this.orders);
-                //this.timelayout = JSON.parse(JSON.stringify(timeLayout));
+                this.staffs = data.staff_layout;
+                //this.timelayout = JSON.parse(JSON.stringify(timeLayout));                
+                if (data.count > 10) {
+                    this.colNum = (data.count + 1) * 3;
+                }
                 this.hdlayout = JSON.parse(JSON.stringify(data.staff_layout));
                 this.conlayout = JSON.parse(JSON.stringify(data.content_layout));
 
             });
         },
 
+        formatDate(dt) {
+            var month = ('0' + (dt.getMonth() + 1)).slice(-2);
+            var date = ('0' + dt.getDate()).slice(-2);
+            var year = dt.getFullYear();
+            var currentDateWithFormat = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
+            console.log(currentDateWithFormat);
+            //var formattedDate = year + '年' + month + '月' + date + '日';
+            var formattedDate = year + '-' + month + '-' + date;
+            return formattedDate;
+        },
+
         dateSelected(e) {
-            // console.log(this.appointment.appointmet_date);
-            // this.$nextTick(() => console.log(this.appointment.appointmet_date));
             console.log(this.current_date, 'want to check...');
         },
 
-        clinicSelected(id) {
-            this.current_clinic_id = id;
+        clinicSelected(clinic) {
+            this.selected_clinic_id = clinic.id;
+            this.selected_clinic_name = clinic.name;
             this.loadStaffRanksList();
         },
 
-        onClick: function(event, x, y) {
-            console.log("click i=" + event);
-            //var targetId = event.currentTarget.id;
-            //window.alert("CLICK!" + "(" + x + "," + y + ")");
-            this.editMode = false;
-            this.form.reset();
-            $('#modalShowInfo').modal('show');
+        onClick: function(event, item) {
+            console.log("click i=" + "(" + item.x + "," + item.y + ")");
+            if (item.selectable) {
+                this.senddata.date = this.current_date;
+                this.senddata.clinic = this.selected_clinic_name;
+                this.senddata.time = item.time;
+                this.senddata.is_new = item.is_new;
+                this.senddata.staff_rank = item.staff_rank;
+                console.log(this.senddata);
+                this.editMode = false;
+                this.form.reset();
+                $('#modalInfoDlg').modal('show');
+            }
         },
         updateBtn: function() {
             this.editMode = false;
-            //$('#modalShowInfo').modal('hide');
             $('#modalShowUpdate').modal('show');
         },
         alertVal() {
