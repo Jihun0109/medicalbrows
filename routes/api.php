@@ -27,8 +27,10 @@ Route::apiResources([
     'region' => 'API\RegionController',
     'operable-part' => 'API\OperablePartController',
     'order' => 'API\OrderController',
+    'order-history' => 'API\OrderHistoryController',
     'staff-rank' => 'API\StaffRankController',
     'menu' => 'API\MenuController',
     'rank-schedule' => 'API\RankScheduleController',
+    'customer' => 'API\CustomerController',
     ]);
 Route::apiResources(['tax' => 'API\TaxController']);

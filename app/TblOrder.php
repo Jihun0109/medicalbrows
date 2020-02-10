@@ -7,15 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 class TblOrder extends Model
 {
     protected $fillable = [
-        'is_new',
-        'phone_number', 
-        'order_id', 
-        'staff_id', 
-        'counselor_id', 
-        'menu_id', 
-        'clinic_id', 
-        'start_time', 
-        'end_time', 
-        'description',
-        'is_deleted'];    
+        'password',
+        'customer_id', 
+        'customer_status', 
+        'subtotal', 
+        'discount', 
+        'tax_id', 
+        'total', 
+        'note', 
+        'order_date', 
+        'cancel_date',
+        'is_deleted',
+        'order_serial_id',
+        'menu_id',
+        'order_route'
+    ];    
 }

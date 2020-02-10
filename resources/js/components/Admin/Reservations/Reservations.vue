@@ -2,20 +2,19 @@
     <div class="container">
         <!-- Info Modal -->
         <div class="modal fade" id="modalInfoDlg">
-            <ModalInfoDlg v-bind:data="this.senddata"></ModalInfoDlg>
+            <ModalInfoDlg v-bind:data="this.item"></ModalInfoDlg>
         </div>
         <!-- Update Modal -->
         <div class="modal fade" id="modalUpdateDlg" data-backdrop="static">
-            <ModalUpdateDlg v-bind:data="this.senddata"></ModalUpdateDlg>
+            <ModalUpdateDlg v-bind:sr_list="this.staff_rank_list" :item="this.item" 
+                v-bind:menus="this.menus" v-bind:counselors="this.counselors" @orderCreated="onOrderCreated"></ModalUpdateDlg>
         </div>
 
         <h4 style="text-align: center">予約管理システム（予約管理)</h4>
-            <div style="display:flex">
-                <div id="calendar" class="col-md-4">
-                    <Datepicker v-model="current_date"  @selected="dateSelected()" format="YYYY-MM-DD" width="80px"/>
-                </div>
-            </div>
 
+        <div id="calendar" class="col-md-4">
+            <Datepicker v-model="current_date"  @selected="dateSelected()" format="YYYY-MM-DD" width="80px"/>
+        </div>
         <!--<datetime format="MM/DD/YYYY" width="300px" name='dob'></datetime>-->
         <div class="el-row"> 
             <button v-for="c in clinics" 
@@ -39,9 +38,8 @@
                             :row-height="30"
                             :is-draggable="false"
                             :is-resizable="false"
-                            :is-mirrored="false"
                             :vertical-compact="true"
-                            :margin="[-1, -1]"
+                            :margin="[-2, -1]"
                             :use-css-transforms="true"
                         >
                             <grid-item v-for="(item, index) in hdlayout"
@@ -65,19 +63,19 @@
                             :row-height="30"
                             :is-draggable="false"
                             :is-resizable="false"
-                            :is-mirrored="false"
                             :vertical-compact="true"
-                            :margin="[-1, -1]"
+                            :margin="[ -2 , -1]"
                             :use-css-transforms="true"
                         >
-                            <grid-item @click.native="onClick($event, item)" v-for="(item, index) in conlayout"
+                            <grid-item @click.native="onClick($event, item, index)" v-for="(item, index) in conlayout"
                                     :x="item.x"
                                     :y="item.y"
                                     :w="item.w"
                                     :h="item.h"
                                     :i="item.i"
                                     :key="index  + '-separator'"
-                                    :static="item.static"
+                                    :static="item.static"                                   
+                                    :class="{before: index === activeColor}"
                                     >
                                 <span class="text">{{item.i}}</span>
                             </grid-item>
@@ -121,6 +119,17 @@
         background: #eee;
     }
 
+    .contentdiv{
+        .vue-grid-item.static {
+            background: #ccc;           
+        }
+        .vue-grid-item.before{
+            background:#649ABA;
+        }
+        .vue-grid-item.activecol{
+            background:#E891DC;
+        }
+    }
     .layoutJSON {
         background: #ddd;
         border: 1px solid black;
@@ -146,6 +155,7 @@
     .vue-grid-item {
         display: table;
         background: white;
+
     }
 
     .vue-grid-item:not(.vue-grid-placeholder) {
@@ -163,13 +173,12 @@
         //background: #ccc;
             background: rgb(0, 176, 240);
         }
-    }
-
-    .contentdiv{
-        .vue-grid-item.static {
-            background: #ccc;           
+                .vue-grid-item.before {
+        //background: #ccc;
+            background: red;
         }
     }
+
     .vue-grid-item .text {
         font-size: 12px;
         text-align: center;

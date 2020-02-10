@@ -23,7 +23,7 @@
                     <div>生年月日 : {{user._id}}</div>
                     <div>電話番号 : {{user.pwd}}</div>
                     <div>予約ルー卜 : {{user.inCnt}}</div>
-                    <div>備考 : {{user.pwd}}</div>
+                    <div>備考:{{user.pwd}}</div>
                 </div>
             </div>
             <div class="modal-footer">

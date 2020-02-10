@@ -6,174 +6,163 @@
             </div>
             <div class="modal-body">                
                 <form class="update">
+                    <input type="hidden" name="_token" :value="csrf">
                     <div class="row">
                         <label class="col-sm-3 col-form-label">予約ID:</label>
-                        <div class="col-sm-8">
-                            <p>010-XXXXXXXXXXXXX</p>
+                        <div class="col-sm-8" >
+                            <p>{{item.order_id==0?'':item.order_id}}</p>
                         </div>
                     </div>
                     <div class="row">
-                        <label for="" class="col-sm-3 col-form-label">施術日:</label>
+                        <label class="col-sm-3 col-form-label">施術日:</label>
                         <div class="col-sm-8">
-                            <p>{{data.date}}</p>
+                            <p>{{item.date}}</p>
                         </div>
                     </div>
                     <div class="row">
                         <label for="hours" class="col-sm-3 col-form-label">時間:</label>
-                        <div class="col-sm-3">
-                            <input type="text" class="form-control form-control-sm" placeholder="10:00">
+                        <div class="col-sm-8">
+                            <p>{{item.time}}</p>
                         </div>
-                        <label for="" class="col-sm-1 col-form-label">~</label>
-                        <div class="col-sm-3">
-                            <input type="text" class="form-control form-control-sm" placeholder="12:00">
-                        </div>
+
                     </div>
                     <div class="row">
-                        <label for="" class="col-sm-3 col-form-label">院名:</label>
+                        <label class="col-sm-3 col-form-label">院名:</label>
                         <div class="col-sm-8">
-                            <p>{{data.clinic}}</p>
+                            <p>{{item.clinic}}</p>
                         </div>
                     </div>
+                    
                     <fieldset class="form-group" style="margin-bottom:0px;">
                         <div class="row">
-                            <label for="" class="col-sm-3 col-form-label">区分:</label>
-                            <div class="col-sm-8">
+                            <label class="col-sm-3 col-form-label">区分:</label>
+                            <div class="col-sm-8" style="padding-top: 7px;">
                                 <div class="form-check form-check-inline">
-                                <input v-model="form.is_new" class="form-check-input" type="radio" name="in_new" id="0" value="新規">
-                                <label class="form-check-label" for="1" >新規</label>
+                                    <input class="form-check-input" type="radio" name="order_type" value="新規" v-model="form.order_type">
+                                    <label class="form-check-label">新規</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                <input v-model="form.is_new" class="form-check-input" type="radio" name="in_new" id="1" value="再診">
-                                <label class="form-check-label" for="inlineRadio2">再診</label>
+                                    <input class="form-check-input" type="radio" name="order_type" value="再診"  v-model="form.order_type" checked>
+                                    <label class="form-check-label">再診</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                <input v-model="form.is_new" class="form-check-input" type="radio" name="in_new" id="2" value="カウンセリング" disabled>
-                                <label class="form-check-label" for="inlineRadio3">カウンセリング</label>
+                                    <input class="form-check-input" type="radio" name="order_type" value="カウンセリング" v-model="form.order_type">
+                                    <label class="form-check-label">カウンセリング</label>
                                 </div>
                             </div>
                         </div>
                     </fieldset>
                     <div class="row">
-                        <label for="" class="col-sm-3 col-form-label">施術者:</label>
-                        <div class="col-sm-8">
-                            <select class="form-control form-control-sm" id="exampleFormControlSelect1">
-                                <option>{{data.staff_rank}}</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                            </select>
+                        <label class="col-sm-3 col-form-label">施術者:</label>
+                        <div class="col-sm-8" style="padding-top: 7px;">
+                            <!-- <select v-model="staff_rank" class="form-control form-control-sm" data-width="fit" id="exampleFormControlSelect1">
+                                <option disabled value="">Please select one</option>
+                                <option v-for="n in sr_list" :key="n.id" v-bind:value="n.name">{{n.name}}</option>
+                            </select> -->
+
                         </div>
                     </div>
                     <fieldset class="form-group" style="margin-bottom:0px;">
                         <div class="row">
-                            <label for="" class="col-sm-3 col-form-label">指名:</label>
-                            <div class="col-sm-8">
+                            <label class="col-sm-3 col-form-label">指名:</label>
+                            <div class="col-sm-8" style="padding-top: 7px;">
                                 <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="3" value="あり">
-                                <label class="form-check-label" for="3">あり</label>
+                                <input class="form-check-input" type="radio" name="stuff_choosed" value="あり" v-model="form.stuff_choosed">
+                                <label class="form-check-label">あり</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="4" value="なし">
-                                <label class="form-check-label" for="4">なし</label>
+                                <input class="form-check-input" type="radio" name="stuff_choosed"  value="なし" v-model="form.stuff_choosed">
+                                <label class="form-check-label">なし</label>
                                 </div>
                             </div>
                         </div>
                     </fieldset>
                     <div class="row">
-                        <label for="" class="col-sm-3 col-form-label">メニュー:</label>
-                        <div class="col-sm-8">
-                            <select class="form-control form-control-sm" id="exampleFormControlSelect1">
-                                <option>アイブロウ２回 2/2</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
+                        <label class="col-sm-3 col-form-label">メニュー:</label>
+                        <div class="col-sm-8"  style="padding-top: 7px;">
+                            <select v-model="form.menu_id" class="custom-select custom-select-sm form-control-sm" >
+                                <option disabled value="">Please select one</option>
+                                <option v-for="m in menus" :key="m.id" v-bind:value="m.id">{{m.name}}</option>
                             </select>
                         </div>
                     </div>
                     <div class="row">
-                        <label for="" class="col-sm-3 col-form-label" style="letter-spacing: -1.8px;">カウンセラー:</label>
-                        <div class="col-sm-8">
-                            <select class="form-control form-control-sm" id="exampleFormControlSelect1">
-                                <option>09:20〜10:00 加野</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
+                        <label class="col-sm-3 col-form-label" style="letter-spacing: -1.8px;">カウンセラー:</label>
+                        <div class="col-sm-8" style="padding-top: 7px;"  v-show="isShow(form.order_type)">
+                            <select v-model="form.counselor_id" class="custom-select custom-select-sm form-control-sm">
+                                <option disabled value="">Please select one</option>
+                                <option v-for="c in counselors" :key="c.id" v-bind:value="c.id">{{c.full_name}}</option>                                                                                                                       
                             </select>
                         </div>
                     </div>
                     <br>
                     <div class="row">
-                        <label for="hours" class="col-sm-3 col-form-label">お客様各:</label>
+                        <label class="col-sm-3 col-form-label">お客様各:</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control form-control-sm" placeholder="プレミアム 花子">
+                            <input v-model="form.first_name" type="text" class="form-control form-control-sm" placeholder="お客様名を入力" :class="{'is-invalid':form.errors.has('first_name')}">
                         </div>
                     </div>
                     <div class="row">
-                        <label for="hours" class="col-sm-3 col-form-label">フリガナ:</label>
+                        <label class="col-sm-3 col-form-label">フリガナ:</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control form-control-sm" id="time" placeholder="プレミアム ハナコ">
+                            <input v-model="form.last_name" type="text" class="form-control form-control-sm" id="time" placeholder="フリガナを入力" :class="{'is-invalid':form.errors.has('last_name')}">
                         </div>
                     </div>
                     <div class="row">
-                        <label for="hours" class="col-sm-3 col-form-label">生年月日:</label>
+                        <label class="col-sm-3 col-form-label">生年月日:</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control form-control-sm" placeholder="2002/6/8">
+                            <input v-model="form.birthday" type="date" class="form-control form-control-sm" placeholder="生年月日" 
+                            :class="{'is-invalid': form.errors.has('birthday')}">
                         </div>
                     </div>
                     <div class="row">
-                        <label for="hours" class="col-sm-3 col-form-label">電話番号:</label>
+                        <label class="col-sm-3 col-form-label">電話番号:</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control form-control-sm" placeholder="080-xxx-xxxx">
+                            <input v-model="form.phonenumber" type="text" class="form-control form-control-sm" placeholder="080-xxx-xxxx" :class="{'is-invalid':form.errors.has('phonenumber')}">
                         </div>
                     </div>
                     <div class="row">
-                        <label for="" class="col-sm-3 col-form-label">予約ルー卜:</label>
+                        <label class="col-sm-3 col-form-label">予約ルー卜:</label>
                         <div class="col-sm-8">
-                            <select class="form-control form-control-sm" id="exampleFormControlSelect1">
-                                <option>システム</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
+                            <select v-model="form.order_route" class="custom-select custom-select-sm form-control-sm">
+                                <option disabled value="">Please select one</option>
+                                <option v-for="(r,index) in routes" :key="index" v-bind:value="r">{{r}}</option>
                             </select>
                         </div>
                     </div>
                     <div>
-                        <label for="" class="col-sm-3 col-form-label">経験:</label>
+                        <label class="col-sm-3 col-form-label">経験:</label>
                     </div>
                     <div class="experience">
                         <div>
-                            <label for="" class="col-sm-8 col-form-label">妊娠・授乳・不妊治療 :</label>
+                            <label class="col-sm-8 col-form-label">妊娠・授乳・不妊治療 :</label>
                         </div> 
                         <div>
-                            <label for="" class="col-sm-8 col-form-label">通院歴・薬 :</label>
+                            <label class="col-sm-8 col-form-label">通院歴・薬 :</label>
                         </div>
                         <div>
-                            <label for="" class="col-sm-8 col-form-label">金アレ・アトピー・ケロイド確認 :</label>
+                            <label class="col-sm-8 col-form-label">金アレ・アトピー・ケロイド確認 :</label>
                         </div>
                         <div>
-                            <label for="" class="col-sm-8 col-form-label">眉ブリーチ・炎症・傷跡確認 :</label>
+                            <label class="col-sm-8 col-form-label">眉ブリーチ・炎症・傷跡確認 :</label>
                         </div>
                         <div>
-                            <label for="" class="col-sm-8 col-form-label">美容サービス・美容整形確認 :</label>
+                            <label class="col-sm-8 col-form-label">美容サービス・美容整形確認 :</label>
                         </div>
                         <div>
-                            <label for="" class="col-sm-8 col-form-label">料金・所要時間 :</label>
+                            <label class="col-sm-8 col-form-label">料金・所要時間 :</label>
                         </div>
                         <div>
-                            <label for="" class="col-sm-8 col-form-label">HP :</label>
+                            <label class="col-sm-8 col-form-label">HP :</label>
                         </div>                                                                                                         <div>
-                            <label for="" class="col-sm-8 col-form-label">キャンセル規約 :</label>
+                            <label class="col-sm-8 col-form-label">キャンセル規約 :</label>
                         </div>           
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <a href="#" data-dismiss="modal" class="btn">取消</a>
-                <a href="#" class="btn btn-primary" style="background:rgb(197, 224, 180); color:black">登録</a>
+                <a href="#" v-on:click="createCustomerInfo" class="btn btn-primary" style="background:rgb(197, 224, 180); color:black">登録</a>
             </div>
         </div>
     </div>
@@ -182,87 +171,78 @@
 <script>
 
     export default {
-        props:['data'],
+        props:['item','sr_list','menus','counselors'],
         data () {
             return {
-                tabbtns:['来院','会計','終了','キャンセル'],
-                selected:'来院',
-                users:{},
-                dialog: false,
-                userAges: [],
-                userLvs: [],
-                userAge: 0,
-                userLv: 0,
-                userName: '',
-                snackbar: false,
-                sbMsg: '',
-                putId: '',
-                changeMode:false,
+                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 form: new Form({
-                    id: '',
-                    name: ''
+                    order_type : '新規',
+                    stuff_choosed : 'あり',
+                    menu_id : '',
+                    counselor_id : '',
+                    first_name : '',
+                    last_name : '',
+                    birthday : '',
+                    phonenumber : '',
+                    order_route : 'システム',
+                    order_serial_id : '',
                 }),
+                routes:['システム','電話','Web','チャットボット'],
             }
         },
         mounted () {
-            for (let i = 10; i < 40; i++) this.userAges.push(i)
-            for (let i = 0; i < 4; i++) this.userLvs.push(i)
-            //this.getUsers()
+            console.log('modalupdateDlg mounted function');
+        },
+        created() {
+            console.log('modalupdateDlg Component created.');
+            this.loadInfo();            
         },
         methods: {
-            changeBtnClick(){
-                this.changeMode = false;
-                this.form.reset();
-                $('#modalShowUpdate').modal('show');
-            }, 
-            getUsers () {
-                this.$axios.get('manage/user')
-                    .then((r) => {
-                        this.users = r.data.users
-                    })
-                    .catch((e) => {
-                    if (!e.response) this.$store.commit('pop', { msg: e.message, color: 'warning' })
-                    })
+            isShow: function(order_type){                
+                if(order_type =="再診")
+                    return false;
+                if (this.item.rank_name == 'T' || this.item.rank_name == 'NA')
+                    return false;
+                return true;
             },
-            putDialog (user) {
-                this.putId = user._id
-                this.dialog = true
-                this.userName = user.name
-                this.userLv = user.lv
-                this.userAge = user.age
-            },
-            putUser () {
-                this.dialog = false
-                this.$axios.put(`manage/user/${this.putId}`, {
-                    name: this.userName, lv: this.userLv, age: this.userAge
-                })
-                .then((r) => {
-                this.$store.commit('pop', { msg: '사용자 수정 완료', color: 'success' })
-                this.getUsers()
-                })
-                .catch((e) => {
-                if (!e.response) this.$store.commit('pop', { msg: e.message, color: 'warning' })
-                })
-            },
-            delUser (id) {
-                this.$axios.delete(`manage/user/${id}`)
-                    .then((r) => {
-                    this.$store.commit('pop', { msg: '사용자 삭제 완료', color: 'success' })
-                    this.getUsers()
+            createCustomerInfo(){
+                this.form['item'] = this.item;
+                this.form.post('v1/order-create')
+                    .then((result)=>{
+                        toast.fire({
+                            icon: "success",
+                            title: "A Customer was created successfully."
+                        });
+                        $('#modalUpdateDlg').modal('hide');
+                        this.$emit('orderCreated', result.data);
                     })
-                    .catch((e) => {
-                    if (!e.response) this.$store.commit('pop', { msg: e.message, color: 'warning' })
-                    })
+                    .catch(()=>{
+                        console.log('create error');
+                    });  
             },
-            pop (msg) {
-                this.snackbar = true
-                this.sbMsg = msg
+            loadInfo(){
+                this.form.order_type = this.item.order_type;
+                this.form.stuff_choosed = this.item.staff_choosed;
+                this.form.menu_id = this.item.menu_id;
+                this.form.counselor_id = this.item.counselor_id;
+                this.form.first_name = this.item.customer_first_name;
+                this.form.last_name = this.item.customer_last_name;
+                this.form.birthday = this.item.customer_birthday;
+                this.form.phonenumber = this.item.customer_phonenumber;
+                this.form.order_route = this.item.order_route;
+                this.form.order_serial_id = this.item.order_serial_id;
+                console.log(this.form);
+            },
+        },
+        watch:{
+            item: function(val){
+                console.log('watch...');
+                this.loadInfo();
             }
         }
     }
 </script>
 <style lang="scss">
-
     .container{
         padding-top:10px;
     }

@@ -3,32 +3,21 @@ import Datepicker from 'vuejs-datetimepicker';
 import Datetime from 'vue-datetime';
 import ModalInfoDlg from './ModalInfoDlg.vue';
 import ModalUpdateDlg from './ModalUpdateDlg.vue';
-var hdLayout = [
-    { "x": 0, "y": 0, "w": 2, "h": 2, "i": "", "static": true },
 
-    { "x": 2, "y": 0, "w": 2, "h": 1, "i": "", "static": true },
-    { "x": 4, "y": 0, "w": 2, "h": 1, "i": "", "static": true },
-    { "x": 20, "y": 1, "w": 2, "h": 1, "i": "", static: true },
-];
-
-var timeLayout = [
-
-    { "x": 0, "y": 0, "w": 2, "h": 3, "i": "9:00", static: false },
-    { "x": 0, "y": 3, "w": 2, "h": 3, "i": "10:00", static: false },
-    { "x": 0, "y": 6, "w": 2, "h": 3, "i": "11:00", static: false },
-    { "x": 0, "y": 9, "w": 2, "h": 3, "i": "12:00", static: false },
-    { "x": 0, "y": 12, "w": 2, "h": 3, "i": "13:00", static: false },
-    { "x": 0, "y": 15, "w": 2, "h": 3, "i": "14:00", static: false },
-    { "x": 0, "y": 18, "w": 2, "h": 3, "i": "15:00", static: false },
-    { "x": 0, "y": 21, "w": 2, "h": 3, "i": "16:00", static: false },
-    { "x": 0, "y": 24, "w": 2, "h": 3, "i": "17:00", static: false },
-    { "x": 0, "y": 27, "w": 2, "h": 3, "i": "18:00", static: false },
-    { "x": 0, "y": 30, "w": 2, "h": 3, "i": "19:00", static: false },
-
-    //{ "x": 6, "y": 0, "w": 2, "h": 3, "i": "【新規】\t010-XXXXXXXXプレミアムハナコ指名ありアイブロウ2回 1/2カウセ9:20～10:00加野", static: false }, 
-];
+window.Bus = new Vue({});
+window.store = {
+    orderdata: {
+        reserve_id: '',
+        order_type: '',
+        staff_rank: '',
+        appoint: '',
+        menu: '',
+        counselor_info: '',
+    }
+}
 
 export default {
+
     components: {
         GridLayout: VueGridLayout.GridLayout,
         GridItem: VueGridLayout.GridItem,
@@ -42,53 +31,74 @@ export default {
             hdlayout: [], //JSON.parse(JSON.stringify(hdLayout)),
             conlayout: [], //JSON.parse(JSON.stringify([])),
             timelayout: [],
-            draggable: false,
-            resizable: false,
-            mirrored: false,
-            responsive: true,
-            preventCollision: false,
+            activeColor: '',
             rowHeight: 30,
             colNum: 33,
             index: 0,
-            editMode: false,
             form: new Form({
                 id: '',
                 name: ''
             }),
             clinics: {},
             staffs: {},
+            staff_rank_list: {},
+            menus: {},
+            counselors: {},
             current_date: '',
             selected_clinic_id: 0,
             selected_clinic_name: '',
             message: "Welcome, Please Wait....",
-            senddata: {
+            staffInfo: {
                 date: '',
                 clinic: '',
                 time: '',
-                is_new: '',
+                order_type: '',
                 staff_rank: '',
-                techname: '',
-            }
+                staff_name:'',
+            },
+            item:{},
         }
     },
     mounted() {
         console.log('Component mounted.');
         this.index = this.conlayout.length;
+        $('#modalInfoDlg').on('hidden.bs.modal', function() {
+            $(".vue-grid-item").removeClass("before");
+        });
     },
     created() {
         console.log('Component created.');
         this.loadClinicList();
-        //this.loadStaffRanksList();
         this.current_date = this.formatDate(new Date());
     },
 
     methods: {
+        onOrderCreated: function(item){
+            console.log("onOrderCreated");
+            console.log(item);
+            this.conlayout.forEach(function(cell){
+                if (cell.x == item.x && cell.y == item.y){
+                    cell.i = item.i;
+                    cell.order_serial_id = item.order_serial_id;
+                    cell.order_history_id = item.order_history_id;
+                    cell.order_status = item.order_status;
+                    cell.order_type = item.order_type;
+                    cell.menu_id = item.menu_id;
+                    cell.menu_name = item.menu_name;
+                    cell.staff_choosed = item.staff_choosed;
+                    cell.customer_first_name = item.customer_first_name;
+                    cell.customer_last_name = item.customer_last_name;
+                    cell.customer_phonenumber = item.customer_phonenumber;
+                    cell.customer_birthday = item.customer_birthday;
+                    return false;
+                }
+            });
+
+        },
         callFunction: function() {
             var currentDate = new Date();
             console.log(currentDate);
             var currentDateWithFormat = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
-            console.log(currentDateWithFormat);
-
         },
         loadClinicList() {
             axios.get('api/clinic').
@@ -98,9 +108,13 @@ export default {
                 this.selected_clinic_name = this.clinics[0].name;
                 this.loadStaffRanksList();
             });
+            axios.get('api/menu').
+            then(({ data }) => {
+                this.menus = data.data;
+            });
         },
         loadStaffRanksList() {
-            axios.get('v1/reservation/staffs_ranks?clinic_id=' + this.selected_clinic_id).
+            axios.get('v1/reservation/staff_list?clinic_id=' + this.selected_clinic_id).
             then(({ data }) => {
                 this.staffs = data.staff_layout;
                 //this.timelayout = JSON.parse(JSON.stringify(timeLayout));                
@@ -109,7 +123,16 @@ export default {
                 }
                 this.hdlayout = JSON.parse(JSON.stringify(data.staff_layout));
                 this.conlayout = JSON.parse(JSON.stringify(data.content_layout));
-
+            });
+            axios.get('v1/reservation/staff_rank_list?clinic_id=' + this.selected_clinic_id).
+            then(({ data }) => {
+                this.staff_rank_list = data;
+                //console.log(this.staffInfo);
+            });
+            axios.get('v1/reservation/counselor_list?clinic_id=' + this.selected_clinic_id).
+            then(({ data }) => {
+                //console.log(data, 'counselor list');
+                this.counselors = data;
             });
         },
 
@@ -134,22 +157,29 @@ export default {
             this.loadStaffRanksList();
         },
 
-        onClick: function(event, item) {
-            console.log("click i=" + "(" + item.x + "," + item.y + ")");
+        onClick: function(event, item, index) {
+            console.log("Item Info");
+            console.log(item);
             if (item.selectable) {
-                this.senddata.date = this.current_date;
-                this.senddata.clinic = this.selected_clinic_name;
-                this.senddata.time = item.time;
-                this.senddata.is_new = item.is_new;
-                this.senddata.staff_rank = item.staff_rank;
-                console.log(this.senddata);
-                this.editMode = false;
-                this.form.reset();
-                $('#modalInfoDlg').modal('show');
+                $(event.currentTarget).addClass("before");
+                //this.activeColor = index;
+                // Here this variable is Reservation Vue component (Parent of modals)
+                this.item = item;
+                this.item['date'] = this.current_date;
+                if (item.order_history_id == 0){
+                    // New order creating
+                    
+                    this.changeMode = false;
+                    $('#modalUpdateDlg').modal('show');
+                } else {
+                    // order info and editing
+                    $('#modalInfoDlg').modal('show');
+                }
+                
+                //$('#modalUpdateDlg').modal('show');
             }
         },
         updateBtn: function() {
-            this.editMode = false;
             $('#modalShowUpdate').modal('show');
         },
         alertVal() {

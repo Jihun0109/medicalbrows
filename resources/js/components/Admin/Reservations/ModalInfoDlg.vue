@@ -19,20 +19,20 @@
             </div>
             <div class="modal-body" >
                 <div class="info">
-                    <div>予約ID : </div>
+                    <div>予約ID : {{data.order_serial_id}}</div>
                     <div>施術日 : {{data.date}}</div>
-                    <div>院名 : {{data.clinic}}</div>
+                    <div>院名 : {{data.clinic_name}}</div>
                     <div>時間 : {{data.time}}</div>
-                    <div>区分 : {{data.is_new}}</div>
-                    <div>施術者 : {{data.staff_rank}}</div>
-                    <div>指名 : {{data.techname}}</div>
-                    <div>メニュー : </div>
+                    <div>区分 : </div>
+                    <div>施術者 : {{data.staff_name}}</div>
+                    <div>指名 : {{data.staff_choosed}}</div>
+                    <div>メニュー : {{data.menu_name}}</div>
                     <div>カウンセラー : </div>
                     <br>
-                    <div>お客様各 : </div>
-                    <div>生年月日 : </div>
-                    <div>電話番号 : </div>
-                    <div>予約ルー卜 : </div>
+                    <div>お客様各 : {{data.customer_first_name}}</div>
+                    <div>生年月日 : {{data.customer_birthday}}</div>
+                    <div>電話番号 : {{data.customer_phonenumber}}</div>
+                    <div>予約ルー卜 : {{data.order_route}}</div>
                     <div>備考 : </div>
                     <div class="experience">
                         <div>経験 : </div>
@@ -66,77 +66,28 @@
             return {
                 tabbtns:['来院','会計','終了','キャンセル'],
                 selected:'来院',
-                users:{},
+                customer:{},
                 dialog: false,
-                userAges: [],
-                userLvs: [],
-                userAge: 0,
-                userLv: 0,
-                userName: '',
-                snackbar: false,
-                sbMsg: '',
-                putId: '',
                 changeMode:false,
-                form: new Form({
-                    id: '',
-                    name: ''
-                }),
+                updatedOrderInfo:store.orderdata,
             }
         },
         mounted () {
-            for (let i = 10; i < 40; i++) this.userAges.push(i)
-            for (let i = 0; i < 4; i++) this.userLvs.push(i)
             //this.getUsers()
+        },
+        created(){
+            Bus.$on('sendCustInfo',(customerData) =>{
+                this.customer = customerData;
+            });
         },
         methods: {
             changeBtnClick(){
                 this.changeMode = false;
-                this.form.reset();
+                console.log("Updating ...");
+                console.log(app.$refs.modalUpdateDlg);
+                app.$refs.modalUpdateDlg.loadInfo();
                 $('#modalShowUpdate').modal('show');
             }, 
-            getUsers () {
-                this.$axios.get('manage/user')
-                    .then((r) => {
-                        this.users = r.data.users
-                    })
-                    .catch((e) => {
-                    if (!e.response) this.$store.commit('pop', { msg: e.message, color: 'warning' })
-                    })
-            },
-            putDialog (user) {
-                this.putId = user._id
-                this.dialog = true
-                this.userName = user.name
-                this.userLv = user.lv
-                this.userAge = user.age
-            },
-            putUser () {
-                this.dialog = false
-                this.$axios.put(`manage/user/${this.putId}`, {
-                    name: this.userName, lv: this.userLv, age: this.userAge
-                })
-                .then((r) => {
-                this.$store.commit('pop', { msg: '사용자 수정 완료', color: 'success' })
-                this.getUsers()
-                })
-                .catch((e) => {
-                if (!e.response) this.$store.commit('pop', { msg: e.message, color: 'warning' })
-                })
-            },
-            delUser (id) {
-                this.$axios.delete(`manage/user/${id}`)
-                    .then((r) => {
-                    this.$store.commit('pop', { msg: '사용자 삭제 완료', color: 'success' })
-                    this.getUsers()
-                    })
-                    .catch((e) => {
-                    if (!e.response) this.$store.commit('pop', { msg: e.message, color: 'warning' })
-                    })
-            },
-            pop (msg) {
-                this.snackbar = true
-                this.sbMsg = msg
-            }
         }
     }
 </script>

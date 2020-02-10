@@ -2024,100 +2024,28 @@ __webpack_require__.r(__webpack_exports__);
     return {
       tabbtns: ['来院', '会計', '終了', 'キャンセル'],
       selected: '来院',
-      users: {},
+      customer: {},
       dialog: false,
-      userAges: [],
-      userLvs: [],
-      userAge: 0,
-      userLv: 0,
-      userName: '',
-      snackbar: false,
-      sbMsg: '',
-      putId: '',
       changeMode: false,
-      form: new Form({
-        id: '',
-        name: ''
-      })
+      updatedOrderInfo: store.orderdata
     };
   },
-  mounted: function mounted() {
-    for (var i = 10; i < 40; i++) {
-      this.userAges.push(i);
-    }
+  mounted: function mounted() {//this.getUsers()
+  },
+  created: function created() {
+    var _this = this;
 
-    for (var _i = 0; _i < 4; _i++) {
-      this.userLvs.push(_i);
-    } //this.getUsers()
-
+    Bus.$on('sendCustInfo', function (customerData) {
+      _this.customer = customerData;
+    });
   },
   methods: {
     changeBtnClick: function changeBtnClick() {
       this.changeMode = false;
-      this.form.reset();
+      console.log("Updating ...");
+      console.log(app.$refs.modalUpdateDlg);
+      app.$refs.modalUpdateDlg.loadInfo();
       $('#modalShowUpdate').modal('show');
-    },
-    getUsers: function getUsers() {
-      var _this = this;
-
-      this.$axios.get('manage/user').then(function (r) {
-        _this.users = r.data.users;
-      })["catch"](function (e) {
-        if (!e.response) _this.$store.commit('pop', {
-          msg: e.message,
-          color: 'warning'
-        });
-      });
-    },
-    putDialog: function putDialog(user) {
-      this.putId = user._id;
-      this.dialog = true;
-      this.userName = user.name;
-      this.userLv = user.lv;
-      this.userAge = user.age;
-    },
-    putUser: function putUser() {
-      var _this2 = this;
-
-      this.dialog = false;
-      this.$axios.put("manage/user/".concat(this.putId), {
-        name: this.userName,
-        lv: this.userLv,
-        age: this.userAge
-      }).then(function (r) {
-        _this2.$store.commit('pop', {
-          msg: '사용자 수정 완료',
-          color: 'success'
-        });
-
-        _this2.getUsers();
-      })["catch"](function (e) {
-        if (!e.response) _this2.$store.commit('pop', {
-          msg: e.message,
-          color: 'warning'
-        });
-      });
-    },
-    delUser: function delUser(id) {
-      var _this3 = this;
-
-      this.$axios["delete"]("manage/user/".concat(id)).then(function (r) {
-        _this3.$store.commit('pop', {
-          msg: '사용자 삭제 완료',
-          color: 'success'
-        });
-
-        _this3.getUsers();
-      })["catch"](function (e) {
-        if (!e.response) _this3.$store.commit('pop', {
-          msg: e.message,
-          color: 'warning'
-        });
-      });
-    },
-    pop: function pop(msg) {
-      this.snackbar = true;
-      this.sbMsg = msg;
     }
   }
 });
@@ -2303,117 +2231,73 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['data'],
+  props: ['item', 'sr_list', 'menus', 'counselors'],
   data: function data() {
     return {
-      tabbtns: ['来院', '会計', '終了', 'キャンセル'],
-      selected: '来院',
-      users: {},
-      dialog: false,
-      userAges: [],
-      userLvs: [],
-      userAge: 0,
-      userLv: 0,
-      userName: '',
-      snackbar: false,
-      sbMsg: '',
-      putId: '',
-      changeMode: false,
+      csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
       form: new Form({
-        id: '',
-        name: ''
-      })
+        order_type: '新規',
+        stuff_choosed: 'あり',
+        menu_id: '',
+        counselor_id: '',
+        first_name: '',
+        last_name: '',
+        birthday: '',
+        phonenumber: '',
+        order_route: 'システム',
+        order_serial_id: ''
+      }),
+      routes: ['システム', '電話', 'Web', 'チャットボット']
     };
   },
   mounted: function mounted() {
-    for (var i = 10; i < 40; i++) {
-      this.userAges.push(i);
-    }
-
-    for (var _i = 0; _i < 4; _i++) {
-      this.userLvs.push(_i);
-    } //this.getUsers()
-
+    console.log('modalupdateDlg mounted function');
+  },
+  created: function created() {
+    console.log('modalupdateDlg Component created.');
+    this.loadInfo();
   },
   methods: {
-    changeBtnClick: function changeBtnClick() {
-      this.changeMode = false;
-      this.form.reset();
-      $('#modalShowUpdate').modal('show');
+    isShow: function isShow(order_type) {
+      if (order_type == "再診") return false;
+      if (this.item.rank_name == 'T' || this.item.rank_name == 'NA') return false;
+      return true;
     },
-    getUsers: function getUsers() {
+    createCustomerInfo: function createCustomerInfo() {
       var _this = this;
 
-      this.$axios.get('manage/user').then(function (r) {
-        _this.users = r.data.users;
-      })["catch"](function (e) {
-        if (!e.response) _this.$store.commit('pop', {
-          msg: e.message,
-          color: 'warning'
+      this.form['item'] = this.item;
+      this.form.post('v1/order-create').then(function (result) {
+        toast.fire({
+          icon: "success",
+          title: "A Customer was created successfully."
         });
+        $('#modalUpdateDlg').modal('hide');
+
+        _this.$emit('orderCreated', result.data);
+      })["catch"](function () {
+        console.log('create error');
       });
     },
-    putDialog: function putDialog(user) {
-      this.putId = user._id;
-      this.dialog = true;
-      this.userName = user.name;
-      this.userLv = user.lv;
-      this.userAge = user.age;
-    },
-    putUser: function putUser() {
-      var _this2 = this;
-
-      this.dialog = false;
-      this.$axios.put("manage/user/".concat(this.putId), {
-        name: this.userName,
-        lv: this.userLv,
-        age: this.userAge
-      }).then(function (r) {
-        _this2.$store.commit('pop', {
-          msg: '사용자 수정 완료',
-          color: 'success'
-        });
-
-        _this2.getUsers();
-      })["catch"](function (e) {
-        if (!e.response) _this2.$store.commit('pop', {
-          msg: e.message,
-          color: 'warning'
-        });
-      });
-    },
-    delUser: function delUser(id) {
-      var _this3 = this;
-
-      this.$axios["delete"]("manage/user/".concat(id)).then(function (r) {
-        _this3.$store.commit('pop', {
-          msg: '사용자 삭제 완료',
-          color: 'success'
-        });
-
-        _this3.getUsers();
-      })["catch"](function (e) {
-        if (!e.response) _this3.$store.commit('pop', {
-          msg: e.message,
-          color: 'warning'
-        });
-      });
-    },
-    pop: function pop(msg) {
-      this.snackbar = true;
-      this.sbMsg = msg;
+    loadInfo: function loadInfo() {
+      this.form.order_type = this.item.order_type;
+      this.form.stuff_choosed = this.item.staff_choosed;
+      this.form.menu_id = this.item.menu_id;
+      this.form.counselor_id = this.item.counselor_id;
+      this.form.first_name = this.item.customer_first_name;
+      this.form.last_name = this.item.customer_last_name;
+      this.form.birthday = this.item.customer_birthday;
+      this.form.phonenumber = this.item.customer_phonenumber;
+      this.form.order_route = this.item.order_route;
+      this.form.order_serial_id = this.item.order_serial_id;
+      console.log(this.form);
+    }
+  },
+  watch: {
+    item: function item(val) {
+      console.log('watch...');
+      this.loadInfo();
     }
   }
 });
@@ -3787,57 +3671,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-$('#openBtn').click(function () {
-  $('#myModal').modal({
-    show: true
-  });
-});
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {};
@@ -4620,114 +4453,17 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var hdLayout = [{
-  "x": 0,
-  "y": 0,
-  "w": 2,
-  "h": 2,
-  "i": "",
-  "static": true
-}, {
-  "x": 2,
-  "y": 0,
-  "w": 2,
-  "h": 1,
-  "i": "",
-  "static": true
-}, {
-  "x": 4,
-  "y": 0,
-  "w": 2,
-  "h": 1,
-  "i": "",
-  "static": true
-}, {
-  "x": 20,
-  "y": 1,
-  "w": 2,
-  "h": 1,
-  "i": "",
-  "static": true
-}];
-var timeLayout = [{
-  "x": 0,
-  "y": 0,
-  "w": 2,
-  "h": 3,
-  "i": "9:00",
-  "static": false
-}, {
-  "x": 0,
-  "y": 3,
-  "w": 2,
-  "h": 3,
-  "i": "10:00",
-  "static": false
-}, {
-  "x": 0,
-  "y": 6,
-  "w": 2,
-  "h": 3,
-  "i": "11:00",
-  "static": false
-}, {
-  "x": 0,
-  "y": 9,
-  "w": 2,
-  "h": 3,
-  "i": "12:00",
-  "static": false
-}, {
-  "x": 0,
-  "y": 12,
-  "w": 2,
-  "h": 3,
-  "i": "13:00",
-  "static": false
-}, {
-  "x": 0,
-  "y": 15,
-  "w": 2,
-  "h": 3,
-  "i": "14:00",
-  "static": false
-}, {
-  "x": 0,
-  "y": 18,
-  "w": 2,
-  "h": 3,
-  "i": "15:00",
-  "static": false
-}, {
-  "x": 0,
-  "y": 21,
-  "w": 2,
-  "h": 3,
-  "i": "16:00",
-  "static": false
-}, {
-  "x": 0,
-  "y": 24,
-  "w": 2,
-  "h": 3,
-  "i": "17:00",
-  "static": false
-}, {
-  "x": 0,
-  "y": 27,
-  "w": 2,
-  "h": 3,
-  "i": "18:00",
-  "static": false
-}, {
-  "x": 0,
-  "y": 30,
-  "w": 2,
-  "h": 3,
-  "i": "19:00",
-  "static": false
-} //{ "x": 6, "y": 0, "w": 2, "h": 3, "i": "【新規】\t010-XXXXXXXXプレミアムハナコ指名ありアイブロウ2回 1/2カウセ9:20～10:00加野", static: false }, 
-];
+window.Bus = new Vue({});
+window.store = {
+  orderdata: {
+    reserve_id: '',
+    order_type: '',
+    staff_rank: '',
+    appoint: '',
+    menu: '',
+    counselor_info: ''
+  }
+};
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     GridLayout: vue_grid_layout__WEBPACK_IMPORTED_MODULE_0___default.a.GridLayout,
@@ -4744,51 +4480,72 @@ var timeLayout = [{
       conlayout: [],
       //JSON.parse(JSON.stringify([])),
       timelayout: [],
-      draggable: false,
-      resizable: false,
-      mirrored: false,
-      responsive: true,
-      preventCollision: false,
+      activeColor: '',
       rowHeight: 30,
       colNum: 33,
       index: 0,
-      editMode: false,
       form: new Form({
         id: '',
         name: ''
       }),
       clinics: {},
       staffs: {},
+      staff_rank_list: {},
+      menus: {},
+      counselors: {},
       current_date: '',
       selected_clinic_id: 0,
       selected_clinic_name: '',
       message: "Welcome, Please Wait....",
-      senddata: {
+      staffInfo: {
         date: '',
         clinic: '',
         time: '',
-        is_new: '',
+        order_type: '',
         staff_rank: '',
-        techname: ''
-      }
+        staff_name: ''
+      },
+      item: {}
     };
   },
   mounted: function mounted() {
     console.log('Component mounted.');
     this.index = this.conlayout.length;
+    $('#modalInfoDlg').on('hidden.bs.modal', function () {
+      $(".vue-grid-item").removeClass("before");
+    });
   },
   created: function created() {
     console.log('Component created.');
-    this.loadClinicList(); //this.loadStaffRanksList();
-
+    this.loadClinicList();
     this.current_date = this.formatDate(new Date());
   },
   methods: {
+    onOrderCreated: function onOrderCreated(item) {
+      console.log("onOrderCreated");
+      console.log(item);
+      this.conlayout.forEach(function (cell) {
+        if (cell.x == item.x && cell.y == item.y) {
+          cell.i = item.i;
+          cell.order_serial_id = item.order_serial_id;
+          cell.order_history_id = item.order_history_id;
+          cell.order_status = item.order_status;
+          cell.order_type = item.order_type;
+          cell.menu_id = item.menu_id;
+          cell.menu_name = item.menu_name;
+          cell.staff_choosed = item.staff_choosed;
+          cell.customer_first_name = item.customer_first_name;
+          cell.customer_last_name = item.customer_last_name;
+          cell.customer_phonenumber = item.customer_phonenumber;
+          cell.customer_birthday = item.customer_birthday;
+          return false;
+        }
+      });
+    },
     callFunction: function callFunction() {
       var currentDate = new Date();
       console.log(currentDate);
       var currentDateWithFormat = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
-      console.log(currentDateWithFormat);
     },
     loadClinicList: function loadClinicList() {
       var _this = this;
@@ -4801,12 +4558,16 @@ var timeLayout = [{
 
         _this.loadStaffRanksList();
       });
+      axios.get('api/menu').then(function (_ref2) {
+        var data = _ref2.data;
+        _this.menus = data.data;
+      });
     },
     loadStaffRanksList: function loadStaffRanksList() {
       var _this2 = this;
 
-      axios.get('v1/reservation/staffs_ranks?clinic_id=' + this.selected_clinic_id).then(function (_ref2) {
-        var data = _ref2.data;
+      axios.get('v1/reservation/staff_list?clinic_id=' + this.selected_clinic_id).then(function (_ref3) {
+        var data = _ref3.data;
         _this2.staffs = data.staff_layout; //this.timelayout = JSON.parse(JSON.stringify(timeLayout));                
 
         if (data.count > 10) {
@@ -4815,6 +4576,15 @@ var timeLayout = [{
 
         _this2.hdlayout = JSON.parse(JSON.stringify(data.staff_layout));
         _this2.conlayout = JSON.parse(JSON.stringify(data.content_layout));
+      });
+      axios.get('v1/reservation/staff_rank_list?clinic_id=' + this.selected_clinic_id).then(function (_ref4) {
+        var data = _ref4.data;
+        _this2.staff_rank_list = data; //console.log(this.staffInfo);
+      });
+      axios.get('v1/reservation/counselor_list?clinic_id=' + this.selected_clinic_id).then(function (_ref5) {
+        var data = _ref5.data;
+        //console.log(data, 'counselor list');
+        _this2.counselors = data;
       });
     },
     formatDate: function formatDate(dt) {
@@ -4835,23 +4605,29 @@ var timeLayout = [{
       this.selected_clinic_name = clinic.name;
       this.loadStaffRanksList();
     },
-    onClick: function onClick(event, item) {
-      console.log("click i=" + "(" + item.x + "," + item.y + ")");
+    onClick: function onClick(event, item, index) {
+      console.log("Item Info");
+      console.log(item);
 
       if (item.selectable) {
-        this.senddata.date = this.current_date;
-        this.senddata.clinic = this.selected_clinic_name;
-        this.senddata.time = item.time;
-        this.senddata.is_new = item.is_new;
-        this.senddata.staff_rank = item.staff_rank;
-        console.log(this.senddata);
-        this.editMode = false;
-        this.form.reset();
-        $('#modalInfoDlg').modal('show');
+        $(event.currentTarget).addClass("before"); //this.activeColor = index;
+        // Here this variable is Reservation Vue component (Parent of modals)
+
+        this.item = item;
+        this.item['date'] = this.current_date;
+
+        if (item.order_history_id == 0) {
+          // New order creating
+          this.changeMode = false;
+          $('#modalUpdateDlg').modal('show');
+        } else {
+          // order info and editing
+          $('#modalInfoDlg').modal('show');
+        } //$('#modalUpdateDlg').modal('show');
+
       }
     },
     updateBtn: function updateBtn() {
-      this.editMode = false;
       $('#modalShowUpdate').modal('show');
     },
     alertVal: function alertVal() {
@@ -9472,7 +9248,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, "#app-container {\n  width: 100%;\n  margin-top: 10px;\n}\n#calendar {\n  margin: 0 0px 20px 20px;\n}\n.tab-btn {\n  padding: 6px 10px;\n  background: #ffffff;\n  cursor: pointer;\n  margin-bottom: 3px;\n  margin-left: 3px;\n  border: 1px solid #cccccc;\n  outline: none;\n}\n.active {\n  background: #1bb9af;\n}\n.vue-grid-layout {\n  background: #eee;\n}\n.layoutJSON {\n  background: #ddd;\n  border: 1px solid black;\n  margin-top: 10px;\n  padding: 10px;\n}\n.eventsJSON {\n  background: #ddd;\n  border: 1px solid black;\n  margin-top: 10px;\n  padding: 10px;\n  height: 100px;\n  overflow-y: scroll;\n}\n.columns {\n  -moz-columns: 120px;\n  -webkit-columns: 120px;\n  columns: 120px;\n}\n.vue-grid-item {\n  display: table;\n  background: white;\n}\n.vue-grid-item:not(.vue-grid-placeholder) {\n  /*background: #ccc;*/\n  border: 1px solid black;\n}\n.vue-grid-item.resizing {\n  background: #00b0f0;\n  opacity: 0.9;\n}\n.headerdiv .vue-grid-item.static {\n  background: #00b0f0;\n}\n.contentdiv .vue-grid-item.static {\n  background: #ccc;\n}\n.vue-grid-item .text {\n  font-size: 12px;\n  text-align: center;\n  /*position: absolute;*/\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  margin: auto;\n  height: 100%;\n  width: 100%;\n  display: table-cell;\n  vertical-align: middle;\n}\n.vue-grid-item .no-drag {\n  height: 100%;\n  width: 100%;\n}\n.vue-grid-item .minMax {\n  font-size: 12px;\n}\n.vue-grid-item .add {\n  cursor: pointer;\n}", ""]);
+exports.push([module.i, "#app-container {\n  width: 100%;\n  margin-top: 10px;\n}\n#calendar {\n  margin: 0 0px 20px 20px;\n}\n.tab-btn {\n  padding: 6px 10px;\n  background: #ffffff;\n  cursor: pointer;\n  margin-bottom: 3px;\n  margin-left: 3px;\n  border: 1px solid #cccccc;\n  outline: none;\n}\n.active {\n  background: #1bb9af;\n}\n.vue-grid-layout {\n  background: #eee;\n}\n.contentdiv .vue-grid-item.static {\n  background: #ccc;\n}\n.contentdiv .vue-grid-item.before {\n  background: #649ABA;\n}\n.contentdiv .vue-grid-item.activecol {\n  background: #E891DC;\n}\n.layoutJSON {\n  background: #ddd;\n  border: 1px solid black;\n  margin-top: 10px;\n  padding: 10px;\n}\n.eventsJSON {\n  background: #ddd;\n  border: 1px solid black;\n  margin-top: 10px;\n  padding: 10px;\n  height: 100px;\n  overflow-y: scroll;\n}\n.columns {\n  -moz-columns: 120px;\n  -webkit-columns: 120px;\n  columns: 120px;\n}\n.vue-grid-item {\n  display: table;\n  background: white;\n}\n.vue-grid-item:not(.vue-grid-placeholder) {\n  /*background: #ccc;*/\n  border: 1px solid black;\n}\n.vue-grid-item.resizing {\n  background: #00b0f0;\n  opacity: 0.9;\n}\n.headerdiv .vue-grid-item.static {\n  background: #00b0f0;\n}\n.headerdiv .vue-grid-item.before {\n  background: red;\n}\n.vue-grid-item .text {\n  font-size: 12px;\n  text-align: center;\n  /*position: absolute;*/\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  margin: auto;\n  height: 100%;\n  width: 100%;\n  display: table-cell;\n  vertical-align: middle;\n}\n.vue-grid-item .no-drag {\n  height: 100%;\n  width: 100%;\n}\n.vue-grid-item .minMax {\n  font-size: 12px;\n}\n.vue-grid-item .add {\n  cursor: pointer;\n}", ""]);
 
 // exports
 
@@ -91626,33 +91402,39 @@ var render = function() {
         _vm._v(" "),
         _c("div", { staticClass: "modal-body" }, [
           _c("div", { staticClass: "info" }, [
-            _c("div", [_vm._v("予約ID : ")]),
+            _c("div", [_vm._v("予約ID : " + _vm._s(_vm.data.order_serial_id))]),
             _vm._v(" "),
             _c("div", [_vm._v("施術日 : " + _vm._s(_vm.data.date))]),
             _vm._v(" "),
-            _c("div", [_vm._v("院名 : " + _vm._s(_vm.data.clinic))]),
+            _c("div", [_vm._v("院名 : " + _vm._s(_vm.data.clinic_name))]),
             _vm._v(" "),
             _c("div", [_vm._v("時間 : " + _vm._s(_vm.data.time))]),
             _vm._v(" "),
-            _c("div", [_vm._v("区分 : " + _vm._s(_vm.data.is_new))]),
+            _c("div", [_vm._v("区分 : ")]),
             _vm._v(" "),
-            _c("div", [_vm._v("施術者 : " + _vm._s(_vm.data.staff_rank))]),
+            _c("div", [_vm._v("施術者 : " + _vm._s(_vm.data.staff_name))]),
             _vm._v(" "),
-            _c("div", [_vm._v("指名 : " + _vm._s(_vm.data.techname))]),
+            _c("div", [_vm._v("指名 : " + _vm._s(_vm.data.staff_choosed))]),
             _vm._v(" "),
-            _c("div", [_vm._v("メニュー : ")]),
+            _c("div", [_vm._v("メニュー : " + _vm._s(_vm.data.menu_name))]),
             _vm._v(" "),
             _c("div", [_vm._v("カウンセラー : ")]),
             _vm._v(" "),
             _c("br"),
             _vm._v(" "),
-            _c("div", [_vm._v("お客様各 : ")]),
+            _c("div", [
+              _vm._v("お客様各 : " + _vm._s(_vm.data.customer_first_name))
+            ]),
             _vm._v(" "),
-            _c("div", [_vm._v("生年月日 : ")]),
+            _c("div", [
+              _vm._v("生年月日 : " + _vm._s(_vm.data.customer_birthday))
+            ]),
             _vm._v(" "),
-            _c("div", [_vm._v("電話番号 : ")]),
+            _c("div", [
+              _vm._v("電話番号 : " + _vm._s(_vm.data.customer_phonenumber))
+            ]),
             _vm._v(" "),
-            _c("div", [_vm._v("予約ルー卜 : ")]),
+            _c("div", [_vm._v("予約ルー卜 : " + _vm._s(_vm.data.order_route))]),
             _vm._v(" "),
             _c("div", [_vm._v("備考 : ")]),
             _vm._v(" "),
@@ -91787,31 +91569,57 @@ var render = function() {
         _vm._v(" "),
         _c("div", { staticClass: "modal-body" }, [
           _c("form", { staticClass: "update" }, [
-            _vm._m(1),
+            _c("input", {
+              attrs: { type: "hidden", name: "_token" },
+              domProps: { value: _vm.csrf }
+            }),
             _vm._v(" "),
             _c("div", { staticClass: "row" }, [
-              _c(
-                "label",
-                { staticClass: "col-sm-3 col-form-label", attrs: { for: "" } },
-                [_vm._v("施術日:")]
-              ),
+              _c("label", { staticClass: "col-sm-3 col-form-label" }, [
+                _vm._v("予約ID:")
+              ]),
               _vm._v(" "),
               _c("div", { staticClass: "col-sm-8" }, [
-                _c("p", [_vm._v(_vm._s(_vm.data.date))])
+                _c("p", [
+                  _vm._v(
+                    _vm._s(_vm.item.order_id == 0 ? "" : _vm.item.order_id)
+                  )
+                ])
               ])
             ]),
             _vm._v(" "),
-            _vm._m(2),
+            _c("div", { staticClass: "row" }, [
+              _c("label", { staticClass: "col-sm-3 col-form-label" }, [
+                _vm._v("施術日:")
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-sm-8" }, [
+                _c("p", [_vm._v(_vm._s(_vm.item.date))])
+              ])
+            ]),
             _vm._v(" "),
             _c("div", { staticClass: "row" }, [
               _c(
                 "label",
-                { staticClass: "col-sm-3 col-form-label", attrs: { for: "" } },
-                [_vm._v("院名:")]
+                {
+                  staticClass: "col-sm-3 col-form-label",
+                  attrs: { for: "hours" }
+                },
+                [_vm._v("時間:")]
               ),
               _vm._v(" "),
               _c("div", { staticClass: "col-sm-8" }, [
-                _c("p", [_vm._v(_vm._s(_vm.data.clinic))])
+                _c("p", [_vm._v(_vm._s(_vm.item.time))])
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "row" }, [
+              _c("label", { staticClass: "col-sm-3 col-form-label" }, [
+                _vm._v("院名:")
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-sm-8" }, [
+                _c("p", [_vm._v(_vm._s(_vm.item.clinic))])
               ])
             ]),
             _vm._v(" "),
@@ -91823,186 +91631,594 @@ var render = function() {
               },
               [
                 _c("div", { staticClass: "row" }, [
-                  _c(
-                    "label",
-                    {
-                      staticClass: "col-sm-3 col-form-label",
-                      attrs: { for: "" }
-                    },
-                    [_vm._v("区分:")]
-                  ),
+                  _c("label", { staticClass: "col-sm-3 col-form-label" }, [
+                    _vm._v("区分:")
+                  ]),
                   _vm._v(" "),
-                  _c("div", { staticClass: "col-sm-8" }, [
-                    _c("div", { staticClass: "form-check form-check-inline" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.form.is_new,
-                            expression: "form.is_new"
-                          }
-                        ],
-                        staticClass: "form-check-input",
-                        attrs: {
-                          type: "radio",
-                          name: "in_new",
-                          id: "0",
-                          value: "新規"
-                        },
-                        domProps: { checked: _vm._q(_vm.form.is_new, "新規") },
-                        on: {
-                          change: function($event) {
-                            return _vm.$set(_vm.form, "is_new", "新規")
-                          }
-                        }
-                      }),
+                  _c(
+                    "div",
+                    {
+                      staticClass: "col-sm-8",
+                      staticStyle: { "padding-top": "7px" }
+                    },
+                    [
+                      _c(
+                        "div",
+                        { staticClass: "form-check form-check-inline" },
+                        [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.form.order_type,
+                                expression: "form.order_type"
+                              }
+                            ],
+                            staticClass: "form-check-input",
+                            attrs: {
+                              type: "radio",
+                              name: "order_type",
+                              value: "新規"
+                            },
+                            domProps: {
+                              checked: _vm._q(_vm.form.order_type, "新規")
+                            },
+                            on: {
+                              change: function($event) {
+                                return _vm.$set(_vm.form, "order_type", "新規")
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c("label", { staticClass: "form-check-label" }, [
+                            _vm._v("新規")
+                          ])
+                        ]
+                      ),
                       _vm._v(" "),
                       _c(
-                        "label",
-                        {
-                          staticClass: "form-check-label",
-                          attrs: { for: "1" }
-                        },
-                        [_vm._v("新規")]
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-check form-check-inline" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.form.is_new,
-                            expression: "form.is_new"
-                          }
-                        ],
-                        staticClass: "form-check-input",
-                        attrs: {
-                          type: "radio",
-                          name: "in_new",
-                          id: "1",
-                          value: "再診"
-                        },
-                        domProps: { checked: _vm._q(_vm.form.is_new, "再診") },
-                        on: {
-                          change: function($event) {
-                            return _vm.$set(_vm.form, "is_new", "再診")
-                          }
-                        }
-                      }),
+                        "div",
+                        { staticClass: "form-check form-check-inline" },
+                        [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.form.order_type,
+                                expression: "form.order_type"
+                              }
+                            ],
+                            staticClass: "form-check-input",
+                            attrs: {
+                              type: "radio",
+                              name: "order_type",
+                              value: "再診",
+                              checked: ""
+                            },
+                            domProps: {
+                              checked: _vm._q(_vm.form.order_type, "再診")
+                            },
+                            on: {
+                              change: function($event) {
+                                return _vm.$set(_vm.form, "order_type", "再診")
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c("label", { staticClass: "form-check-label" }, [
+                            _vm._v("再診")
+                          ])
+                        ]
+                      ),
                       _vm._v(" "),
                       _c(
-                        "label",
-                        {
-                          staticClass: "form-check-label",
-                          attrs: { for: "inlineRadio2" }
-                        },
-                        [_vm._v("再診")]
+                        "div",
+                        { staticClass: "form-check form-check-inline" },
+                        [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.form.order_type,
+                                expression: "form.order_type"
+                              }
+                            ],
+                            staticClass: "form-check-input",
+                            attrs: {
+                              type: "radio",
+                              name: "order_type",
+                              value: "カウンセリング"
+                            },
+                            domProps: {
+                              checked: _vm._q(
+                                _vm.form.order_type,
+                                "カウンセリング"
+                              )
+                            },
+                            on: {
+                              change: function($event) {
+                                return _vm.$set(
+                                  _vm.form,
+                                  "order_type",
+                                  "カウンセリング"
+                                )
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c("label", { staticClass: "form-check-label" }, [
+                            _vm._v("カウンセリング")
+                          ])
+                        ]
                       )
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-check form-check-inline" }, [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.form.is_new,
-                            expression: "form.is_new"
-                          }
-                        ],
-                        staticClass: "form-check-input",
-                        attrs: {
-                          type: "radio",
-                          name: "in_new",
-                          id: "2",
-                          value: "カウンセリング",
-                          disabled: ""
-                        },
-                        domProps: {
-                          checked: _vm._q(_vm.form.is_new, "カウンセリング")
-                        },
-                        on: {
-                          change: function($event) {
-                            return _vm.$set(
-                              _vm.form,
-                              "is_new",
-                              "カウンセリング"
-                            )
-                          }
-                        }
-                      }),
+                    ]
+                  )
+                ])
+              ]
+            ),
+            _vm._v(" "),
+            _vm._m(1),
+            _vm._v(" "),
+            _c(
+              "fieldset",
+              {
+                staticClass: "form-group",
+                staticStyle: { "margin-bottom": "0px" }
+              },
+              [
+                _c("div", { staticClass: "row" }, [
+                  _c("label", { staticClass: "col-sm-3 col-form-label" }, [
+                    _vm._v("指名:")
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass: "col-sm-8",
+                      staticStyle: { "padding-top": "7px" }
+                    },
+                    [
+                      _c(
+                        "div",
+                        { staticClass: "form-check form-check-inline" },
+                        [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.form.stuff_choosed,
+                                expression: "form.stuff_choosed"
+                              }
+                            ],
+                            staticClass: "form-check-input",
+                            attrs: {
+                              type: "radio",
+                              name: "stuff_choosed",
+                              value: "あり"
+                            },
+                            domProps: {
+                              checked: _vm._q(_vm.form.stuff_choosed, "あり")
+                            },
+                            on: {
+                              change: function($event) {
+                                return _vm.$set(
+                                  _vm.form,
+                                  "stuff_choosed",
+                                  "あり"
+                                )
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c("label", { staticClass: "form-check-label" }, [
+                            _vm._v("あり")
+                          ])
+                        ]
+                      ),
                       _vm._v(" "),
                       _c(
-                        "label",
-                        {
-                          staticClass: "form-check-label",
-                          attrs: { for: "inlineRadio3" }
-                        },
-                        [_vm._v("カウンセリング")]
+                        "div",
+                        { staticClass: "form-check form-check-inline" },
+                        [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.form.stuff_choosed,
+                                expression: "form.stuff_choosed"
+                              }
+                            ],
+                            staticClass: "form-check-input",
+                            attrs: {
+                              type: "radio",
+                              name: "stuff_choosed",
+                              value: "なし"
+                            },
+                            domProps: {
+                              checked: _vm._q(_vm.form.stuff_choosed, "なし")
+                            },
+                            on: {
+                              change: function($event) {
+                                return _vm.$set(
+                                  _vm.form,
+                                  "stuff_choosed",
+                                  "なし"
+                                )
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c("label", { staticClass: "form-check-label" }, [
+                            _vm._v("なし")
+                          ])
+                        ]
                       )
-                    ])
-                  ])
+                    ]
+                  )
                 ])
               ]
             ),
             _vm._v(" "),
             _c("div", { staticClass: "row" }, [
+              _c("label", { staticClass: "col-sm-3 col-form-label" }, [
+                _vm._v("メニュー:")
+              ]),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "col-sm-8",
+                  staticStyle: { "padding-top": "7px" }
+                },
+                [
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.form.menu_id,
+                          expression: "form.menu_id"
+                        }
+                      ],
+                      staticClass:
+                        "custom-select custom-select-sm form-control-sm",
+                      on: {
+                        change: function($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function(o) {
+                              return o.selected
+                            })
+                            .map(function(o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.$set(
+                            _vm.form,
+                            "menu_id",
+                            $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          )
+                        }
+                      }
+                    },
+                    [
+                      _c("option", { attrs: { disabled: "", value: "" } }, [
+                        _vm._v("Please select one")
+                      ]),
+                      _vm._v(" "),
+                      _vm._l(_vm.menus, function(m) {
+                        return _c(
+                          "option",
+                          { key: m.id, domProps: { value: m.id } },
+                          [_vm._v(_vm._s(m.name))]
+                        )
+                      })
+                    ],
+                    2
+                  )
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "row" }, [
               _c(
                 "label",
-                { staticClass: "col-sm-3 col-form-label", attrs: { for: "" } },
-                [_vm._v("施術者:")]
+                {
+                  staticClass: "col-sm-3 col-form-label",
+                  staticStyle: { "letter-spacing": "-1.8px" }
+                },
+                [_vm._v("カウンセラー:")]
               ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.isShow(_vm.form.order_type),
+                      expression: "isShow(form.order_type)"
+                    }
+                  ],
+                  staticClass: "col-sm-8",
+                  staticStyle: { "padding-top": "7px" }
+                },
+                [
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.form.counselor_id,
+                          expression: "form.counselor_id"
+                        }
+                      ],
+                      staticClass:
+                        "custom-select custom-select-sm form-control-sm",
+                      on: {
+                        change: function($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function(o) {
+                              return o.selected
+                            })
+                            .map(function(o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.$set(
+                            _vm.form,
+                            "counselor_id",
+                            $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          )
+                        }
+                      }
+                    },
+                    [
+                      _c("option", { attrs: { disabled: "", value: "" } }, [
+                        _vm._v("Please select one")
+                      ]),
+                      _vm._v(" "),
+                      _vm._l(_vm.counselors, function(c) {
+                        return _c(
+                          "option",
+                          { key: c.id, domProps: { value: c.id } },
+                          [_vm._v(_vm._s(c.full_name))]
+                        )
+                      })
+                    ],
+                    2
+                  )
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("br"),
+            _vm._v(" "),
+            _c("div", { staticClass: "row" }, [
+              _c("label", { staticClass: "col-sm-3 col-form-label" }, [
+                _vm._v("お客様各:")
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-sm-8" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.form.first_name,
+                      expression: "form.first_name"
+                    }
+                  ],
+                  staticClass: "form-control form-control-sm",
+                  class: { "is-invalid": _vm.form.errors.has("first_name") },
+                  attrs: { type: "text", placeholder: "お客様名を入力" },
+                  domProps: { value: _vm.form.first_name },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.form, "first_name", $event.target.value)
+                    }
+                  }
+                })
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "row" }, [
+              _c("label", { staticClass: "col-sm-3 col-form-label" }, [
+                _vm._v("フリガナ:")
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-sm-8" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.form.last_name,
+                      expression: "form.last_name"
+                    }
+                  ],
+                  staticClass: "form-control form-control-sm",
+                  class: { "is-invalid": _vm.form.errors.has("last_name") },
+                  attrs: {
+                    type: "text",
+                    id: "time",
+                    placeholder: "フリガナを入力"
+                  },
+                  domProps: { value: _vm.form.last_name },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.form, "last_name", $event.target.value)
+                    }
+                  }
+                })
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "row" }, [
+              _c("label", { staticClass: "col-sm-3 col-form-label" }, [
+                _vm._v("生年月日:")
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-sm-8" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.form.birthday,
+                      expression: "form.birthday"
+                    }
+                  ],
+                  staticClass: "form-control form-control-sm",
+                  class: { "is-invalid": _vm.form.errors.has("birthday") },
+                  attrs: { type: "date", placeholder: "生年月日" },
+                  domProps: { value: _vm.form.birthday },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.form, "birthday", $event.target.value)
+                    }
+                  }
+                })
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "row" }, [
+              _c("label", { staticClass: "col-sm-3 col-form-label" }, [
+                _vm._v("電話番号:")
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-sm-8" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.form.phonenumber,
+                      expression: "form.phonenumber"
+                    }
+                  ],
+                  staticClass: "form-control form-control-sm",
+                  class: { "is-invalid": _vm.form.errors.has("phonenumber") },
+                  attrs: { type: "text", placeholder: "080-xxx-xxxx" },
+                  domProps: { value: _vm.form.phonenumber },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.form, "phonenumber", $event.target.value)
+                    }
+                  }
+                })
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "row" }, [
+              _c("label", { staticClass: "col-sm-3 col-form-label" }, [
+                _vm._v("予約ルー卜:")
+              ]),
               _vm._v(" "),
               _c("div", { staticClass: "col-sm-8" }, [
                 _c(
                   "select",
                   {
-                    staticClass: "form-control form-control-sm",
-                    attrs: { id: "exampleFormControlSelect1" }
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.form.order_route,
+                        expression: "form.order_route"
+                      }
+                    ],
+                    staticClass:
+                      "custom-select custom-select-sm form-control-sm",
+                    on: {
+                      change: function($event) {
+                        var $$selectedVal = Array.prototype.filter
+                          .call($event.target.options, function(o) {
+                            return o.selected
+                          })
+                          .map(function(o) {
+                            var val = "_value" in o ? o._value : o.value
+                            return val
+                          })
+                        _vm.$set(
+                          _vm.form,
+                          "order_route",
+                          $event.target.multiple
+                            ? $$selectedVal
+                            : $$selectedVal[0]
+                        )
+                      }
+                    }
                   },
                   [
-                    _c("option", [_vm._v(_vm._s(_vm.data.staff_rank))]),
+                    _c("option", { attrs: { disabled: "", value: "" } }, [
+                      _vm._v("Please select one")
+                    ]),
                     _vm._v(" "),
-                    _c("option", [_vm._v("2")]),
-                    _vm._v(" "),
-                    _c("option", [_vm._v("3")]),
-                    _vm._v(" "),
-                    _c("option", [_vm._v("4")]),
-                    _vm._v(" "),
-                    _c("option", [_vm._v("5")])
-                  ]
+                    _vm._l(_vm.routes, function(r, index) {
+                      return _c(
+                        "option",
+                        { key: index, domProps: { value: r } },
+                        [_vm._v(_vm._s(r))]
+                      )
+                    })
+                  ],
+                  2
                 )
               ])
             ]),
             _vm._v(" "),
-            _vm._m(3),
+            _vm._m(2),
             _vm._v(" "),
-            _vm._m(4),
-            _vm._v(" "),
-            _vm._m(5),
-            _vm._v(" "),
-            _c("br"),
-            _vm._v(" "),
-            _vm._m(6),
-            _vm._v(" "),
-            _vm._m(7),
-            _vm._v(" "),
-            _vm._m(8),
-            _vm._v(" "),
-            _vm._m(9),
-            _vm._v(" "),
-            _vm._m(10),
-            _vm._v(" "),
-            _vm._m(11),
-            _vm._v(" "),
-            _vm._m(12)
+            _vm._m(3)
           ])
         ]),
         _vm._v(" "),
-        _vm._m(13)
+        _c("div", { staticClass: "modal-footer" }, [
+          _c(
+            "a",
+            {
+              staticClass: "btn",
+              attrs: { href: "#", "data-dismiss": "modal" }
+            },
+            [_vm._v("取消")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            {
+              staticClass: "btn btn-primary",
+              staticStyle: { background: "rgb(197, 224, 180)", color: "black" },
+              attrs: { href: "#" },
+              on: { click: _vm.createCustomerInfo }
+            },
+            [_vm._v("登録")]
+          )
+        ])
       ])
     ]
   )
@@ -92033,279 +92249,13 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "row" }, [
       _c("label", { staticClass: "col-sm-3 col-form-label" }, [
-        _vm._v("予約ID:")
+        _vm._v("施術者:")
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "col-sm-8" }, [
-        _c("p", [_vm._v("010-XXXXXXXXXXXXX")])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row" }, [
-      _c(
-        "label",
-        { staticClass: "col-sm-3 col-form-label", attrs: { for: "hours" } },
-        [_vm._v("時間:")]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-3" }, [
-        _c("input", {
-          staticClass: "form-control form-control-sm",
-          attrs: { type: "text", placeholder: "10:00" }
-        })
-      ]),
-      _vm._v(" "),
-      _c(
-        "label",
-        { staticClass: "col-sm-1 col-form-label", attrs: { for: "" } },
-        [_vm._v("~")]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-3" }, [
-        _c("input", {
-          staticClass: "form-control form-control-sm",
-          attrs: { type: "text", placeholder: "12:00" }
-        })
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "fieldset",
-      { staticClass: "form-group", staticStyle: { "margin-bottom": "0px" } },
-      [
-        _c("div", { staticClass: "row" }, [
-          _c(
-            "label",
-            { staticClass: "col-sm-3 col-form-label", attrs: { for: "" } },
-            [_vm._v("指名:")]
-          ),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-sm-8" }, [
-            _c("div", { staticClass: "form-check form-check-inline" }, [
-              _c("input", {
-                staticClass: "form-check-input",
-                attrs: {
-                  type: "radio",
-                  name: "inlineRadioOptions",
-                  id: "3",
-                  value: "あり"
-                }
-              }),
-              _vm._v(" "),
-              _c(
-                "label",
-                { staticClass: "form-check-label", attrs: { for: "3" } },
-                [_vm._v("あり")]
-              )
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "form-check form-check-inline" }, [
-              _c("input", {
-                staticClass: "form-check-input",
-                attrs: {
-                  type: "radio",
-                  name: "inlineRadioOptions",
-                  id: "4",
-                  value: "なし"
-                }
-              }),
-              _vm._v(" "),
-              _c(
-                "label",
-                { staticClass: "form-check-label", attrs: { for: "4" } },
-                [_vm._v("なし")]
-              )
-            ])
-          ])
-        ])
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row" }, [
-      _c(
-        "label",
-        { staticClass: "col-sm-3 col-form-label", attrs: { for: "" } },
-        [_vm._v("メニュー:")]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-8" }, [
-        _c(
-          "select",
-          {
-            staticClass: "form-control form-control-sm",
-            attrs: { id: "exampleFormControlSelect1" }
-          },
-          [
-            _c("option", [_vm._v("アイブロウ２回 2/2")]),
-            _vm._v(" "),
-            _c("option", [_vm._v("2")]),
-            _vm._v(" "),
-            _c("option", [_vm._v("3")]),
-            _vm._v(" "),
-            _c("option", [_vm._v("4")]),
-            _vm._v(" "),
-            _c("option", [_vm._v("5")])
-          ]
-        )
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row" }, [
-      _c(
-        "label",
-        {
-          staticClass: "col-sm-3 col-form-label",
-          staticStyle: { "letter-spacing": "-1.8px" },
-          attrs: { for: "" }
-        },
-        [_vm._v("カウンセラー:")]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-8" }, [
-        _c(
-          "select",
-          {
-            staticClass: "form-control form-control-sm",
-            attrs: { id: "exampleFormControlSelect1" }
-          },
-          [
-            _c("option", [_vm._v("09:20〜10:00 加野")]),
-            _vm._v(" "),
-            _c("option", [_vm._v("2")]),
-            _vm._v(" "),
-            _c("option", [_vm._v("3")]),
-            _vm._v(" "),
-            _c("option", [_vm._v("4")]),
-            _vm._v(" "),
-            _c("option", [_vm._v("5")])
-          ]
-        )
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row" }, [
-      _c(
-        "label",
-        { staticClass: "col-sm-3 col-form-label", attrs: { for: "hours" } },
-        [_vm._v("お客様各:")]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-8" }, [
-        _c("input", {
-          staticClass: "form-control form-control-sm",
-          attrs: { type: "text", placeholder: "プレミアム 花子" }
-        })
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row" }, [
-      _c(
-        "label",
-        { staticClass: "col-sm-3 col-form-label", attrs: { for: "hours" } },
-        [_vm._v("フリガナ:")]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-8" }, [
-        _c("input", {
-          staticClass: "form-control form-control-sm",
-          attrs: { type: "text", id: "time", placeholder: "プレミアム ハナコ" }
-        })
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row" }, [
-      _c(
-        "label",
-        { staticClass: "col-sm-3 col-form-label", attrs: { for: "hours" } },
-        [_vm._v("生年月日:")]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-8" }, [
-        _c("input", {
-          staticClass: "form-control form-control-sm",
-          attrs: { type: "text", placeholder: "2002/6/8" }
-        })
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row" }, [
-      _c(
-        "label",
-        { staticClass: "col-sm-3 col-form-label", attrs: { for: "hours" } },
-        [_vm._v("電話番号:")]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-8" }, [
-        _c("input", {
-          staticClass: "form-control form-control-sm",
-          attrs: { type: "text", placeholder: "080-xxx-xxxx" }
-        })
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row" }, [
-      _c(
-        "label",
-        { staticClass: "col-sm-3 col-form-label", attrs: { for: "" } },
-        [_vm._v("予約ルー卜:")]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-8" }, [
-        _c(
-          "select",
-          {
-            staticClass: "form-control form-control-sm",
-            attrs: { id: "exampleFormControlSelect1" }
-          },
-          [
-            _c("option", [_vm._v("システム")]),
-            _vm._v(" "),
-            _c("option", [_vm._v("2")]),
-            _vm._v(" "),
-            _c("option", [_vm._v("3")]),
-            _vm._v(" "),
-            _c("option", [_vm._v("4")]),
-            _vm._v(" "),
-            _c("option", [_vm._v("5")])
-          ]
-        )
-      ])
+      _c("div", {
+        staticClass: "col-sm-8",
+        staticStyle: { "padding-top": "7px" }
+      })
     ])
   },
   function() {
@@ -92313,11 +92263,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", [
-      _c(
-        "label",
-        { staticClass: "col-sm-3 col-form-label", attrs: { for: "" } },
-        [_vm._v("経験:")]
-      )
+      _c("label", { staticClass: "col-sm-3 col-form-label" }, [_vm._v("経験:")])
     ])
   },
   function() {
@@ -92326,90 +92272,52 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "experience" }, [
       _c("div", [
-        _c(
-          "label",
-          { staticClass: "col-sm-8 col-form-label", attrs: { for: "" } },
-          [_vm._v("妊娠・授乳・不妊治療 :")]
-        )
+        _c("label", { staticClass: "col-sm-8 col-form-label" }, [
+          _vm._v("妊娠・授乳・不妊治療 :")
+        ])
       ]),
       _vm._v(" "),
       _c("div", [
-        _c(
-          "label",
-          { staticClass: "col-sm-8 col-form-label", attrs: { for: "" } },
-          [_vm._v("通院歴・薬 :")]
-        )
+        _c("label", { staticClass: "col-sm-8 col-form-label" }, [
+          _vm._v("通院歴・薬 :")
+        ])
       ]),
       _vm._v(" "),
       _c("div", [
-        _c(
-          "label",
-          { staticClass: "col-sm-8 col-form-label", attrs: { for: "" } },
-          [_vm._v("金アレ・アトピー・ケロイド確認 :")]
-        )
+        _c("label", { staticClass: "col-sm-8 col-form-label" }, [
+          _vm._v("金アレ・アトピー・ケロイド確認 :")
+        ])
       ]),
       _vm._v(" "),
       _c("div", [
-        _c(
-          "label",
-          { staticClass: "col-sm-8 col-form-label", attrs: { for: "" } },
-          [_vm._v("眉ブリーチ・炎症・傷跡確認 :")]
-        )
+        _c("label", { staticClass: "col-sm-8 col-form-label" }, [
+          _vm._v("眉ブリーチ・炎症・傷跡確認 :")
+        ])
       ]),
       _vm._v(" "),
       _c("div", [
-        _c(
-          "label",
-          { staticClass: "col-sm-8 col-form-label", attrs: { for: "" } },
-          [_vm._v("美容サービス・美容整形確認 :")]
-        )
+        _c("label", { staticClass: "col-sm-8 col-form-label" }, [
+          _vm._v("美容サービス・美容整形確認 :")
+        ])
       ]),
       _vm._v(" "),
       _c("div", [
-        _c(
-          "label",
-          { staticClass: "col-sm-8 col-form-label", attrs: { for: "" } },
-          [_vm._v("料金・所要時間 :")]
-        )
+        _c("label", { staticClass: "col-sm-8 col-form-label" }, [
+          _vm._v("料金・所要時間 :")
+        ])
       ]),
       _vm._v(" "),
       _c("div", [
-        _c(
-          "label",
-          { staticClass: "col-sm-8 col-form-label", attrs: { for: "" } },
-          [_vm._v("HP :")]
-        )
+        _c("label", { staticClass: "col-sm-8 col-form-label" }, [
+          _vm._v("HP :")
+        ])
       ]),
       _vm._v(" "),
       _c("div", [
-        _c(
-          "label",
-          { staticClass: "col-sm-8 col-form-label", attrs: { for: "" } },
-          [_vm._v("キャンセル規約 :")]
-        )
+        _c("label", { staticClass: "col-sm-8 col-form-label" }, [
+          _vm._v("キャンセル規約 :")
+        ])
       ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-footer" }, [
-      _c(
-        "a",
-        { staticClass: "btn", attrs: { href: "#", "data-dismiss": "modal" } },
-        [_vm._v("取消")]
-      ),
-      _vm._v(" "),
-      _c(
-        "a",
-        {
-          staticClass: "btn btn-primary",
-          staticStyle: { background: "rgb(197, 224, 180)", color: "black" },
-          attrs: { href: "#" }
-        },
-        [_vm._v("登録")]
-      )
     ])
   }
 ]
@@ -92438,7 +92346,7 @@ var render = function() {
     _c(
       "div",
       { staticClass: "modal fade", attrs: { id: "modalInfoDlg" } },
-      [_c("ModalInfoDlg", { attrs: { data: this.senddata } })],
+      [_c("ModalInfoDlg", { attrs: { data: this.item } })],
       1
     ),
     _vm._v(" "),
@@ -92448,7 +92356,17 @@ var render = function() {
         staticClass: "modal fade",
         attrs: { id: "modalUpdateDlg", "data-backdrop": "static" }
       },
-      [_c("ModalUpdateDlg", { attrs: { data: this.senddata } })],
+      [
+        _c("ModalUpdateDlg", {
+          attrs: {
+            sr_list: this.staff_rank_list,
+            item: this.item,
+            menus: this.menus,
+            counselors: this.counselors
+          },
+          on: { orderCreated: _vm.onOrderCreated }
+        })
+      ],
       1
     ),
     _vm._v(" "),
@@ -92456,30 +92374,28 @@ var render = function() {
       _vm._v("予約管理システム（予約管理)")
     ]),
     _vm._v(" "),
-    _c("div", { staticStyle: { display: "flex" } }, [
-      _c(
-        "div",
-        { staticClass: "col-md-4", attrs: { id: "calendar" } },
-        [
-          _c("Datepicker", {
-            attrs: { format: "YYYY-MM-DD", width: "80px" },
-            on: {
-              selected: function($event) {
-                return _vm.dateSelected()
-              }
-            },
-            model: {
-              value: _vm.current_date,
-              callback: function($$v) {
-                _vm.current_date = $$v
-              },
-              expression: "current_date"
+    _c(
+      "div",
+      { staticClass: "col-md-4", attrs: { id: "calendar" } },
+      [
+        _c("Datepicker", {
+          attrs: { format: "YYYY-MM-DD", width: "80px" },
+          on: {
+            selected: function($event) {
+              return _vm.dateSelected()
             }
-          })
-        ],
-        1
-      )
-    ]),
+          },
+          model: {
+            value: _vm.current_date,
+            callback: function($$v) {
+              _vm.current_date = $$v
+            },
+            expression: "current_date"
+          }
+        })
+      ],
+      1
+    ),
     _vm._v(" "),
     _c(
       "div",
@@ -92520,9 +92436,8 @@ var render = function() {
                     "row-height": 30,
                     "is-draggable": false,
                     "is-resizable": false,
-                    "is-mirrored": false,
                     "vertical-compact": true,
-                    margin: [-1, -1],
+                    margin: [-2, -1],
                     "use-css-transforms": true
                   },
                   on: {
@@ -92571,9 +92486,8 @@ var render = function() {
                     "row-height": 30,
                     "is-draggable": false,
                     "is-resizable": false,
-                    "is-mirrored": false,
                     "vertical-compact": true,
-                    margin: [-1, -1],
+                    margin: [-2, -1],
                     "use-css-transforms": true
                   },
                   on: {
@@ -92587,6 +92501,7 @@ var render = function() {
                     "grid-item",
                     {
                       key: index + "-separator",
+                      class: { before: index === _vm.activeColor },
                       attrs: {
                         x: item.x,
                         y: item.y,
@@ -92597,7 +92512,7 @@ var render = function() {
                       },
                       nativeOn: {
                         click: function($event) {
-                          return _vm.onClick($event, item)
+                          return _vm.onClick($event, item, index)
                         }
                       }
                     },
@@ -95735,152 +95650,7 @@ var staticRenderFns = [
       _c("div", { staticClass: "row" }, [
         _c("div", { staticClass: "col-12" }, [
           _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "example" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "btn btn-primary",
-                  attrs: { "data-toggle": "modal", href: "#myModal" }
-                },
-                [_vm._v("Launch modal")]
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "modal fade", attrs: { id: "myModal" } },
-                [
-                  _c(
-                    "div",
-                    { staticClass: "modal-dialog modal-dialog-centered" },
-                    [
-                      _c("div", { staticClass: "modal-content" }, [
-                        _c("div", { staticClass: "modal-header" }, [
-                          _c("h4", { staticClass: "modal-title" }, [
-                            _vm._v("Modal title")
-                          ]),
-                          _vm._v(" "),
-                          _c(
-                            "button",
-                            {
-                              staticClass: "close",
-                              attrs: {
-                                type: "button",
-                                "data-dismiss": "modal",
-                                "aria-hidden": "true"
-                              }
-                            },
-                            [_vm._v("×")]
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "container" }),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "modal-body" }, [
-                          _vm._v(
-                            "\n                                Content for the dialog / modal goes here.\n                                "
-                          ),
-                          _c(
-                            "a",
-                            {
-                              staticClass: "btn btn-primary",
-                              attrs: { "data-toggle": "modal" }
-                            },
-                            [_vm._v("Launch modal")]
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "modal-footer" }, [
-                          _c(
-                            "a",
-                            {
-                              staticClass: "btn",
-                              attrs: { href: "#", "data-dismiss": "modal" }
-                            },
-                            [_vm._v("Close")]
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "a",
-                            {
-                              staticClass: "btn btn-primary",
-                              attrs: {
-                                "data-toggle": "modal",
-                                href: "#myModal2"
-                              }
-                            },
-                            [_vm._v("Save changes")]
-                          )
-                        ])
-                      ])
-                    ]
-                  )
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass: "modal fade",
-                  attrs: { id: "myModal2", "data-backdrop": "static" }
-                },
-                [
-                  _c(
-                    "div",
-                    { staticClass: "modal-dialog modal-dialog-centered" },
-                    [
-                      _c("div", { staticClass: "modal-content" }, [
-                        _c("div", { staticClass: "modal-header" }, [
-                          _c("h4", { staticClass: "modal-title" }, [
-                            _vm._v("2nd Modal title")
-                          ]),
-                          _vm._v(" "),
-                          _c(
-                            "button",
-                            {
-                              staticClass: "close",
-                              attrs: {
-                                type: "button",
-                                "data-dismiss": "modal",
-                                "aria-hidden": "true"
-                              }
-                            },
-                            [_vm._v("×")]
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "container" }),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "modal-body" }, [
-                          _vm._v(
-                            "\n                                Content for the dialog / modal goes here.\n                                Content for the dialog / modal goes here.\n                                Content for the dialog / modal goes here.\n                                Content for the dialog / modal goes here.\n                                Content for the dialog / modal goes here.\n                                "
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "modal-footer" }, [
-                          _c(
-                            "a",
-                            {
-                              staticClass: "btn",
-                              attrs: { href: "#", "data-dismiss": "modal" }
-                            },
-                            [_vm._v("Close")]
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "a",
-                            {
-                              staticClass: "btn btn-primary",
-                              attrs: { href: "#" }
-                            },
-                            [_vm._v("Save changes")]
-                          )
-                        ])
-                      ])
-                    ]
-                  )
-                ]
-              )
-            ])
+            _c("div", { staticClass: "example" })
           ])
         ])
       ])
@@ -113371,7 +113141,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!*********************************************************************************************!*\
   !*** ./resources/js/components/Admin/Reservations/Reservations.js?vue&type=script&lang=js& ***!
   \*********************************************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -113385,14 +113155,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!*********************************************************************!*\
   !*** ./resources/js/components/Admin/Reservations/Reservations.vue ***!
   \*********************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Reservations_vue_vue_type_template_id_55972134___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Reservations.vue?vue&type=template&id=55972134& */ "./resources/js/components/Admin/Reservations/Reservations.vue?vue&type=template&id=55972134&");
 /* harmony import */ var _Reservations_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Reservations?vue&type=script&lang=js& */ "./resources/js/components/Admin/Reservations/Reservations.js?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _Reservations_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Reservations.vue?vue&type=style&index=0&lang=scss& */ "./resources/js/components/Admin/Reservations/Reservations.vue?vue&type=style&index=0&lang=scss&");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Reservations_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _Reservations_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _Reservations_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Reservations.vue?vue&type=style&index=0&lang=scss& */ "./resources/js/components/Admin/Reservations/Reservations.vue?vue&type=style&index=0&lang=scss&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
