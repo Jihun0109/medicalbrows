@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 04, 2020 at 11:23 AM
+-- Generation Time: Feb 11, 2020 at 09:16 PM
 -- Server version: 10.3.16-MariaDB
 -- PHP Version: 7.3.8
 
@@ -642,7 +642,36 @@ INSERT INTO `tbl_clinics` (`id`, `name`, `email`, `address`, `is_vacation`, `is_
 (3, 'tttttt', 'adfasdf@sdf', 'Room 3 ABC str ABC building', 0, 1, '2020-02-01 15:43:44', '2020-02-01 15:53:37'),
 (4, 'atdfa', 'adfasdf@sdfadf', 'adfadfadf', 0, 1, '2020-02-01 15:52:16', '2020-02-01 15:53:34'),
 (5, 'Clinic1', 'clinic1@mail.com', 'Address1111', 0, 0, '2020-02-01 15:53:27', '2020-02-01 22:13:06'),
-(6, 'Clinic 3', 'clinc3@mail.com', '新宿', 0, 0, '2020-02-01 22:13:49', '2020-02-01 22:13:49');
+(6, 'Clinic0', 'clinc3@mail.com', '新宿', 0, 0, '2020-02-01 22:13:49', '2020-02-11 04:24:08');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_customers`
+--
+
+CREATE TABLE `tbl_customers` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `email` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `gender` tinyint(4) DEFAULT NULL,
+  `first_name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `last_name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phonenumber` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `birthday` date DEFAULT NULL,
+  `is_deleted` tinyint(4) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tbl_customers`
+--
+
+INSERT INTO `tbl_customers` (`id`, `email`, `gender`, `first_name`, `last_name`, `address`, `phonenumber`, `birthday`, `is_deleted`, `created_at`, `updated_at`) VALUES
+(9, NULL, NULL, 'aaaaaa', 'aaaaaaa', NULL, '123124123', '2020-02-03', 0, '2020-02-11 09:35:39', '2020-02-11 09:35:39'),
+(10, NULL, NULL, 'qweqwe', 'qweqweqw', NULL, '51244234234', '2020-02-13', 0, '2020-02-11 09:57:18', '2020-02-11 09:57:18'),
+(11, NULL, NULL, 'reyeryeyr', 'ertertert', NULL, '12312312442113', '2020-02-06', 0, '2020-02-11 11:32:35', '2020-02-11 11:32:35');
 
 -- --------------------------------------------------------
 
@@ -669,8 +698,10 @@ CREATE TABLE `tbl_menus` (
 --
 
 INSERT INTO `tbl_menus` (`id`, `name`, `rank_id`, `tax_id`, `amount`, `start_time`, `end_time`, `is_vacation`, `is_deleted`, `created_at`, `updated_at`) VALUES
-(1, 'face change', 123, 123, 500, '2020-02-26 16:00:00', '2020-02-26 16:00:00', 0, 0, NULL, NULL),
-(2, 'hair change', 123, 123, 500, '2020-02-26 16:00:00', '2020-02-26 16:00:00', 0, 0, NULL, NULL);
+(1, 'アイブロウ２回 2/2', 3, 4, 50000, '2020-02-10 16:00:00', '2020-02-19 16:00:00', 0, 0, NULL, '2020-02-11 06:42:09'),
+(2, 'アイブロウ3回 1/3', 3, 1, 20000, '2020-02-01 16:00:00', '2020-02-05 16:00:00', 0, 0, NULL, '2020-02-11 06:43:54'),
+(3, 'トレイニー２回 1/2', 1, 3, 70000, '2020-02-04 16:00:00', '2020-02-07 16:00:00', NULL, 0, '2020-02-11 06:45:35', '2020-02-11 06:46:08'),
+(4, 'トレイニー２回 2/2', 1, 3, 0, '2020-01-31 16:00:00', '2020-02-12 16:00:00', NULL, 0, '2020-02-11 06:47:20', '2020-02-11 06:47:20');
 
 -- --------------------------------------------------------
 
@@ -700,29 +731,72 @@ INSERT INTO `tbl_operable_parts` (`id`, `name`, `created_at`, `updated_at`) VALU
 
 CREATE TABLE `tbl_orders` (
   `id` int(10) UNSIGNED NOT NULL,
-  `is_new` tinyint(4) DEFAULT NULL,
-  `phone_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `order_id` int(11) DEFAULT NULL,
-  `staff_id` int(11) DEFAULT NULL,
-  `counselor_id` int(11) DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `customer_id` int(11) DEFAULT NULL,
+  `customer_status` tinyint(4) DEFAULT NULL,
+  `subtotal` float DEFAULT NULL,
+  `discount` float DEFAULT NULL,
+  `tax_id` int(11) DEFAULT NULL,
+  `total` float DEFAULT NULL,
+  `note` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `order_date` date DEFAULT NULL,
+  `cancel_date` date DEFAULT NULL,
+  `order_serial_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `menu_id` int(11) DEFAULT NULL,
-  `clinic_id` int(11) DEFAULT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `order_route` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_deleted` tinyint(4) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  `start_time` datetime DEFAULT NULL,
-  `end_time` datetime DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `tbl_orders`
 --
 
-INSERT INTO `tbl_orders` (`id`, `is_new`, `phone_number`, `order_id`, `staff_id`, `counselor_id`, `menu_id`, `clinic_id`, `description`, `is_deleted`, `created_at`, `updated_at`, `start_time`, `end_time`) VALUES
-(4, 1, '12345678', 11, 2, 1, 1, 6, 'This is test order11111', 0, '2020-02-03 00:37:06', '2020-02-03 00:42:12', '2020-02-03 10:36:00', '2020-02-28 12:36:00'),
-(5, 1, '53734563', 21, 2, 1, 2, 6, 'This is test order11111345345634563456', 0, '2020-02-03 00:37:52', '2020-02-03 00:42:02', '2020-02-04 14:36:00', '2020-02-29 16:36:00'),
-(6, 0, 'sdfgert', 34, 3, 1, 1, 6, 'This is test order11111', 0, '2020-02-03 00:39:58', '2020-02-03 00:39:58', '2020-02-04 13:39:00', '2020-02-12 16:39:00');
+INSERT INTO `tbl_orders` (`id`, `password`, `customer_id`, `customer_status`, `subtotal`, `discount`, `tax_id`, `total`, `note`, `order_date`, `cancel_date`, `order_serial_id`, `menu_id`, `order_route`, `is_deleted`, `created_at`, `updated_at`) VALUES
+(6, NULL, 9, NULL, 0, 0, NULL, 0, '', NULL, NULL, '1581442539-000009', 4, 'システム', 0, '2020-02-11 09:35:39', '2020-02-11 09:35:39'),
+(7, NULL, 10, NULL, 0, 0, NULL, 0, '', NULL, NULL, '1581443839-000010', 3, '電話', 0, '2020-02-11 09:57:19', '2020-02-11 09:57:19'),
+(8, NULL, 11, NULL, 0, 0, NULL, 0, '', NULL, NULL, '1581449555-000011', 1, 'Web', 0, '2020-02-11 11:32:35', '2020-02-11 11:32:35');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_order_histories`
+--
+
+CREATE TABLE `tbl_order_histories` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `clinic_id` int(11) DEFAULT NULL,
+  `staff_id` int(11) DEFAULT NULL,
+  `rank_id` int(11) DEFAULT NULL,
+  `order_id` int(11) DEFAULT NULL,
+  `menu_id` int(11) DEFAULT NULL,
+  `interviewer_id` int(11) DEFAULT NULL,
+  `interview_start` time DEFAULT NULL,
+  `interview_end` time DEFAULT NULL,
+  `amount` float DEFAULT NULL,
+  `discount` float DEFAULT NULL,
+  `status` tinyint(4) DEFAULT NULL,
+  `order_route` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `staff_choosed` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rank_schedule_id` int(11) DEFAULT NULL,
+  `order_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_deleted` tinyint(4) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tbl_order_histories`
+--
+
+INSERT INTO `tbl_order_histories` (`id`, `clinic_id`, `staff_id`, `rank_id`, `order_id`, `menu_id`, `interviewer_id`, `interview_start`, `interview_end`, `amount`, `discount`, `status`, `order_route`, `staff_choosed`, `rank_schedule_id`, `order_type`, `is_deleted`, `created_at`, `updated_at`) VALUES
+(3, NULL, 6, 4, 6, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'あり', 2, '新規', 0, '2020-02-11 09:35:39', '2020-02-11 10:02:13'),
+(4, NULL, 6, 4, 6, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'あり', 2, '新規', 0, '2020-02-11 09:55:07', '2020-02-11 10:02:13'),
+(5, NULL, 9, 2, 7, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL, 'あり', 18, '新規', 0, '2020-02-11 09:57:19', '2020-02-11 11:47:34'),
+(6, NULL, 5, 5, 7, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL, 'あり', 17, '再診', 0, '2020-02-11 10:08:00', '2020-02-11 10:08:00'),
+(7, NULL, 4, 8, 7, NULL, NULL, NULL, NULL, NULL, NULL, 3, NULL, 'あり', 28, '再診', 0, '2020-02-11 10:08:50', '2020-02-11 11:32:09'),
+(8, NULL, 7, 4, 8, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL, 'あり', 3, '新規', 0, '2020-02-11 11:32:35', '2020-02-11 11:32:40');
 
 -- --------------------------------------------------------
 
@@ -744,11 +818,15 @@ CREATE TABLE `tbl_ranks` (
 --
 
 INSERT INTO `tbl_ranks` (`id`, `name`, `is_deleted`, `created_at`, `updated_at`, `short_name`) VALUES
-(1, 'グランドマスタートレイナー', 0, '2020-01-28 13:07:00', '2020-02-03 20:40:58', 'GMT'),
-(2, 'グランドマスター', 0, '2020-01-28 13:08:00', '2020-02-03 20:42:03', 'GM'),
-(3, 'マスター', 0, '2020-01-28 13:09:00', '2020-02-03 20:41:37', 'M'),
-(4, 'ノービスアーテイスト', 0, '2020-01-28 13:12:00', '2020-02-03 20:42:42', 'NA'),
-(5, 'カウンセラー', 0, '2020-01-28 13:12:00', '2020-02-03 20:43:35', 'カウゼ');
+(1, 'トレイニー', 0, '2020-02-04 23:42:00', '2020-02-04 23:59:39', 'T'),
+(2, 'ノービスアーティスト', 0, '2020-02-04 23:48:00', '2020-02-04 23:53:19', 'NA'),
+(3, 'アーティスト', 0, '2020-02-04 23:49:00', '2020-02-04 23:53:13', 'A'),
+(4, 'ロイヤルアーティスト', 0, '2020-02-04 23:49:00', '2020-02-05 00:00:31', 'RA'),
+(5, 'マスター', 0, '2020-02-05 00:00:54', '2020-02-05 00:00:54', 'M'),
+(6, 'マスタートレイナー', 0, '2020-02-05 00:01:13', '2020-02-05 00:01:13', 'MT'),
+(7, 'グランドマスター', 0, '2020-02-05 00:01:25', '2020-02-05 00:01:25', 'GM'),
+(8, 'グランドマスタートレイナー', 0, '2020-02-05 00:01:39', '2020-02-05 00:01:39', 'GMT'),
+(9, 'カウンセラー', 0, '2020-02-05 00:02:14', '2020-02-05 00:02:14', 'カウゼ');
 
 -- --------------------------------------------------------
 
@@ -772,19 +850,37 @@ CREATE TABLE `tbl_rank_schedules` (
 --
 
 INSERT INTO `tbl_rank_schedules` (`id`, `rank_id`, `part_id`, `start_time`, `end_time`, `is_deleted`, `created_at`, `updated_at`) VALUES
-(1, 1, 0, '10:00:00', '12:00:00', 0, '2020-02-04 08:17:53', '2020-02-04 08:17:56'),
-(2, 1, 0, '12:00:00', '14:00:00', 0, '2020-02-04 08:19:01', '2020-02-04 08:19:04'),
-(3, 1, 0, '15:00:00', '17:00:00', 0, '2020-02-04 08:20:23', '2020-02-04 08:20:26'),
-(4, 1, 0, '17:00:00', '19:00:00', 0, '2020-02-04 08:21:28', '2020-02-04 08:21:31'),
-(5, 2, 0, '10:00:00', '13:00:00', 0, '2020-02-04 08:22:20', '2020-02-04 08:22:24'),
-(6, 2, 0, '14:00:00', '16:30:00', 0, '2020-02-04 08:23:28', '2020-02-04 08:23:31'),
-(7, 2, 0, '16:30:00', '19:00:00', 0, '2020-02-04 08:24:18', '2020-02-04 08:24:21'),
-(8, 3, 0, '10:00:00', '14:00:00', 0, '2020-02-04 08:25:14', '2020-02-04 08:25:17'),
-(9, 3, 0, '15:00:00', '19:30:00', 0, '2020-02-04 08:26:30', '2020-02-04 08:26:33'),
-(10, 5, 0, '09:20:00', '10:00:00', 0, '2020-02-04 08:29:18', '2020-02-04 08:29:21'),
-(11, 5, 0, '11:20:00', '12:00:00', 0, '2020-02-04 08:29:54', '2020-02-04 08:29:56'),
-(12, 5, 0, '14:20:00', '15:00:00', 0, '2020-02-04 08:30:33', '2020-02-04 08:30:36'),
-(13, 5, 0, '16:20:00', '17:00:00', 0, '2020-02-04 08:31:17', '2020-02-04 08:31:19');
+(1, 4, 0, '10:00:00', '12:00:00', 0, '2020-02-04 08:17:53', '2020-02-04 08:17:56'),
+(2, 4, 0, '12:00:00', '14:00:00', 0, '2020-02-04 08:19:01', '2020-02-04 08:19:04'),
+(3, 4, 0, '15:00:00', '17:00:00', 0, '2020-02-04 08:20:23', '2020-02-04 08:20:26'),
+(4, 4, 0, '17:00:00', '19:00:00', 0, '2020-02-04 08:21:28', '2020-02-04 08:21:31'),
+(5, 3, 0, '10:00:00', '13:00:00', 0, '2020-02-04 08:22:20', '2020-02-04 08:22:24'),
+(6, 3, 0, '14:00:00', '16:30:00', 0, '2020-02-04 08:23:28', '2020-02-04 08:23:31'),
+(7, 3, 0, '16:30:00', '19:00:00', 0, '2020-02-04 08:24:18', '2020-02-04 08:24:21'),
+(8, 1, 0, '10:00:00', '14:00:00', 0, '2020-02-04 08:25:14', '2020-02-04 08:25:17'),
+(9, 1, 0, '15:00:00', '19:30:00', 0, '2020-02-04 08:26:30', '2020-02-04 08:26:33'),
+(10, 9, 0, '09:20:00', '10:00:00', 0, '2020-02-04 08:29:18', '2020-02-04 08:29:21'),
+(11, 9, 0, '11:20:00', '12:00:00', 0, '2020-02-04 08:29:54', '2020-02-04 08:29:56'),
+(12, 9, 0, '14:20:00', '15:00:00', 0, '2020-02-04 08:30:33', '2020-02-04 08:30:36'),
+(13, 9, 0, '16:20:00', '17:00:00', 0, '2020-02-04 08:31:17', '2020-02-04 08:31:19'),
+(14, 5, 0, '10:00:00', '12:00:00', 0, '2020-02-04 08:17:53', '2020-02-04 08:17:56'),
+(15, 5, 0, '12:00:00', '14:00:00', 0, '2020-02-04 08:19:01', '2020-02-04 08:19:04'),
+(16, 5, 0, '15:00:00', '17:00:00', 0, '2020-02-04 08:20:23', '2020-02-04 08:20:26'),
+(17, 5, 0, '17:00:00', '19:00:00', 0, '2020-02-04 08:21:28', '2020-02-04 08:21:31'),
+(18, 2, 0, '10:00:00', '14:00:00', 0, '2020-02-04 08:25:14', '2020-02-04 08:25:17'),
+(19, 2, 0, '15:00:00', '19:30:00', 0, '2020-02-04 08:26:30', '2020-02-04 08:26:33'),
+(20, 6, 0, '10:00:00', '12:00:00', 0, '2020-02-04 08:17:53', '2020-02-04 08:17:56'),
+(21, 6, 0, '12:00:00', '14:00:00', 0, '2020-02-04 08:19:01', '2020-02-04 08:19:04'),
+(22, 6, 0, '15:00:00', '17:00:00', 0, '2020-02-04 08:20:23', '2020-02-04 08:20:26'),
+(23, 6, 0, '17:00:00', '19:00:00', 0, '2020-02-04 08:21:28', '2020-02-04 08:21:31'),
+(24, 7, 0, '10:00:00', '12:00:00', 0, '2020-02-04 08:17:53', '2020-02-04 08:17:56'),
+(25, 7, 0, '12:00:00', '14:00:00', 0, '2020-02-04 08:19:01', '2020-02-04 08:19:04'),
+(26, 7, 0, '15:00:00', '17:00:00', 0, '2020-02-04 08:20:23', '2020-02-04 08:20:26'),
+(27, 7, 0, '17:00:00', '19:00:00', 0, '2020-02-04 08:21:28', '2020-02-04 08:21:31'),
+(28, 8, 0, '10:00:00', '12:00:00', 0, '2020-02-04 08:17:53', '2020-02-04 08:17:56'),
+(29, 8, 0, '12:00:00', '14:00:00', 0, '2020-02-04 08:19:01', '2020-02-04 08:19:04'),
+(30, 8, 0, '15:00:00', '17:00:00', 0, '2020-02-04 08:20:23', '2020-02-04 08:20:26'),
+(31, 8, 0, '17:00:00', '19:00:00', 0, '2020-02-04 08:21:28', '2020-02-04 08:21:31');
 
 -- --------------------------------------------------------
 
@@ -816,10 +912,21 @@ INSERT INTO `tbl_regions` (`id`, `name`, `created_at`, `updated_at`) VALUES
 
 CREATE TABLE `tbl_shift_histories` (
   `id` int(10) UNSIGNED NOT NULL,
-  `rank_id` int(11) DEFAULT NULL,
+  `staff_id` int(11) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `rank_id` int(11) DEFAULT NULL,
+  `date` date DEFAULT NULL,
+  `status` tinyint(4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tbl_shift_histories`
+--
+
+INSERT INTO `tbl_shift_histories` (`id`, `staff_id`, `created_at`, `updated_at`, `rank_id`, `date`, `status`) VALUES
+(1, 4, '2020-02-11 12:00:37', '2020-02-11 12:00:37', NULL, '2020-02-07', NULL),
+(2, 4, '2020-02-11 12:00:37', '2020-02-11 12:00:37', NULL, '2020-02-08', NULL);
 
 -- --------------------------------------------------------
 
@@ -835,17 +942,28 @@ CREATE TABLE `tbl_staffs` (
   `is_deleted` int(11) DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `clinic_id` int(11) DEFAULT NULL
+  `clinic_id` int(11) DEFAULT NULL,
+  `alias` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `tbl_staffs`
 --
 
-INSERT INTO `tbl_staffs` (`id`, `full_name`, `staff_type_id`, `is_vacation`, `is_deleted`, `created_at`, `updated_at`, `clinic_id`) VALUES
-(1, 'Gimura', 1, 0, 0, '2020-02-01 21:40:36', '2020-02-03 21:28:43', 5),
-(2, 'Yamamoto', 2, 0, 0, '2020-02-01 21:53:40', '2020-02-01 21:53:40', 5),
-(3, 'Hanako', 1, 0, 0, '2020-02-01 21:55:14', '2020-02-01 21:55:14', 5);
+INSERT INTO `tbl_staffs` (`id`, `full_name`, `staff_type_id`, `is_vacation`, `is_deleted`, `created_at`, `updated_at`, `clinic_id`, `alias`) VALUES
+(1, 'Gimura', 1, 0, 0, '2020-02-01 21:40:36', '2020-02-04 19:05:26', 5, 'Doctor_alias1'),
+(2, 'Yamamoto', 2, 0, 0, '2020-02-01 21:53:40', '2020-02-04 19:05:32', 5, 'Doctor_alias2'),
+(3, 'Hanako', 1, 0, 0, '2020-02-01 21:55:14', '2020-02-04 19:05:39', 5, 'Doctor_alias3'),
+(4, '池田', 1, 0, 0, '2020-02-11 05:30:54', '2020-02-11 05:31:04', 6, 'staff-gmt'),
+(5, '山田', 1, 0, 0, '2020-02-11 05:31:39', '2020-02-11 05:31:39', 6, 'staff-m'),
+(6, '高橋', 1, 0, 0, '2020-02-11 05:32:15', '2020-02-11 05:32:15', 6, 'staff-ra'),
+(7, '佐藤', 1, 0, 0, '2020-02-11 05:32:58', '2020-02-11 05:32:58', 6, 'staff-raa'),
+(8, '鈴木（あ）', 1, 0, 0, '2020-02-11 05:33:22', '2020-02-11 05:33:22', 6, 'staff-a'),
+(9, '加藤', 1, 0, 0, '2020-02-11 05:33:48', '2020-02-11 05:33:48', 6, 'staff-na'),
+(10, '石田', 1, 0, 0, '2020-02-11 05:34:09', '2020-02-11 05:34:09', 6, 'staff-t'),
+(11, '梅田', 1, 0, 0, '2020-02-11 05:34:45', '2020-02-11 05:34:45', 6, 'coun-1'),
+(12, '平山', 1, 0, 0, '2020-02-11 05:35:03', '2020-02-11 05:35:03', 6, 'coun-2'),
+(13, '加野', 1, 0, 0, '2020-02-11 05:35:25', '2020-02-11 05:35:25', 6, 'coun-3');
 
 -- --------------------------------------------------------
 
@@ -869,13 +987,19 @@ CREATE TABLE `tbl_staff_ranks` (
 --
 
 INSERT INTO `tbl_staff_ranks` (`id`, `rank_id`, `staff_id`, `part_id`, `promo_date`, `is_deleted`, `created_at`, `updated_at`) VALUES
-(1, 5, 2, NULL, NULL, 0, '2020-02-03 22:35:56', '2020-02-04 01:06:59'),
-(2, 3, 3, NULL, NULL, 0, '2020-02-03 22:38:13', '2020-02-04 01:06:43'),
-(3, 3, 1, NULL, NULL, 1, '2020-02-04 00:11:14', '2020-02-04 00:12:26'),
-(4, 5, 1, NULL, NULL, 1, '2020-02-04 00:44:02', '2020-02-04 00:50:24'),
-(5, 2, 1, NULL, NULL, 1, '2020-02-04 00:44:44', '2020-02-04 00:44:53'),
-(6, 4, 1, NULL, NULL, 1, '2020-02-04 00:50:32', '2020-02-04 01:11:32'),
-(7, 3, 1, NULL, '2020-02-02', 0, '2020-02-04 01:11:49', '2020-02-04 01:39:37');
+(1, 9, 2, NULL, '2019-02-01', 0, '2020-02-03 22:35:56', '2020-02-11 05:36:13'),
+(2, 6, 3, NULL, '2019-02-04', 0, '2020-02-03 22:38:13', '2020-02-11 05:36:08'),
+(7, 1, 1, NULL, '2018-12-06', 0, '2020-02-04 01:11:49', '2020-02-11 05:36:02'),
+(8, 8, 4, NULL, '2020-02-11', 0, '2020-02-11 05:36:59', '2020-02-11 05:36:59'),
+(9, 5, 5, NULL, '2020-02-11', 0, '2020-02-11 05:37:36', '2020-02-11 05:37:36'),
+(10, 4, 6, NULL, '2020-02-11', 0, '2020-02-11 05:38:13', '2020-02-11 05:38:13'),
+(11, 4, 7, NULL, '2020-02-11', 0, '2020-02-11 05:38:23', '2020-02-11 05:38:23'),
+(12, 3, 8, NULL, '2020-02-11', 0, '2020-02-11 05:38:48', '2020-02-11 05:38:48'),
+(13, 2, 9, NULL, '2020-02-11', 0, '2020-02-11 05:39:08', '2020-02-11 05:39:08'),
+(14, 1, 10, NULL, '2020-02-11', 0, '2020-02-11 05:39:22', '2020-02-11 05:39:22'),
+(15, 9, 11, NULL, '2020-02-11', 0, '2020-02-11 05:39:54', '2020-02-11 05:39:54'),
+(16, 9, 12, NULL, '2019-02-04', 0, '2020-02-11 05:40:16', '2020-02-11 05:40:16'),
+(17, 9, 13, NULL, '2019-02-07', 0, '2020-02-11 05:40:40', '2020-02-11 05:40:40');
 
 -- --------------------------------------------------------
 
@@ -897,7 +1021,11 @@ CREATE TABLE `tbl_staff_types` (
 
 INSERT INTO `tbl_staff_types` (`id`, `name`, `is_deleted`, `created_at`, `updated_at`) VALUES
 (1, '医師', 0, '2020-02-01 14:39:00', '2020-02-03 21:15:28'),
-(2, '看護師', 0, '2020-02-01 14:39:00', '2020-02-03 21:15:37');
+(2, '看護師', 0, '2020-02-01 14:39:00', '2020-02-03 21:15:37'),
+(8, 'カウンセラー', 0, '2020-02-04 21:05:09', '2020-02-04 21:05:09'),
+(9, '事務長', 0, '2020-02-04 21:05:22', '2020-02-04 21:05:22'),
+(10, 'カスタマーサポート', 0, '2020-02-04 21:05:37', '2020-02-04 21:05:37'),
+(11, '一般', 0, '2020-02-04 21:05:45', '2020-02-04 21:05:45');
 
 -- --------------------------------------------------------
 
@@ -921,10 +1049,10 @@ CREATE TABLE `tbl_tax_rates` (
 --
 
 INSERT INTO `tbl_tax_rates` (`id`, `name`, `amount`, `start_time`, `end_time`, `is_deleted`, `created_at`, `updated_at`) VALUES
-(1, 'aasdf', 24, '2020-02-01', '2020-02-28', 0, '2020-02-01 04:25:03', '2020-02-01 04:25:03'),
+(1, 'Tax3', 12, '2020-02-01', '2020-02-28', 0, '2020-02-01 04:25:03', '2020-02-11 06:33:01'),
 (2, 'RedLine155', 7832, '2020-02-27', '2020-02-29', 1, '2020-02-01 04:26:40', '2020-02-01 04:30:54'),
-(3, 'asdfasdfg', 42323, '2020-02-28', '2020-02-29', 0, '2020-02-01 04:29:16', '2020-02-01 06:06:40'),
-(4, 'Tax1', 3, '2020-02-01', '2020-02-22', 0, '2020-02-03 23:59:38', '2020-02-03 23:59:38');
+(3, 'Tax2', 10, '2020-02-28', '2020-02-29', 0, '2020-02-01 04:29:16', '2020-02-11 06:32:46'),
+(4, 'Tax1', 8, '2020-02-01', '2020-02-22', 0, '2020-02-03 23:59:38', '2020-02-11 06:33:08');
 
 -- --------------------------------------------------------
 
@@ -1007,7 +1135,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `role_id`, `name`, `email`, `avatar`, `email_verified_at`, `password`, `remember_token`, `settings`, `created_at`, `updated_at`, `user_id`, `is_deleted`, `is_active`) VALUES
-(1, 1, 'Admin', 'admin@admin.com', 'users/default.png', NULL, '$2y$10$swdnObuPvOaOdPE.giyUCOBpNO6Lzu7UU2VyTNLR4nXJP3w.ipHJC', 'd36TYhvgnaFSsYJcNbo2qi9oodHeIo4Ck0VrjufKEbK3AgG1aHdN1SyaQ0Hl', '{\"locale\":\"en\"}', '2020-01-28 07:13:04', '2020-02-03 21:41:07', 'admin', 0, 1),
+(1, 1, 'Admin', 'admin@admin.com', 'users/default.png', NULL, '$2y$10$swdnObuPvOaOdPE.giyUCOBpNO6Lzu7UU2VyTNLR4nXJP3w.ipHJC', '4Przk0pSbrT361JYvmZNr8grZAYDoCyX2BBfqRVGqSEIo3aMoG8w9jdPc9qf', '{\"locale\":\"en\"}', '2020-01-28 07:13:04', '2020-02-03 21:41:07', 'admin', 0, 1),
 (2, 2, 'Clinic1', 'clinic1@mail.com', 'users/default.png', NULL, '$2y$10$WFzJaFBy.Q5ukA4Fr4pyLOzPZcifBJiSFyfcEvTpZQhAKRrynnxby', NULL, '{\"locale\":\"ja\"}', '2020-01-28 10:32:46', '2020-02-04 02:18:03', 'clinic1', 0, 1),
 (3, 1, 'admin', 'admin@mail.com', 'users/default.png', NULL, 'aldjflajdflkajsdfasdf', NULL, NULL, '2020-02-01 05:05:29', '2020-02-01 05:52:04', 'admin1', 1, 1);
 
@@ -1131,6 +1259,12 @@ ALTER TABLE `tbl_clinics`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `tbl_customers`
+--
+ALTER TABLE `tbl_customers`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `tbl_menus`
 --
 ALTER TABLE `tbl_menus`
@@ -1146,6 +1280,12 @@ ALTER TABLE `tbl_operable_parts`
 -- Indexes for table `tbl_orders`
 --
 ALTER TABLE `tbl_orders`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `tbl_order_histories`
+--
+ALTER TABLE `tbl_order_histories`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1303,10 +1443,16 @@ ALTER TABLE `tbl_clinics`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
+-- AUTO_INCREMENT for table `tbl_customers`
+--
+ALTER TABLE `tbl_customers`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
 -- AUTO_INCREMENT for table `tbl_menus`
 --
 ALTER TABLE `tbl_menus`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `tbl_operable_parts`
@@ -1318,19 +1464,25 @@ ALTER TABLE `tbl_operable_parts`
 -- AUTO_INCREMENT for table `tbl_orders`
 --
 ALTER TABLE `tbl_orders`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `tbl_order_histories`
+--
+ALTER TABLE `tbl_order_histories`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `tbl_ranks`
 --
 ALTER TABLE `tbl_ranks`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=141;
 
 --
 -- AUTO_INCREMENT for table `tbl_rank_schedules`
 --
 ALTER TABLE `tbl_rank_schedules`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT for table `tbl_regions`
@@ -1342,25 +1494,25 @@ ALTER TABLE `tbl_regions`
 -- AUTO_INCREMENT for table `tbl_shift_histories`
 --
 ALTER TABLE `tbl_shift_histories`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `tbl_staffs`
 --
 ALTER TABLE `tbl_staffs`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `tbl_staff_ranks`
 --
 ALTER TABLE `tbl_staff_ranks`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `tbl_staff_types`
 --
 ALTER TABLE `tbl_staff_types`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `tbl_tax_rates`

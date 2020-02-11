@@ -2,7 +2,7 @@
     <div class="container">
         <!-- Info Modal -->
         <div class="modal fade" id="modalInfoDlg">
-            <ModalInfoDlg v-bind:data="this.item"></ModalInfoDlg>
+            <ModalInfoDlg v-bind:data="this.item" @statusUpdated="onOrderCreated"></ModalInfoDlg>
         </div>
         <!-- Update Modal -->
         <div class="modal fade" id="modalUpdateDlg" data-backdrop="static">
@@ -75,9 +75,10 @@
                                     :i="item.i"
                                     :key="index  + '-separator'"
                                     :static="item.static"                                   
-                                    :class="{before: index === activeColor}"
+                                    :class="[item.order_status, {selectedcolor: index === activeColor}]"
                                     >
-                                <span class="text">{{item.i}}</span>
+                                    <div class="text" v-html="item.i"></div>
+                                    <!-- <span class="text">{{item.i}}</span>-->
                             </grid-item>
                         </grid-layout>
                     </div>
@@ -112,7 +113,7 @@
     .active {
         //border-bottom: 3px solid green;
         //background: #fcfcfc;
-        background:rgb(27, 185, 175);
+        background:#1BB9AF;
     }
 
     .vue-grid-layout {
@@ -123,13 +124,26 @@
         .vue-grid-item.static {
             background: #ccc;           
         }
-        .vue-grid-item.before{
-            background:#649ABA;
+        .vue-grid-item.selectedcolor{
+            background:#649ABA !important;
         }
-        .vue-grid-item.activecol{
+        .vue-grid-item.neworder{
             background:#E891DC;
+            color:white;
         }
+        .vue-grid-item.oldorder{
+            background:#D511BA;
+            color:white;
+        }
+        .vue-grid-item.cancelorder{
+            background:#3C3A3C;
+            color:white;
+        }
+        .vue-grid-item.grayconselor{
+            background:#649ABA;
+        }        
     }
+
     .layoutJSON {
         background: #ddd;
         border: 1px solid black;
@@ -155,7 +169,6 @@
     .vue-grid-item {
         display: table;
         background: white;
-
     }
 
     .vue-grid-item:not(.vue-grid-placeholder) {
@@ -170,12 +183,7 @@
     }
     .headerdiv{
         .vue-grid-item.static {
-        //background: #ccc;
             background: rgb(0, 176, 240);
-        }
-                .vue-grid-item.before {
-        //background: #ccc;
-            background: red;
         }
     }
 

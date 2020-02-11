@@ -9,8 +9,12 @@
                     <input type="hidden" name="_token" :value="csrf">
                     <div class="row">
                         <label class="col-sm-3 col-form-label">予約ID:</label>
-                        <div class="col-sm-8" >
-                            <p>{{item.order_id==0?'':item.order_id}}</p>
+                        <div v-show="isShow(form.order_type)" class="col-sm-8" >
+                            <p>{{form.order_serial_id==0?'':item.order_serial_id}}</p>
+                        </div>
+                        <div v-show="!isShow(form.order_type)" class="col-sm-8">
+                            <input v-model="form.order_serial_id" type="text" class="form-control form-control-sm" placeholder="xxxxxxxx-xxxx" 
+                            :class="{'is-invalid': form.errors.has('order_serial_id')}">
                         </div>
                     </div>
                     <div class="row">
@@ -29,7 +33,7 @@
                     <div class="row">
                         <label class="col-sm-3 col-form-label">院名:</label>
                         <div class="col-sm-8">
-                            <p>{{item.clinic}}</p>
+                            <p>{{item.clinic_name}}</p>
                         </div>
                     </div>
                     
@@ -59,7 +63,7 @@
                                 <option disabled value="">Please select one</option>
                                 <option v-for="n in sr_list" :key="n.id" v-bind:value="n.name">{{n.name}}</option>
                             </select> -->
-
+                            <div style="letter-spacing: -1.2px">{{item.staff_name + item.rank_full_name}}</div>
                         </div>
                     </div>
                     <fieldset class="form-group" style="margin-bottom:0px;">
@@ -141,7 +145,7 @@
                             <label class="col-sm-8 col-form-label">通院歴・薬 :</label>
                         </div>
                         <div>
-                            <label class="col-sm-8 col-form-label">金アレ・アトピー・ケロイド確認 :</label>
+                            <label class="col-sm-8 col-form-label" style="letter-spacing:-1.5px">金アレ・アトピー・ケロイド確認 :</label>
                         </div>
                         <div>
                             <label class="col-sm-8 col-form-label">眉ブリーチ・炎症・傷跡確認 :</label>
@@ -178,8 +182,8 @@
                 form: new Form({
                     order_type : '新規',
                     stuff_choosed : 'あり',
-                    menu_id : '',
-                    counselor_id : '',
+                    menu_id : 0,
+                    counselor_id : 0,
                     first_name : '',
                     last_name : '',
                     birthday : '',
@@ -207,18 +211,42 @@
             },
             createCustomerInfo(){
                 this.form['item'] = this.item;
-                this.form.post('v1/order-create')
-                    .then((result)=>{
-                        toast.fire({
-                            icon: "success",
-                            title: "A Customer was created successfully."
-                        });
-                        $('#modalUpdateDlg').modal('hide');
-                        this.$emit('orderCreated', result.data);
-                    })
-                    .catch(()=>{
-                        console.log('create error');
-                    });  
+                if(this.item.order_serial_id == ''){
+                    this.form.post('v1/order-create')
+                        .then((result)=>{
+                            if(result.data == 0){
+                                toast.fire({
+                                    icon: "error",
+                                    title: "Not exist reservation ID."
+                                });
+                            }else{
+                                toast.fire({
+                                    icon: "success",
+                                    title: "A Customer was created successfully."
+                                });
+                                $('#modalUpdateDlg').modal('hide');
+                                this.$emit('orderCreated', result.data);
+                            }
+                        })
+                        .catch(()=>{
+                            console.log('create error');
+                        });  
+                }
+                else{
+                    this.form.post('v1/order-update')
+                        .then((result)=>{
+                            toast.fire({
+                                icon: "success",
+                                title: "A Customer was update successfully."
+                            });
+                            $('#modalUpdateDlg').modal('hide');
+                            this.$emit('orderCreated', result.data);
+                        })
+                        .catch(()=>{
+                            console.log('update error');
+                        });  
+                }
+
             },
             loadInfo(){
                 this.form.order_type = this.item.order_type;
@@ -231,7 +259,7 @@
                 this.form.phonenumber = this.item.customer_phonenumber;
                 this.form.order_route = this.item.order_route;
                 this.form.order_serial_id = this.item.order_serial_id;
-                console.log(this.form);
+                console.log(this.form,'log from loadInfo');
             },
         },
         watch:{

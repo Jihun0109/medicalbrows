@@ -3,12 +3,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="el-row"> 
-                    <button v-for="tab in tabbtns" 
+                    <button v-for="(tab, index) in tabbtns" 
                             :key="tab"                     
                             type="button" 
-                            @click="selected = tab;" 
+                            @click="onClickStateBtn(tab, index)" 
                             class="el-button  el-button--primary el-button--medium" 
-                            :class="['tab-btn', { active: selected === tab }]"                    
+                            :class="['tab-btn', { setcolor: selected === tab }]"                    
                             >
                         <span>{{tab}}</span>
                     </button>
@@ -19,31 +19,147 @@
             </div>
             <div class="modal-body" >
                 <div class="info">
-                    <div>予約ID : {{data.order_serial_id}}</div>
-                    <div>施術日 : {{data.date}}</div>
-                    <div>院名 : {{data.clinic_name}}</div>
-                    <div>時間 : {{data.time}}</div>
-                    <div>区分 : </div>
-                    <div>施術者 : {{data.staff_name}}</div>
-                    <div>指名 : {{data.staff_choosed}}</div>
-                    <div>メニュー : {{data.menu_name}}</div>
-                    <div>カウンセラー : </div>
+                    <div class="row">
+                        <label class="col-sm-3 col-form-label">予約ID:</label>
+                        <div class="col-sm-8" >
+                            <p>{{data.order_serial_id}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-3 col-form-label">施術日:</label>
+                        <div class="col-sm-8" >
+                            <p>{{data.date}}</p>
+                        </div>
+                    </div>                    
+                    <div class="row">
+                        <label class="col-sm-3 col-form-label">院名:</label>
+                        <div class="col-sm-8" >
+                            <p>{{data.clinic_name}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-3 col-form-label">時間:</label>
+                        <div class="col-sm-8" >
+                            <p>{{data.time}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-3 col-form-label">区分:</label>
+                        <div class="col-sm-8" >
+                            <p>{{data.order_type}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-3 col-form-label">施術者:</label>
+                        <div class="col-sm-8" >
+                            <p style="letter-spacing:-1.5px">{{data.staff_name + data.rank_full_name}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-3 col-form-label">指名:</label>
+                        <div class="col-sm-8" >
+                            <p>{{data.staff_choosed}}</p>
+                        </div>
+                    </div>
+                    <div class="row">           
+                        <label class="col-sm-3 col-form-label">メニュー:</label>
+                        <div class="col-sm-8" >
+                            <p>{{data.menu_name}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-3 col-form-label" style="letter-spacing:-1.5px" >カウンセラー:</label>
+                        <div class="col-sm-8" >
+                            <p>-</p>
+                        </div>
+                    </div>
                     <br>
-                    <div>お客様各 : {{data.customer_first_name}}</div>
-                    <div>生年月日 : {{data.customer_birthday}}</div>
-                    <div>電話番号 : {{data.customer_phonenumber}}</div>
-                    <div>予約ルー卜 : {{data.order_route}}</div>
-                    <div>備考 : </div>
+                    <div class="row">
+                        <label class="col-sm-3 col-form-label">お客様各:</label>
+                        <div class="col-sm-8" >
+                            <p>{{data.customer_first_name}}</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label class="col-sm-3 col-form-label">生年月日:</label>
+                        <div class="col-sm-8" >
+                            <p>{{data.customer_birthday}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-3 col-form-label">電話番号:</label>
+                        <div class="col-sm-8" >
+                            <p>{{data.customer_phonenumber}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-3 col-form-label" style="letter-spacing:-1.5px">予約ルー卜:</label>
+                        <div class="col-sm-8" >
+                            <p>{{data.order_route}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-3 col-form-label">備考:</label>
+                        <div class="col-sm-8" >
+                            <p></p>
+                        </div>
+                    </div>
                     <div class="experience">
-                        <div>経験 : </div>
-                        <div>妊娠・授乳・不妊治療 : </div>
-                        <div>通院歴・薬 : </div>
-                        <div>金アレ・アトピー・ケロイド確認 : </div>
-                        <div>眉ブリーチ・炎症・傷跡確認 : </div>
-                        <div>美容サービス・美容整形確認 : </div> 
-                        <div>料金・所要時間 : </div>
-                        <div>HP : </div>
-                        <div>キャンセル規約 : </div>    
+                        <div class="row">
+                            <label class="col-sm-7 col-form-label">経験:</label>
+                            <div class="col-sm-3" >
+                                <p></p>
+                            </div>
+                        </div> 
+                        <div class="row">
+                            <label class="col-sm-7 col-form-label">妊娠・授乳・不妊治療:</label>
+                            <div class="col-sm-3" >
+                                <p></p>
+                            </div>
+                        </div> 
+                        <div class="row">
+                            <label class="col-sm-7 col-form-label">通院歴・薬:</label>
+                            <div class="col-sm-3" >
+                                <p></p>
+                            </div>
+                        </div> 
+                        <div class="row">
+                            <label class="col-sm-8 col-form-label">金アレ・アトピー・ケロイド確認:</label>
+                            <div class="col-sm-3" >
+                                <p></p>
+                            </div>
+                        </div> 
+                        <div class="row">
+                            <label class="col-sm-7 col-form-label">眉ブリーチ・炎症・傷跡確認:</label>
+                            <div class="col-sm-3" >
+                                <p></p>
+                            </div>
+                        </div> 
+                        <div class="row">
+                            <label class="col-sm-7 col-form-label">美容サービス・美容整形確認:</label>
+                            <div class="col-sm-3" >
+                                <p></p>
+                            </div>
+                        </div> 
+                        <div class="row">
+                            <label class="col-sm-7 col-form-label">料金・所要時間:</label>
+                            <div class="col-sm-3" >
+                                <p></p>
+                            </div>
+                        </div> 
+                        <div class="row">
+                            <label class="col-sm-7 col-form-label">HP:</label>
+                            <div class="col-sm-3" >
+                                <p></p>
+                            </div>
+                        </div> 
+                        <div class="row">
+                            <label class="col-sm-7 col-form-label">キャンセル規約:</label>
+                            <div class="col-sm-3" >
+                                <p></p>
+                            </div>
+                        </div> 
                     </div>
                 </div>
             </div>
@@ -81,6 +197,38 @@
             });
         },
         methods: {
+            onClickStateBtn(clickedtab, index){
+                this.selected = clickedtab;
+                var status = '';
+                switch(index)
+                {
+                    case 0:
+                        status = 'neworder';
+                        break;
+                    case 1:
+                        status = 'oldorder';
+                        break;
+                    case 2:
+                        status = 'grayconselor';
+                        break;
+                    case 3:
+                        status = 'cancelorder'
+                }
+                this.data.order_status = status;
+                console.log(this.data);
+                axios.post('v1/order-statusupdate',{ item: this.data })
+                .then((result)=>{
+                    console.log(result.data);
+                    toast.fire({
+                        icon: "success",
+                        title: "A status was update successfully."
+                    });
+                    this.$emit('statusUpdated', result.data);
+                })
+                .catch(()=>{
+                    console.log('update error');
+                });  
+            },
             changeBtnClick(){
                 this.changeMode = false;
                 console.log("Updating ...");
@@ -92,9 +240,27 @@
     }
 </script>
 <style lang="scss">
+    .modal-header .setcolor{
+        background:#76DBF8;
+    }
+    .modal-body{
+        padding-left: 30px;
+        padding-right: 8px;
+    }
     .info {
+        .experience{
+            .row{
+                margin-bottom: -5px;
+            }
+        }
         div{
             padding-left: 10px;
+        }
+        label{
+            padding:2px;
+        }
+        p{
+            margin-bottom:0px;
         }
     }
 

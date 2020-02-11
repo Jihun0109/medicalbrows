@@ -54,16 +54,19 @@ export default {
                 time: '',
                 order_type: '',
                 staff_rank: '',
-                staff_name:'',
+                staff_name: '',
             },
-            item:{},
+            item: {},
         }
     },
     mounted() {
         console.log('Component mounted.');
         this.index = this.conlayout.length;
         $('#modalInfoDlg').on('hidden.bs.modal', function() {
-            $(".vue-grid-item").removeClass("before");
+            $(".vue-grid-item").removeClass("selectedcolor");
+        });
+        $('#modalUpdateDlg').on('hidden.bs.modal', function() {
+            $(".vue-grid-item").removeClass("selectedcolor");
         });
     },
     created() {
@@ -73,11 +76,11 @@ export default {
     },
 
     methods: {
-        onOrderCreated: function(item){
+        onOrderCreated: function(item) {
             console.log("onOrderCreated");
             console.log(item);
-            this.conlayout.forEach(function(cell){
-                if (cell.x == item.x && cell.y == item.y){
+            this.conlayout.forEach(function(cell) {
+                if (cell.x == item.x && cell.y == item.y) {
                     cell.i = item.i;
                     cell.order_serial_id = item.order_serial_id;
                     cell.order_history_id = item.order_history_id;
@@ -159,29 +162,25 @@ export default {
 
         onClick: function(event, item, index) {
             console.log("Item Info");
-            console.log(item);
             if (item.selectable) {
-                $(event.currentTarget).addClass("before");
+                console.log(item);
+                $(event.currentTarget).addClass("selectedcolor"); //defalt color when click..                
                 //this.activeColor = index;
                 // Here this variable is Reservation Vue component (Parent of modals)
                 this.item = item;
                 this.item['date'] = this.current_date;
-                if (item.order_history_id == 0){
+                console.log(this.item, 'after clicked item');
+                if (item.order_history_id == 0) {
                     // New order creating
-                    
                     this.changeMode = false;
                     $('#modalUpdateDlg').modal('show');
                 } else {
                     // order info and editing
                     $('#modalInfoDlg').modal('show');
                 }
-                
-                //$('#modalUpdateDlg').modal('show');
             }
         },
-        updateBtn: function() {
-            $('#modalShowUpdate').modal('show');
-        },
+
         alertVal() {
             alert(this.dob)
         },
