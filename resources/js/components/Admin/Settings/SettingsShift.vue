@@ -130,6 +130,16 @@ export default {
         pageChange(page){
           console.log(page);
           this.selectedMonth = page;
+
+          this.selectedDate = [];
+          if (this.selected_id > -1)
+            this.getShift(this.selected_id, page.year, page.month);
+        },
+        getShift(staff_id, year, month){
+            axios.post('v1/shift/get', {'staff_id':staff_id, 'year':year, 'month':month}).
+            then(({ data }) => {
+                this.selectedDate = data.map(d => moment(d).toDate());
+            });
         },
         onRowClass (dataItem, index) {
           //return (dataItem.isOverdue) ? 'active' : 'color-white'
@@ -138,7 +148,8 @@ export default {
         },
         onRowCLicked(row){
             this.selected_id = row.id;
-            console.log(row);
+            if (this.selectedMonth)
+              this.getShift(this.selected_id, this.selectedMonth.year, this.selectedMonth.month);
         },
         loadClinicList() {
             axios.get('api/clinic').

@@ -52,14 +52,42 @@ class ShiftController extends Controller
     {
         $staff_ids = $request->staffs;
         $dates = $request->dates;
+        $month = $request->month;
+
         //return Carbon::parse($request->dates[0])->tz('UTC');
         foreach($staff_ids as $staff_id){
+            $target_day = Carbon::createFromDate($month['year'], $month['month'], 15)->tz(config('app.timezone'));
+            
+            $dd = TblShiftHistory::where('staff_id',$staff_id)->
+                                    whereBetween('date',[Carbon::parse($target_day)->startOfMonth(),Carbon::parse($target_day)->endOfMonth()])->
+                                    delete();
+            
             foreach($dates as $date){
                 TblShiftHistory::create([
                         'staff_id' => $staff_id,
-                        'date' => Carbon::parse($date)
+                        'date' => Carbon::parse($date)->tz(config('app.timezone'))
                 ]);
             }
         }
+
+        return array("result"=>"success", "message"=> "Saved successfully.");
+    }
+
+    public function getShift(Request $request)
+    {
+        $staff_id = $request->staff_id;
+        $year = $request->year;
+        $month = $request->month;
+
+        $target_day = Carbon::createFromDate($year, $month, 15);
+
+        $shift = TblShiftHistory::where('staff_id', $staff_id)->
+                                whereBetween('date',[Carbon::parse($target_day)->startOfMonth(),Carbon::parse($target_day)->endOfMonth()])->
+                                select('date')->pluck('date')->toArray();
+
+        return $shift;        
+        // return array_map(function($val) {
+        //     return new Carbon($val, 'UTC');
+        // },$shift);
     }
 }

@@ -3974,6 +3974,22 @@ __webpack_require__.r(__webpack_exports__);
     pageChange: function pageChange(page) {
       console.log(page);
       this.selectedMonth = page;
+      this.selectedDate = [];
+      if (this.selected_id > -1) this.getShift(this.selected_id, page.year, page.month);
+    },
+    getShift: function getShift(staff_id, year, month) {
+      var _this = this;
+
+      axios.post('v1/shift/get', {
+        'staff_id': staff_id,
+        'year': year,
+        'month': month
+      }).then(function (_ref2) {
+        var data = _ref2.data;
+        _this.selectedDate = data.map(function (d) {
+          return moment__WEBPACK_IMPORTED_MODULE_3___default()(d).toDate();
+        });
+      });
     },
     onRowClass: function onRowClass(dataItem, index) {
       //return (dataItem.isOverdue) ? 'active' : 'color-white'
@@ -3981,17 +3997,17 @@ __webpack_require__.r(__webpack_exports__);
     },
     onRowCLicked: function onRowCLicked(row) {
       this.selected_id = row.id;
-      console.log(row);
+      if (this.selectedMonth) this.getShift(this.selected_id, this.selectedMonth.year, this.selectedMonth.month);
     },
     loadClinicList: function loadClinicList() {
-      var _this = this;
+      var _this2 = this;
 
-      axios.get('api/clinic').then(function (_ref2) {
-        var data = _ref2.data;
-        _this.clinics = data;
-        _this.selected_clinic_id = _this.clinics[0].id; // this.selected_clinic_name = this.clinics[0].name;
+      axios.get('api/clinic').then(function (_ref3) {
+        var data = _ref3.data;
+        _this2.clinics = data;
+        _this2.selected_clinic_id = _this2.clinics[0].id; // this.selected_clinic_name = this.clinics[0].name;
 
-        _this.loadStaffRanksList();
+        _this2.loadStaffRanksList();
       });
     },
     clinicSelected: function clinicSelected(clinic) {
@@ -3999,11 +4015,11 @@ __webpack_require__.r(__webpack_exports__);
       this.loadStaffRanksList();
     },
     loadStaffRanksList: function loadStaffRanksList() {
-      var _this2 = this;
+      var _this3 = this;
 
-      axios.get('v1/shift/clinic/' + this.selected_clinic_id + '/' + this.staff_type).then(function (_ref3) {
-        var data = _ref3.data;
-        _this2.staffs = data;
+      axios.get('v1/shift/clinic/' + this.selected_clinic_id + '/' + this.staff_type).then(function (_ref4) {
+        var data = _ref4.data;
+        _this3.staffs = data;
       });
     }
   },
@@ -4090,10 +4106,10 @@ __webpack_require__.r(__webpack_exports__);
     this.loadClinicList();
   },
   mounted: function mounted() {
-    var _this3 = this;
+    var _this4 = this;
 
     this.$watch(function () {
-      return _this3.$refs.vuetable.selectedTo;
+      return _this4.$refs.vuetable.selectedTo;
     }, function (val) {
       console.log(val);
     });
