@@ -41,12 +41,12 @@
                         <div class="row">
                             <label class="col-sm-3 col-form-label">区分:</label>
                             <div class="col-sm-8" style="padding-top: 7px;">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="order_type" value="新規" v-model="form.order_type">
+                                <div class="form-check form-check-inline" >
+                                    <input class="form-check-input" type="radio" name="order_type" value="新規" v-model="form.order_type" :disabled="item.rank_name === 'カウゼ'">
                                     <label class="form-check-label">新規</label>
                                 </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="order_type" value="再診"  v-model="form.order_type" checked>
+                                <div class="form-check form-check-inline" >
+                                    <input class="form-check-input" type="radio" name="order_type" value="再診"  v-model="form.order_type" :disabled="item.rank_name === 'カウゼ'">
                                     <label class="form-check-label">再診</label>
                                 </div>
                                 <div class="form-check form-check-inline">
@@ -56,8 +56,9 @@
                             </div>
                         </div>
                     </fieldset>
-                    <div class="row">
-                        <label class="col-sm-3 col-form-label">施術者:</label>
+                    <div class="row" style="letter-spacing:-1.8px;">
+                        <label class="col-sm-3 col-form-label" v-if="item.rank_name === 'カウゼ'">カウンセラー:</label>
+                        <label class="col-sm-3 col-form-label" v-else>施術者:</label>
                         <div class="col-sm-8" style="padding-top: 7px;">
                             <!-- <select v-model="staff_rank" class="form-control form-control-sm" data-width="fit" id="exampleFormControlSelect1">
                                 <option disabled value="">Please select one</option>
@@ -83,19 +84,19 @@
                     </fieldset>
                     <div class="row">
                         <label class="col-sm-3 col-form-label">メニュー:</label>
-                        <div class="col-sm-8"  style="padding-top: 7px;">
+                        <div class="col-sm-8"  style="padding-top: 7px;" v-show="item.rank_name !== 'カウゼ'">
                             <select v-model="form.menu_id" class="custom-select custom-select-sm form-control-sm" >
                                 <option disabled value="">Please select one</option>
                                 <option v-for="m in menus" :key="m.id" v-bind:value="m.id">{{m.name}}</option>
                             </select>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" v-show="item.rank_name !== 'カウゼ'">
                         <label class="col-sm-3 col-form-label" style="letter-spacing: -1.8px;">カウンセラー:</label>
                         <div class="col-sm-8" style="padding-top: 7px;"  v-show="isShow(form.order_type)">
-                            <select v-model="form.counselor_id" class="custom-select custom-select-sm form-control-sm">
+                            <select v-model="form.counselor" class="custom-select custom-select-sm form-control-sm">
                                 <option disabled value="">Please select one</option>
-                                <option v-for="c in counselors" :key="c.id" v-bind:value="c.id">{{c.full_name}}</option>                                                                                                                       
+                                <option v-for="c in counselors" :key="c.id" v-bind:value="c">{{c.timename}}</option>            
                             </select>
                         </div>
                     </div>
@@ -137,31 +138,12 @@
                     <div>
                         <label class="col-sm-3 col-form-label">経験:</label>
                     </div>
-                    <div class="experience">
-                        <div>
-                            <label class="col-sm-8 col-form-label">妊娠・授乳・不妊治療 :</label>
-                        </div> 
-                        <div>
-                            <label class="col-sm-8 col-form-label">通院歴・薬 :</label>
+                        <div class="form-group">                            
+                            <div class='textarea-placeholder'>
+                                <b-form-textarea id="textarea" v-model="form.note" :rows="8" :max-rows="8" class="form-control col-sm-10" :placeholder="'妊娠・授乳・不妊治療 : \n通院歴・薬 :\n金アレ・アトピー・ケロイド確認 :\n眉ブリーチ・炎症・傷跡確認 :\n美容サービス・美容整形確認 :\n料金・所要時間 :\nHP :\nキャンセル規約 :'">
+                                </b-form-textarea>
+                            </div>
                         </div>
-                        <div>
-                            <label class="col-sm-8 col-form-label" style="letter-spacing:-1.5px">金アレ・アトピー・ケロイド確認 :</label>
-                        </div>
-                        <div>
-                            <label class="col-sm-8 col-form-label">眉ブリーチ・炎症・傷跡確認 :</label>
-                        </div>
-                        <div>
-                            <label class="col-sm-8 col-form-label">美容サービス・美容整形確認 :</label>
-                        </div>
-                        <div>
-                            <label class="col-sm-8 col-form-label">料金・所要時間 :</label>
-                        </div>
-                        <div>
-                            <label class="col-sm-8 col-form-label">HP :</label>
-                        </div>                                                                                                         <div>
-                            <label class="col-sm-8 col-form-label">キャンセル規約 :</label>
-                        </div>           
-                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -183,13 +165,14 @@
                     order_type : '新規',
                     stuff_choosed : 'あり',
                     menu_id : 0,
-                    counselor_id : 0,
+                    counselor : {},
                     first_name : '',
                     last_name : '',
                     birthday : '',
                     phonenumber : '',
                     order_route : 'システム',
                     order_serial_id : '',
+                    note:'',
                 }),
                 routes:['システム','電話','Web','チャットボット'],
             }
@@ -211,6 +194,7 @@
             },
             createCustomerInfo(){
                 this.form['item'] = this.item;
+                //in the case of neworder                
                 if(this.item.order_serial_id == ''){
                     this.form.post('/v1/order-create')
                         .then((result)=>{
@@ -224,8 +208,11 @@
                                     icon: "success",
                                     title: "A Customer was created successfully."
                                 });
+                                console.log(result.data);
+                                result.data.forEach(element => {                                    
+                                    this.$emit('orderCreated', element);
+                                });
                                 $('#modalUpdateDlg').modal('hide');
-                                this.$emit('orderCreated', result.data);
                             }
                         })
                         .catch(()=>{
@@ -252,13 +239,14 @@
                 this.form.order_type = this.item.order_type;
                 this.form.stuff_choosed = this.item.staff_choosed;
                 this.form.menu_id = this.item.menu_id;
-                this.form.counselor_id = this.item.counselor_id;
+                this.form.counselor = this.item.counselor;
                 this.form.first_name = this.item.customer_first_name;
                 this.form.last_name = this.item.customer_last_name;
                 this.form.birthday = this.item.customer_birthday;
                 this.form.phonenumber = this.item.customer_phonenumber;
                 this.form.order_route = this.item.order_route;
                 this.form.order_serial_id = this.item.order_serial_id;
+                this.form.note = ''; //init
                 console.log(this.form,'log from loadInfo');
             },
         },
@@ -271,6 +259,10 @@
     }
 </script>
 <style lang="scss">
+    textarea{
+        margin:auto;
+        min-height: 180px;
+    }
     .container{
         padding-top:10px;
     }

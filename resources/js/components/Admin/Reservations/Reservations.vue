@@ -9,6 +9,22 @@
             <ModalUpdateDlg v-bind:sr_list="this.staff_rank_list" :item="this.item" 
                 v-bind:menus="this.menus" v-bind:counselors="this.counselors" @orderCreated="onOrderCreated"></ModalUpdateDlg>
         </div>
+        <!-- Info Modal -->
+        <div id="modalMessageBox" class="modal fade">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <!-- dialog body -->
+                    <div class="modal-body justify-content-center" style="padding: 70px; font-width:blod;">
+                        ステータスを「XXX」に変更して宜しいですか？
+                    </div>
+                    <!-- dialog buttons -->
+                    <div class="modal-footer justify-content-center"> 
+                        <a href="#" data-dismiss="modal" class="btn" style="width:100px; background:#707070; color:black; margin-right: 60px;">キャンセル</a>
+                        <a href="#" v-on:click="confirmBtn" class="btn btn-primary" style="width:100px; background:#1BB9AF; color:black">OK</a>                      
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <h4 style="text-align: center">予約管理システム（予約管理)</h4>
 
@@ -104,6 +120,19 @@
 </script>
 
 <style lang="scss">
+    @media screen and (max-width: 600px) {
+        .vue-grid-item .text {
+            font-size: 0.5em;
+        }
+    }
+
+
+    @media screen and (max-width: 992px) {
+        #container .vue-grid-item .text {
+            font-size: 0.6em !important;
+        }
+    }
+
     #app-container {
         width: 100%;
         margin-top: 10px;
@@ -151,7 +180,7 @@
             color:white;
         }
         .vue-grid-item.grayconselor{
-            background:#649ABA;
+            background:rgb(160,149,201);
         }        
     }
 
@@ -199,7 +228,7 @@
     }
 
     .vue-grid-item .text {
-        font-size: 12px;
+        font-size: 0.8em;
         text-align: center;
         /*position: absolute;*/
         top: 0;

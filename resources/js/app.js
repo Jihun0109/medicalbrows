@@ -7,7 +7,8 @@
 require("./bootstrap");
 
 window.Vue = require("vue");
-
+import BootstrapVue from "bootstrap-vue";
+Vue.use(BootstrapVue);
 import moment from "moment";
 import VueRouter from "vue-router";
 import swal from "sweetalert2";

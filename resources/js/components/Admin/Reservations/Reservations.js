@@ -16,7 +16,6 @@ window.store = {
 }
 var moment = require('moment');
 export default {
-
     components: {
         GridLayout: VueGridLayout.GridLayout,
         GridItem: VueGridLayout.GridItem,
@@ -71,7 +70,7 @@ export default {
         console.log('Component created.');
         this.loadClinicList();
         //Wed Feb 19 2020 00:00:00 GMT+0800 (China Standard Time)
-        this.selectedDate = new Date();
+        this.selectedDate = new Date('2020-02-12');
     },
     watch: {
         selectedDate(val) {
@@ -79,17 +78,21 @@ export default {
         }
     },
     methods: {
+        confirmBtn: function() {
+            Bus.$emit('confirmClicked');
+            $('#modalMessageBox').modal('hide');
+        },
+
         increment: function() {
             this.selectedDate = new Date(moment(this.selectedDate).add(1, "days"));
             this.loadStaffRanksList();
         },
+
         decrement: function() {
             this.selectedDate = new Date(moment(this.selectedDate).subtract(1, "days"));
             this.loadStaffRanksList();
         },
         onOrderCreated: function(item) {
-            console.log("onOrderCreated");
-            console.log(item);
             this.conlayout.forEach(function(cell) {
                 if (cell.x == item.x && cell.y == item.y) {
                     cell.i = item.i;
@@ -144,11 +147,6 @@ export default {
                 this.staff_rank_list = data;
                 //console.log(this.staffInfo);
             });
-            axios.post('/v1/reservation/counselor_list', { 'clinic_id': this.selected_clinic_id, 'date': this.selectedDate }).
-            then(({ data }) => {
-                //console.log(data, 'counselor list');
-                this.counselors = data;
-            });
         },
 
         formatDate(dt) {
@@ -166,10 +164,6 @@ export default {
             console.log(this.selectedDate, 'want to check...');
         },
 
-        functionEvents(date) {
-            console.log(date, 'want to check...');
-        },
-
         clinicSelected(clinic) {
             this.selected_clinic_id = clinic.id;
             this.selected_clinic_name = clinic.name;
@@ -180,20 +174,50 @@ export default {
             console.log("Item Info");
             if (item.selectable) {
                 console.log(item);
+                $(".vue-grid-item").removeClass("selectedcolor");
                 $(event.currentTarget).addClass("selectedcolor"); //defalt color when click..                
-                //this.activeColor = index;
                 // Here this variable is Reservation Vue component (Parent of modals)
-                this.item = item;
-                this.item['date'] = this.formatDate(this.selectedDate);
-                console.log(this.item, 'after clicked item');
-                if (item.order_history_id == 0) {
-                    // New order creating
-                    this.changeMode = false;
-                    $('#modalUpdateDlg').modal('show');
-                } else {
-                    // order info and editing
-                    $('#modalInfoDlg').modal('show');
+                if (item.rank_id == 9 || item.rank_id == 8 || item.rank_id == 7) { //NA, T, counseler
+                    this.item = item;
+                    this.item['date'] = this.formatDate(this.selectedDate);
+                    console.log(this.item, 'after clicked item');
+                    if (item.order_history_id == 0) {
+                        // New order creating
+                        this.changeMode = false;
+                        $('#modalUpdateDlg').modal('show');
+                    } else {
+                        // order info and editing
+                        $('#modalInfoDlg').modal('show');
+                    }
+                    return;
                 }
+                axios.post('/v1/reservation/counselor_list', { 'clinic_id': this.selected_clinic_id, 'date': this.selectedDate, 'rank_schedule_id': item.rank_schedule_id }).
+                then(({ data }) => {
+                    this.counselors = data;
+                    //선택된 시술자에 해당한 상담원목록을 얻고 그들의 현재 x,y좌표를 구한다. 이값은 신규인경우 상담원칸에 정보를 자동으로 채우는데 리용된다.
+                    for (var i = 0; i < this.counselors.length; i++) {
+                        var rs_id = this.counselors[i].interviewer_rank_schedule_id;
+                        var staff_id = this.counselors[i].interviewer_id;
+                        var filteredObj = this.conlayout.find(function(item, i) {
+                            if (item.rank_schedule_id == rs_id && item.staff_id == staff_id) {
+                                return i;
+                            }
+                        });
+                        this.counselors[i].x = filteredObj.x;
+                        this.counselors[i].y = filteredObj.y;
+                    }
+                    console.log(this.counselors);
+                    this.item = item;
+                    this.item['date'] = this.formatDate(this.selectedDate);
+                    if (item.order_history_id == 0) {
+                        // New order creating
+                        this.changeMode = false;
+                        $('#modalUpdateDlg').modal('show');
+                    } else {
+                        // order info and editing
+                        $('#modalInfoDlg').modal('show');
+                    }
+                });
             }
         },
 

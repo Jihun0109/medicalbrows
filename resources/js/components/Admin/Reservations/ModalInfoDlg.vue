@@ -1,14 +1,15 @@
 <template>
     <div class="modal-dialog modal-dialog-centered" style="width:400px;">
+
         <div class="modal-content">
             <div class="modal-header">
                 <div class="el-row"> 
                     <button v-for="(tab, index) in tabbtns" 
-                            :key="tab"                     
+                            :key="index"                     
                             type="button" 
-                            @click="onClickStateBtn(tab, index)" 
+                            @click="onClickStateBtn(index)"
                             class="el-button  el-button--primary el-button--medium" 
-                            :class="['tab-btn', { setcolor: selected === tab }]"                    
+                            :class="['tab-btn', { setcolor: data.order_status === select_color[index] }]"                    
                             >
                         <span>{{tab}}</span>
                     </button>
@@ -177,11 +178,12 @@
 <script>
 
     export default {
-        props:['data'],
+        props:['data','selected'],
         data () {
             return {
                 tabbtns:['来院','会計','終了','キャンセル'],
-                selected:'来院',
+                select_color:['neworder','oldorder','grayconselor','cancelorder','static'],
+                tabindex: '',
                 customer:{},
                 dialog: false,
                 changeMode:false,
@@ -194,48 +196,39 @@
         created(){
             Bus.$on('sendCustInfo',(customerData) =>{
                 this.customer = customerData;
-            });
+            });     
+            Bus.$on('confirmClicked', this.statusChange);       
         },
+
         methods: {
-            onClickStateBtn(clickedtab, index){
-                this.selected = clickedtab;
-                var status = '';
-                switch(index)
-                {
-                    case 0:
-                        status = 'neworder';
-                        break;
-                    case 1:
-                        status = 'oldorder';
-                        break;
-                    case 2:
-                        status = 'grayconselor';
-                        break;
-                    case 3:
-                        status = 'cancelorder'
-                }
-                this.data.order_status = status;
-                console.log(this.data);
-                axios.post('/v1/order-statusupdate',{ item: this.data })
+            onClickStateBtn(index){
+                this.tabindex = this.select_color[index];
+                $('#modalMessageBox').modal('show');
+                //this.statusChange();
+
+            },
+            statusChange() {                
+                axios.post('/v1/order-statusupdate',{ 'item': this.data, 'status': this.tabindex})
                 .then((result)=>{
-                    console.log(result.data);
-                    toast.fire({
+                     toast.fire({
                         icon: "success",
                         title: "A status was update successfully."
                     });
+                    this.data.order_status = this.tabindex;
                     this.$emit('statusUpdated', result.data);
                 })
                 .catch(()=>{
                     console.log('update error');
-                });  
+                }); 
             },
+
             changeBtnClick(){
                 this.changeMode = false;
-                console.log("Updating ...");
                 console.log(app.$refs.modalUpdateDlg);
                 app.$refs.modalUpdateDlg.loadInfo();
                 $('#modalShowUpdate').modal('show');
-            }, 
+            },
+
         }
     }
 </script>

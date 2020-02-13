@@ -34,6 +34,7 @@
         "@fortawesome/fontawesome-free": "^5.12.0",
         "admin-lte": "^3.0.2",
         "bootstrap": "^4.4.1",
+        "bootstrap-vue": "^2.4.1",
         "chartist": "^0.11.0",
         "jquery": "^3.4.1",
         "laravel-vue-datatable": "^0.5.7",
