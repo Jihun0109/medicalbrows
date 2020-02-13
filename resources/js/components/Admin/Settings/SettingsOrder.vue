@@ -203,21 +203,21 @@
         },
         methods: {
             loadList(){
-                axios.get('api/order').
+                axios.get('/api/order').
                     then(({data}) => (this.data = data.data));
-                axios.get('v1/staff/operators').
+                axios.get('/v1/staff/operators').
                     then(({data}) => (this.operators = data));
-                axios.get('v1/staff/counselors').
+                axios.get('/v1/staff/counselors').
                     then(({data}) => (this.counselors = data));
-                axios.get('api/menu').
+                axios.get('/api/menu').
                     then(({data}) => (this.menus = data.data));
-                axios.get('api/clinic').
+                axios.get('/api/clinic').
                     then(({data}) => (this.clinics = data));
             },
             createData(){ 
                 console.log(this.form.is_new, this.form.phone_number, this.form.clinic_id);
                 
-                this.form.post('api/order')
+                this.form.post('/api/order')
                     .then((result)=>{                        
                         toast.fire({
                             icon: "success",
@@ -234,7 +234,7 @@
                     });         
             },
             updateRank(){
-                this.form.put('api/order/' + this.form.id)
+                this.form.put('/api/order/' + this.form.id)
                     .then(()=>{
                         toast.fire({
                                 icon: "success",
@@ -249,7 +249,7 @@
                     });
             },
             deleteData(id){
-                this.form.delete('api/order/' + id)
+                this.form.delete('/api/order/' + id)
                     .then((result)=>{
                         //if (result.message){
                             toast.fire({

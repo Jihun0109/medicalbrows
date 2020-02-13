@@ -78,4 +78,13 @@ class LoginController extends Controller
             'username' => 'string|exists:users',
         ], $messages);
     }
+
+    protected function authenticated(Request $request, $user)
+    {
+        // if ( $user->isAdmin() ) {// do your magic here
+        //     return redirect()->route('dashboard');
+        // }
+
+        return redirect('/admin/reservations');
+    }
 }

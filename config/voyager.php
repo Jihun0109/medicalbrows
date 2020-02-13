@@ -14,7 +14,8 @@ return [
         'add_default_role_on_register' => true,
         'default_role'                 => 'clinic',
         'default_avatar'               => 'users/default.png',
-        'redirect'                     => '/admin',
+        #'redirect'                     => '/admin',
+        'redirect'                     => '/cadmin',
     ],
 
     /*

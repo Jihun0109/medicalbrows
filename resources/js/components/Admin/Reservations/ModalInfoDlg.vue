@@ -216,7 +216,7 @@
                 }
                 this.data.order_status = status;
                 console.log(this.data);
-                axios.post('v1/order-statusupdate',{ item: this.data })
+                axios.post('/v1/order-statusupdate',{ item: this.data })
                 .then((result)=>{
                     console.log(result.data);
                     toast.fire({

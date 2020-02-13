@@ -15,8 +15,17 @@ class ClinicController extends Controller
      */
     public function index()
     {
+        $keyword = \Request::get('keyword');
+        if ($keyword){
+            return TblClinic::where('is_deleted', 0)->
+                              where(function($query) use ($keyword){
+                                    $query->where('name','LIKE',"%".$keyword."%")->
+                                            orWhere('email','LIKE',"%".$keyword."%")->
+                                            orWhere('address','LIKE',"%".$keyword."%");
+                              })->latest()->get();
+        }
+
         return TblClinic::where('is_deleted', 0)->latest()->get();
-                    
     }
 
     /**

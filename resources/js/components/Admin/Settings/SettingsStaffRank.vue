@@ -121,15 +121,15 @@ import datetime from "vuejs-datetimepicker";
         },
         methods: {            
             loadList(){
-                axios.get('api/staff-rank').
+                axios.get('/api/staff-rank').
                     then(({data}) => (this.data = data));
-                axios.get('api/rank').
+                axios.get('/api/rank').
                     then(({data}) => (this.ranks = data));
-                axios.get('api/staff').
+                axios.get('/api/staff').
                     then(({data}) => (this.staffs = data));
             },
             createData(){                
-                this.form.post('api/staff-rank')
+                this.form.post('/api/staff-rank')
                     .then((result)=>{                        
                         toast.fire({
                             icon: "success",
@@ -143,7 +143,7 @@ import datetime from "vuejs-datetimepicker";
                     });         
             },
             updateRank(){
-                this.form.put('api/staff-rank/' + this.form.id)
+                this.form.put('/api/staff-rank/' + this.form.id)
                     .then(()=>{
                         toast.fire({
                                 icon: "success",
@@ -158,7 +158,7 @@ import datetime from "vuejs-datetimepicker";
                     });
             },
             deleteData(id){
-                this.form.delete('api/staff-rank/' + id)
+                this.form.delete('/api/staff-rank/' + id)
                     .then((result)=>{
                         //if (result.message){
                             toast.fire({

@@ -128,13 +128,13 @@
         },
         methods: {
             loadList(){
-                axios.get('api/user').
+                axios.get('/api/user').
                     then(({data}) => (this.data = data));
-                axios.get('api/role').
+                axios.get('/api/role').
                     then(({data}) => (this.roles = data));
             },
             createData(){                
-                this.form.post('api/user')
+                this.form.post('/api/user')
                     .then((result)=>{                        
                         toast.fire({
                             icon: "success",
@@ -148,7 +148,7 @@
                     });         
             },
             updateRank(){
-                this.form.put('api/user/' + this.form.id)
+                this.form.put('/api/user/' + this.form.id)
                     .then(()=>{
                         toast.fire({
                                 icon: "success",
@@ -163,7 +163,7 @@
                     });
             },
             deleteData(id){
-                this.form.delete('api/user/' + id)
+                this.form.delete('/api/user/' + id)
                     .then((result)=>{
                         //if (result.message){
                             toast.fire({

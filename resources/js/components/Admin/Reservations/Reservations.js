@@ -1,6 +1,5 @@
 import VueGridLayout from 'vue-grid-layout';
 import Datepicker from 'vuejs-datetimepicker';
-import Datetime from 'vue-datetime';
 import ModalInfoDlg from './ModalInfoDlg.vue';
 import ModalUpdateDlg from './ModalUpdateDlg.vue';
 
@@ -15,14 +14,13 @@ window.store = {
         counselor_info: '',
     }
 }
-
+var moment = require('moment');
 export default {
 
     components: {
         GridLayout: VueGridLayout.GridLayout,
         GridItem: VueGridLayout.GridItem,
         Datepicker,
-        Datetime,
         ModalInfoDlg,
         ModalUpdateDlg,
     },
@@ -44,7 +42,7 @@ export default {
             staff_rank_list: {},
             menus: {},
             counselors: {},
-            current_date: '',
+            selectedDate: '',
             selected_clinic_id: 0,
             selected_clinic_name: '',
             message: "Welcome, Please Wait....",
@@ -72,10 +70,23 @@ export default {
     created() {
         console.log('Component created.');
         this.loadClinicList();
-        this.current_date = this.formatDate(new Date());
+        //Wed Feb 19 2020 00:00:00 GMT+0800 (China Standard Time)
+        this.selectedDate = new Date();
     },
-
+    watch: {
+        selectedDate(val) {
+            this.loadStaffRanksList();
+        }
+    },
     methods: {
+        increment: function() {
+            this.selectedDate = new Date(moment(this.selectedDate).add(1, "days"));
+            this.loadStaffRanksList();
+        },
+        decrement: function() {
+            this.selectedDate = new Date(moment(this.selectedDate).subtract(1, "days"));
+            this.loadStaffRanksList();
+        },
         onOrderCreated: function(item) {
             console.log("onOrderCreated");
             console.log(item);
@@ -104,20 +115,21 @@ export default {
             var currentDateWithFormat = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
         },
         loadClinicList() {
-            axios.get('api/clinic').
+            axios.get('/api/clinic').
             then(({ data }) => {
                 this.clinics = data;
                 this.selected_clinic_id = this.clinics[0].id;
                 this.selected_clinic_name = this.clinics[0].name;
                 this.loadStaffRanksList();
             });
-            axios.get('api/menu').
+            axios.get('/api/menu').
             then(({ data }) => {
                 this.menus = data.data;
             });
         },
         loadStaffRanksList() {
-            axios.get('v1/reservation/staff_list?clinic_id=' + this.selected_clinic_id).
+            //axios.get('v1/reservation/staff_list?clinic_id=' + this.selected_clinic_id ).
+            axios.post('/v1/reservation/staff_list', { 'clinic_id': this.selected_clinic_id, 'date': this.selectedDate }).
             then(({ data }) => {
                 this.staffs = data.staff_layout;
                 //this.timelayout = JSON.parse(JSON.stringify(timeLayout));                
@@ -127,12 +139,12 @@ export default {
                 this.hdlayout = JSON.parse(JSON.stringify(data.staff_layout));
                 this.conlayout = JSON.parse(JSON.stringify(data.content_layout));
             });
-            axios.get('v1/reservation/staff_rank_list?clinic_id=' + this.selected_clinic_id).
+            axios.post('/v1/reservation/staff_rank_list', { 'clinic_id': this.selected_clinic_id, 'date': this.selectedDate }).
             then(({ data }) => {
                 this.staff_rank_list = data;
                 //console.log(this.staffInfo);
             });
-            axios.get('v1/reservation/counselor_list?clinic_id=' + this.selected_clinic_id).
+            axios.post('/v1/reservation/counselor_list', { 'clinic_id': this.selected_clinic_id, 'date': this.selectedDate }).
             then(({ data }) => {
                 //console.log(data, 'counselor list');
                 this.counselors = data;
@@ -150,8 +162,12 @@ export default {
             return formattedDate;
         },
 
-        dateSelected(e) {
-            console.log(this.current_date, 'want to check...');
+        changedDate() {
+            console.log(this.selectedDate, 'want to check...');
+        },
+
+        functionEvents(date) {
+            console.log(date, 'want to check...');
         },
 
         clinicSelected(clinic) {
@@ -168,7 +184,7 @@ export default {
                 //this.activeColor = index;
                 // Here this variable is Reservation Vue component (Parent of modals)
                 this.item = item;
-                this.item['date'] = this.current_date;
+                this.item['date'] = this.formatDate(this.selectedDate);
                 console.log(this.item, 'after clicked item');
                 if (item.order_history_id == 0) {
                     // New order creating

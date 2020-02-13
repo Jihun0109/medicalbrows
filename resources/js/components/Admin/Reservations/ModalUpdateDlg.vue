@@ -212,7 +212,7 @@
             createCustomerInfo(){
                 this.form['item'] = this.item;
                 if(this.item.order_serial_id == ''){
-                    this.form.post('v1/order-create')
+                    this.form.post('/v1/order-create')
                         .then((result)=>{
                             if(result.data == 0){
                                 toast.fire({
@@ -233,7 +233,7 @@
                         });  
                 }
                 else{
-                    this.form.post('v1/order-update')
+                    this.form.post('/v1/order-update')
                         .then((result)=>{
                             toast.fire({
                                 icon: "success",

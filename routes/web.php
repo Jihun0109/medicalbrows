@@ -15,15 +15,14 @@
 //     return view('welcome');
 // });
 
-
-Route::group(['prefix' => 'admin'], function () {
-    Voyager::routes();
+Route::group(['prefix' => 'cadmin'], function () {
+    Voyager::routes();    
 });
 
 Auth::routes();
 
-Route::get('/', 'HomeController@index')->name('home');
-
+Route::get('/admin', 'HomeController@index')->name('home');
+Route::get('/', 'CustomerController@index')->name('customer');
 // Left Sidebar Main Category
 // Route::get('reservations', 'ReservationsController@index')->name('reservations.index');
 // Route::group(['prefix' => 'settings'], function() {
@@ -32,16 +31,16 @@ Route::get('/', 'HomeController@index')->name('home');
 // });
 // Route::get('logs', 'LogsController@index')->name('logs.index');
 
-Route::get('{path}','HomeController@index')->where('path','[A-Za-z0-9_-]+' );
+Route::get('/admin/{path}','HomeController@index')->where('path','[A-Za-z0-9_-]+' );
 
 // API
 Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
 
     Route::get('/staff/operators', 'API\StaffController@operators');
     Route::get('/staff/counselors', 'API\StaffController@counselors');
-    Route::get('/reservation/staff_list', 'ReservationsController@staff_list');
-    Route::get('/reservation/staff_rank_list', 'ReservationsController@staff_rank_list');
-    Route::get('/reservation/counselor_list', 'ReservationsController@counselor_list');
+    Route::post('/reservation/staff_list', 'ReservationsController@staff_list');
+    Route::post('/reservation/staff_rank_list', 'ReservationsController@staff_rank_list');
+    Route::post('/reservation/counselor_list', 'ReservationsController@counselor_list');
 
     Route::post('/order-create', 'ReservationsController@orderCreate');
     Route::post('/order-update', 'ReservationsController@orderUpdate');

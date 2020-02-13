@@ -36,11 +36,13 @@ class ReservationsController extends Controller
     public function counselor_list(Request $request)
     {        
         $clinic_id = $request->clinic_id;
+        $selected_date = date('Y-m-d',strtotime($request->date));
         //query
         $counselor_list = DB::table('tbl_staffs')
-                ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id','tbl_staffs.id')                
+                ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id','tbl_staffs.id')   
+                ->join('tbl_shift_histories', 'tbl_shift_histories.staff_id','tbl_staffs.id')               
                 //->select('tbl_staffs.full_name')       
-                ->where([['tbl_staffs.is_deleted', 0], ['tbl_staffs.clinic_id', $clinic_id], ['tbl_staff_ranks.rank_id', 9]])  
+                ->where([['tbl_staffs.is_deleted', 0], ['tbl_staffs.clinic_id', $clinic_id], ['tbl_staff_ranks.rank_id', 9], ['tbl_shift_histories.date', $selected_date]])  
                 ->get();
      
         return $counselor_list;
@@ -49,14 +51,15 @@ class ReservationsController extends Controller
     public function staff_rank_list(Request $request)
     {        
         $clinic_id = $request->clinic_id;
+        $selected_date = date('Y-m-d',strtotime($request->date));
         $res = [];
-
         //query
         $staff_rank_names = DB::table('tbl_staffs')
                 ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id','tbl_staffs.id')  
+                ->join('tbl_shift_histories', 'tbl_shift_histories.staff_id','tbl_staffs.id')  
                 ->join('tbl_ranks', 'tbl_ranks.id','tbl_staff_ranks.rank_id')    
                 ->select('tbl_staffs.full_name','tbl_staff_ranks.rank_id', 'tbl_ranks.short_name','tbl_ranks.name')       
-                ->where([['tbl_staffs.is_deleted', 0], ['tbl_staffs.clinic_id', $clinic_id]])  
+                ->where([['tbl_staffs.is_deleted', 0], ['tbl_staffs.clinic_id', $clinic_id], ['tbl_shift_histories.date', $selected_date]])  
                 ->get();
         //return $staff_rank_names;
         for ( $i = 0; $i < sizeof($staff_rank_names); $i++ ){
@@ -70,17 +73,23 @@ class ReservationsController extends Controller
     public function staff_list(Request $request)
     {        
         $clinic_id = $request->clinic_id;
+        $selected_date = date('Y-m-d',strtotime($request->date));
+
+        Log::info($selected_date);
+
         $staff_rank_with_schedules = [];
 
         // 스타프 staff_id, full_name, rank_id, rank_name, rank_short_name 얻는다.
         $staff_rank_names = DB::table('tbl_staffs')
                 ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id','tbl_staffs.id')  
                 ->join('tbl_ranks', 'tbl_ranks.id','tbl_staff_ranks.rank_id')
+                ->join('tbl_shift_histories', 'tbl_shift_histories.staff_id','tbl_staffs.id')  
                 ->join('tbl_clinics', 'tbl_clinics.id','tbl_staffs.clinic_id')
                 ->select('tbl_staffs.id as staff_id','tbl_staffs.full_name','tbl_staff_ranks.rank_id', 'tbl_ranks.short_name','tbl_ranks.name','tbl_clinics.name as clinic_name')       
-                ->where([['tbl_staffs.is_deleted', 0], ['tbl_staffs.clinic_id', $clinic_id]])  
+                ->where([['tbl_staffs.is_deleted', 0], ['tbl_staffs.clinic_id', $clinic_id], ['tbl_shift_histories.date', $selected_date]])
+                ->orderBy('rank_id','asc')  
                 ->get();
-       
+        //return $staff_rank_names;
         // 매 스타프에 대해서 스타프이름, 랭크략어, 랭크스케쥴목록을 반환
         for ( $i = 0; $i < sizeof($staff_rank_names); $i++ ){
             $temp = [];

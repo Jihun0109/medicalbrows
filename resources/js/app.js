@@ -26,60 +26,60 @@ window.toast = toast;
 Vue.use(VueRouter);
 
 let routes = [{
-        path: "/reservations",
+        path: "/admin/reservations",
         component: require("./components/Admin/Reservations/Reservations.vue").default
     },
     {
-        path: "/logs",
+        path: "/admin/logs",
         component: require("./components/Admin/Logs.vue").default
     },
     {
-        path: "/settings-clinic",
+        path: "/admin/settings-clinic",
         component: require("./components/Admin/Settings/SettingsClinic.vue")
             .default
     },
     {
-        path: "/settings-rank",
+        path: "/admin/settings-rank",
         component: require("./components/Admin/Settings/SettingsRank.vue")
             .default
     },
     {
-        path: "/settings-staff",
+        path: "/admin/settings-staff",
         component: require("./components/Admin/Settings/SettingsStaff.vue")
             .default
     },
     {
-        path: "/settings-staff-rank",
+        path: "/admin/settings-staff-rank",
         component: require("./components/Admin/Settings/SettingsStaffRank.vue")
             .default
     },
     {
-        path: "/settings-menu",
+        path: "/admin/settings-menu",
         component: require("./components/Admin/Settings/SettingsMenu.vue")
             .default
     },
     {
-        path: "/settings-tax",
+        path: "/admin/settings-tax",
         component: require("./components/Admin/Settings/SettingsTax.vue")
             .default
     },
     {
-        path: "/settings-shift",
+        path: "/admin/settings-shift",
         component: require("./components/Admin/Settings/SettingsShift.vue")
             .default
     },
     {
-        path: "/settings-rank-schedule",
+        path: "/admin/settings-rank-schedule",
         component: require("./components/Admin/Settings/SettingsRankSchedule.vue")
             .default
     },
     {
-        path: "/settings-account",
+        path: "/admin/settings-account",
         component: require("./components/Admin/Settings/SettingsAccount.vue")
             .default
     },
     {
-        path: "/settings-order",
+        path: "/admin/settings-order",
         component: require("./components/Admin/Settings/SettingsOrder.vue")
             .default
     }

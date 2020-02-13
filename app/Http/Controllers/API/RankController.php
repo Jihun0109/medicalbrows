@@ -15,6 +15,15 @@ class RankController extends Controller
      */
     public function index()
     {
+        $keyword = \Request::get('keyword');
+        if ($keyword){
+            return TblRank::where('is_deleted', 0)->
+                              where(function($query) use ($keyword){
+                                    $query->where('name','LIKE',"%".$keyword."%")->
+                                            orWhere('short_name','LIKE',"%".$keyword."%");
+                              })->latest()->get();
+        }
+
         return TblRank::where('is_deleted', 0)->get();
     }
 

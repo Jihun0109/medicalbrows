@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\TblStaff;
+use DB;
 
 class StaffController extends Controller
 {
@@ -26,6 +27,20 @@ class StaffController extends Controller
      */
     public function index()
     {
+        $keyword = \Request::get('keyword');
+        if ($keyword){
+            return DB::table('tbl_staffs')->
+                            join('tbl_clinics','tbl_clinics.id','tbl_staffs.clinic_id')->
+                            join('tbl_staff_types','tbl_staff_types.id','tbl_staffs.staff_type_id')->
+                            select('tbl_staffs.*')->
+                            where('tbl_staffs.is_deleted',0)->
+                            where(function($query) use ($keyword){
+                                $query->where('tbl_staffs.full_name','LIKE',"%".$keyword."%")->
+                                        orWhere('tbl_staffs.alias','LIKE',"%".$keyword."%")->
+                                        orWhere('tbl_clinics.name','LIKE',"%".$keyword."%")->
+                                        orWhere('tbl_staff_types.name','LIKE',"%".$keyword."%");
+                          })->latest()->get();
+        }
         return TblStaff::where('is_deleted', 0)->get();
     }
 

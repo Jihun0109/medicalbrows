@@ -147,18 +147,18 @@
         },
         methods: {
             loadList(){
-                axios.get('api/rank-schedule').
+                axios.get('/api/rank-schedule').
                     then(({data}) => {
                         this.data = data;
                         console.log(this.data)
                         });
 
-                axios.get('api/rank').
+                axios.get('/api/rank').
                     then(({data}) => (this.ranks = data));
                
             },
             createData(){                
-                this.form.post('api/rank-schedule')
+                this.form.post('/api/rank-schedule')
                     .then((result)=>{                        
                         toast.fire({
                             icon: "success",
@@ -172,7 +172,7 @@
                     });         
             },
             updateRank(){
-                this.form.put('api/rank-schedule/' + this.form.id)
+                this.form.put('/api/rank-schedule/' + this.form.id)
                     .then(()=>{
                         toast.fire({
                                 icon: "success",
@@ -187,7 +187,7 @@
                     });
             },
             deleteData(id){
-                this.form.delete('api/rank-schedule/' + id)
+                this.form.delete('/api/rank-schedule/' + id)
                     .then((result)=>{
                         //if (result.message){
                             toast.fire({

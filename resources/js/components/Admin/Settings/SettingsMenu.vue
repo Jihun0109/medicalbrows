@@ -163,20 +163,20 @@
         },
         methods: {
             loadList(){
-                axios.get('api/menu').
+                axios.get('/api/menu').
                     then(({data}) => {
                         this.data = data.data
                         console.log(this.data)
                         });
 
-                axios.get('api/rank').
+                axios.get('/api/rank').
                     then(({data}) => (this.ranks = data));
 
-                axios.get('api/tax').
+                axios.get('/api/tax').
                     then(({data}) => (this.taxs = data));                    
             },
             createData(){                
-                this.form.post('api/menu')
+                this.form.post('/api/menu')
                     .then((result)=>{                        
                         toast.fire({
                             icon: "success",
@@ -190,7 +190,7 @@
                     });         
             },
             updateRank(){
-                this.form.put('api/menu/' + this.form.id)
+                this.form.put('/api/menu/' + this.form.id)
                     .then(()=>{
                         toast.fire({
                                 icon: "success",
@@ -205,7 +205,7 @@
                     });
             },
             deleteData(id){
-                this.form.delete('api/menu/' + id)
+                this.form.delete('/api/menu/' + id)
                     .then((result)=>{
                         //if (result.message){
                             toast.fire({

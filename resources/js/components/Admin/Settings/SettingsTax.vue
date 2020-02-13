@@ -220,11 +220,11 @@ export default {
     },
     methods: {
         loadItems() {
-            axios.get("api/tax").then(({ data }) => (this.items = data));
+            axios.get("/api/tax").then(({ data }) => (this.items = data));
         },
         createItem() {
             this.form
-                .post("api/tax")
+                .post("/api/tax")
                 .then(result => {
                     toast.fire({
                         icon: "success",
@@ -237,7 +237,7 @@ export default {
         },
         updateItem() {
             this.form
-                .put("api/tax/" + this.form.id)
+                .put("/api/tax/" + this.form.id)
                 .then(() => {
                     toast.fire({
                         icon: "success",
@@ -250,7 +250,7 @@ export default {
         },
         deleteItem(id) {
             this.form
-                .delete("api/tax/" + id)
+                .delete("/api/tax/" + id)
                 .then(result => {
                     //if (result.message){
                     toast.fire({

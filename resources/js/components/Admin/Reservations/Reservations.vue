@@ -12,10 +12,21 @@
 
         <h4 style="text-align: center">予約管理システム（予約管理)</h4>
 
-        <div id="calendar" class="col-md-4">
+        <div class="row d-flex justify-content-center" style="padding-bottom: 15px; padding-top: 20px;">
+            <button @click="decrement()" type="button" class="btn btn-default btn-sm"><i class="fa fa-chevron-left"></i></button>
+                <v-date-picker
+                    locale="ja"
+                    v-model='selectedDate'
+                    :input-debounce='500'
+                >
+                </v-date-picker>
+            <button @click="increment()" type="button" class="btn btn-default btn-sm"><i class="fa fa-chevron-right"></i></button>
+        </div>
+
+        <!--<div id="calendar" class="col-md-4">
             <Datepicker v-model="current_date"  @selected="dateSelected()" format="YYYY-MM-DD" width="80px"/>
         </div>
-        <!--<datetime format="MM/DD/YYYY" width="300px" name='dob'></datetime>-->
+        -<datetime format="MM/DD/YYYY" width="300px" name='dob'></datetime>-->
         <div class="el-row"> 
             <button v-for="c in clinics" 
                     :key="c.id"                     

@@ -84,11 +84,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
             <li class="nav-item">
                 <!-- <router-link to="/reservations" class="nav-link"> -->
-                <a href="/reservations"  class="nav-link">
+                <a href="/admin/reservations"  class="nav-link">
                   <i class="nav-icon fas fa-calendar-alt"></i>
                   <p>予約登録 . 変更</p>
                 </a>
               </li>
+            @can('isAdmin')
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-cog"></i>
@@ -98,15 +99,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </p>
             </a>
             <ul class="nav nav-treeview">
-                <li class="nav-item"><a href="/settings-clinic" class="nav-link"><p>クリニツク管理</p></a></li>
-                <li class="nav-item"><a href="/settings-rank" class="nav-link"><p>ランク管理</p></a></li>
-                <li class="nav-item"><a href="/settings-staff" class="nav-link"><p>スタッフ管理</p></a></li>
-                <li class="nav-item"><a href="/settings-staff-rank" class="nav-link"><p>スタッフ ランク管理</p></a></li>
-                <li class="nav-item"><a href="/settings-menu" class="nav-link"><p>メニュー管理</p></a></li>
-                <li class="nav-item"><a href="/settings-tax" class="nav-link"><p>税率管理</p></a></li>
-                <li class="nav-item"><a href="/settings-shift" class="nav-link"><p>シフト管理</p></a></li>
-                <li class="nav-item"><a href="/settings-rank-schedule" class="nav-link"><p>ランクスケジュール管理</p></a></li>
-                <li class="nav-item"><a href="/settings-account" class="nav-link"><p>アカウント管理</p></a></li>
+                <li class="nav-item"><a href="/admin/settings-clinic" class="nav-link"><p>クリニツク管理</p></a></li>
+                <li class="nav-item"><a href="/admin/settings-rank" class="nav-link"><p>ランク管理</p></a></li>
+                <li class="nav-item"><a href="/admin/settings-staff" class="nav-link"><p>スタッフ管理</p></a></li>
+                <li class="nav-item"><a href="/admin/settings-staff-rank" class="nav-link"><p>スタッフ ランク管理</p></a></li>
+                <li class="nav-item"><a href="/admin/settings-menu" class="nav-link"><p>メニュー管理</p></a></li>
+                <li class="nav-item"><a href="/admin/settings-tax" class="nav-link"><p>税率管理</p></a></li>
+                <li class="nav-item"><a href="/admin/settings-shift" class="nav-link"><p>シフト管理</p></a></li>
+                <li class="nav-item"><a href="/admin/settings-rank-schedule" class="nav-link"><p>ランクスケジュール管理</p></a></li>
+                <li class="nav-item"><a href="/admin/settings-account" class="nav-link"><p>アカウント管理</p></a></li>
                 <!-- <li class="nav-item"><router-link to="/settings-clinic" class="nav-link"><p>クリニツク管理</p></a></li>
                 <li class="nav-item"><router-link to="/settings-rank" class="nav-link"><p>ランク管理</p></a></li>
                 <li class="nav-item"><router-link to="/settings-staff" class="nav-link"><p>スタッフ管理</p></a></li>
@@ -128,6 +129,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </p>
             </a>
           </li>
+          @endcan
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

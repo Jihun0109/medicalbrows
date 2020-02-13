@@ -13,14 +13,6 @@
               <!-- /.card-header -->
               <div class="card-body">
                 
-                <!-- <div class="input-group mb-3">
-                    <vue-monthly-picker v-model="selectedMonth" :dateFormat="monthlyPickerSetting.dateFormat"
-                         :monthLabels="monthlyPickerSetting.monthLabels"
-                         :clearOption="false"
-                         :alignment="monthlyPickerSetting.alignment"
-                    >
-                    </vue-monthly-picker>                    
-                </div> -->
                 <div class="input-group mb-3">
                   
                 </div>
@@ -61,6 +53,7 @@
                             :css="css.table"
                             :row-class="onRowClass"                            
                             @vuetable:row-clicked="onRowCLicked"
+                            :per-page="lengthOfStaffs"
                     >
                   </vuetable>
                   </div>
@@ -83,8 +76,9 @@
                       </v-date-picker>
                     </div>
                     
-                    <div class="row mt-3 d-flex justify-content-center">                      
-                      <button class="btn btn-success" @click="saveShift">保 管</button>
+                    <div class="row mt-3 d-flex justify-content-center">
+                      <button class="btn btn-secondary mr-5" @click="selectAllDate">全選択</button>
+                      <button class="btn btn-success" @click="saveShift">保 存</button>
                     </div>
                   </div>
                 </div>
@@ -97,7 +91,6 @@
 </template>
 
 <script>
-import VueMonthlyPicker from 'vue-monthly-picker'
 import VCalendar from 'v-calendar';
 import Vuetable from 'vuetable-2'
 
@@ -105,6 +98,18 @@ import moment from 'moment'
 
 export default {
     methods: {
+        selectAllDate(){
+            let startDay = new Date(this.selectedMonth['year'], this.selectedMonth['month']-1,1);
+            let endDay = new Date(this.selectedMonth['year'], this.selectedMonth['month'],0);
+
+            this.selectedDate = [new Date(startDay)];
+            
+            while (startDay < endDay){
+              this.selectedDate.push(startDay);
+              var newDate = startDay.setDate(startDay.getDate() + 1);
+              startDay = new Date(newDate);
+            }
+        },
         saveShift(){
             if (this.selected_id == -1){
               toast.fire({
@@ -122,7 +127,7 @@ export default {
                 };
             console.log(payload);
 
-            axios.post('v1/shift/update', payload).
+            axios.post('/v1/shift/update', payload).
             then(({ data }) => {
                 
             });
@@ -136,7 +141,7 @@ export default {
             this.getShift(this.selected_id, page.year, page.month);
         },
         getShift(staff_id, year, month){
-            axios.post('v1/shift/get', {'staff_id':staff_id, 'year':year, 'month':month}).
+            axios.post('/v1/shift/get', {'staff_id':staff_id, 'year':year, 'month':month}).
             then(({ data }) => {
                 this.selectedDate = data.map(d => moment(d).toDate());
             });
@@ -152,7 +157,7 @@ export default {
               this.getShift(this.selected_id, this.selectedMonth.year, this.selectedMonth.month);
         },
         loadClinicList() {
-            axios.get('api/clinic').
+            axios.get('/api/clinic').
             then(({ data }) => {
                 this.clinics = data;
                 this.selected_clinic_id = this.clinics[0].id;
@@ -166,14 +171,14 @@ export default {
             this.loadStaffRanksList();
         },
         loadStaffRanksList() {
-            axios.get('v1/shift/clinic/' + this.selected_clinic_id + '/' + this.staff_type).
+            axios.get('/v1/shift/clinic/' + this.selected_clinic_id + '/' + this.staff_type).
             then(({ data }) => {
                 this.staffs = data;
+                this.lengthOfStaffs = data.length;
             });
         }
     },
-    components: {
-        VueMonthlyPicker,
+    components: {        
         VCalendar,
         Vuetable
     },
@@ -184,6 +189,7 @@ export default {
             selectedDate: [
               
             ],
+            lengthOfStaffs: 10,
             selected_id: -1,
             staff_type: 1,
             clinics: {},
@@ -191,23 +197,19 @@ export default {
             selectedMonth:  moment(),
             selected_clinic_id: 0,
             
-            monthlyPickerSetting :{
-                dateFormat: "YYYY年MM月",
-                alignment: "center",
-                monthLabels: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
-            },
             fields: [
               {
                 name: '__checkbox',
-                title: '',                
+                titleClass: 'center aligned',
+                dataClass: 'center aligned'
               },
               {
                 name: 'full_name',
-                title: 'Name',                
+                title: 'Name',
               },
               {
                 name: 'name',
-                title: 'Rank',                
+                title: 'Rank',
               },
             ],
             css: {

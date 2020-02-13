@@ -4,7 +4,14 @@
           <div class="col-12">              
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title"></h3>
+                <div class="card-title">
+                    <div class="input-group input-group-md">
+                        <input type="text" class="form-control" placeholder="検索したい文字列を入力" v-model="keyword" @keyup.enter="searchit">
+                        <span class="input-group-append">
+                            <button type="button" class="btn btn-info" @click="searchit">検索</button>
+                        </span>
+                    </div>
+                </div>
 
                 <div class="card-tools">
                   <button class="btn btn-success" @click="newModal">追加 <i class="fa fa-plus"></i></button>
@@ -104,16 +111,20 @@
                     address : '',
                     is_vacation : 0,
                 }),
-                editMode: false
+                editMode: false,
+                keyword: ""
             }
         },
         methods: {
+            searchit(){
+                this.loadList();
+            },
             loadList(){
-                axios.get('api/clinic').
+                axios.get('/api/clinic?keyword='+this.keyword).
                     then(({data}) => (this.data = data));
             },
             createData(){                
-                this.form.post('api/clinic')
+                this.form.post('/api/clinic')
                     .then((result)=>{                        
                         toast.fire({
                             icon: "success",
@@ -127,7 +138,7 @@
                     });         
             },
             updateRank(){
-                this.form.put('api/clinic/' + this.form.id)
+                this.form.put('/api/clinic/' + this.form.id)
                     .then(()=>{
                         toast.fire({
                                 icon: "success",
@@ -142,7 +153,7 @@
                     });
             },
             deleteData(id){
-                this.form.delete('api/clinic/' + id)
+                this.form.delete('/api/clinic/' + id)
                     .then((result)=>{
                         //if (result.message){
                             toast.fire({
