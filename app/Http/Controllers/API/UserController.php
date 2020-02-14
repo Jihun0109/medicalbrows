@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use TCG\Voyager\Facades\Voyager;
 use Illuminate\Support\Facades\Hash;
 
+
 class UserController extends Controller
 {
     /**
@@ -17,6 +18,19 @@ class UserController extends Controller
      */
     public function index()
     {
+        $keyword = \Request::get('keyword');
+        if ($keyword){
+            return DB::table('users')->
+                            join('roles','roles.id','users.role_id')->
+                            select('users.*')->
+                            where('users.is_deleted',0)->
+                            where(function($query) use ($keyword){
+                                $query->where('users.name','LIKE',"%".$keyword."%")->
+                                        orWhere('users.email','LIKE',"%".$keyword."%")->
+                                        orWhere('users.user_id','LIKE',"%".$keyword."%")->
+                                        orWhere('roles.display_name','LIKE',"%".$keyword."%");
+                          })->latest()->get();
+        }
         return Voyager::model('User')
                     ->where('is_deleted', 0)
                     ->latest()                    

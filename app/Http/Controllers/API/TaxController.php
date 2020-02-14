@@ -17,6 +17,13 @@ class TaxController extends Controller
      */
     public function index()
     {
+        $keyword = \Request::get('keyword');
+        if ($keyword){
+            return TblTaxRate::where('is_deleted', 0)->
+                              where(function($query) use ($keyword){
+                                    $query->where('name','LIKE',"%".$keyword."%");
+                              })->latest()->get();
+        }
         return TblTaxRate::where('is_deleted', 0)->
                         latest()->
                         get();

@@ -83,6 +83,10 @@ let routes = [{
         path: "/admin/settings-order",
         component: require("./components/Admin/Settings/SettingsOrder.vue")
             .default
+    },
+    {
+        path: "/",
+        component: require("./components/Customer/Main.vue").default
     }
 ];
 
@@ -139,8 +143,8 @@ Vue.filter("percentageSign", function(data) {
     return data + " " + "%";
 });
 
-
 const app = new Vue({
     el: "#app",
     router
 });
+

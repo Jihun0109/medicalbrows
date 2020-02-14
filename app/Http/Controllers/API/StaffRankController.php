@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\TblStaffRank;
 use Carbon\Carbon;
-
+use DB;
 
 use Illuminate\Validation\Rule;
 
@@ -21,6 +21,19 @@ class StaffRankController extends Controller
      */
     public function index()
     {
+        $keyword = \Request::get('keyword');
+        if ($keyword){
+            return DB::table('tbl_staff_ranks')->
+                join('tbl_staffs','tbl_staffs.id','tbl_staff_ranks.staff_id')->
+                join('tbl_ranks','tbl_ranks.id','tbl_staff_ranks.rank_id')->
+                select('tbl_staff_ranks.*')->
+                where('tbl_staff_ranks.is_deleted', 0)->
+                where(function($query) use ($keyword){
+                    $query->where('tbl_staffs.full_name','LIKE',"%".$keyword."%")->
+                            orWhere('tbl_staffs.alias','LIKE',"%".$keyword."%")->
+                            orWhere('tbl_ranks.name','LIKE',"%".$keyword."%");
+              })->latest()->get();
+        }
         return TblStaffRank::where('is_deleted', 0)->latest()->get();
     }
 

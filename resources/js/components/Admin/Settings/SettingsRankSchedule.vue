@@ -4,8 +4,14 @@
           <div class="col-12">              
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title"></h3>
-
+                <div class="card-title">
+                    <div class="input-group input-group-md">
+                        <input type="text" class="form-control" placeholder="検索したい文字列を入力" v-model="keyword" @keyup.enter="searchit">
+                        <span class="input-group-append">
+                            <button type="button" class="btn btn-info" @click="searchit">検索</button>
+                        </span>
+                    </div>
+                </div>
                 <div class="card-tools">
                   <button class="btn btn-success" @click="newModal">追加 <i class="fa fa-plus"></i></button>
                 </div>
@@ -133,24 +139,30 @@
             return {
                 data: {},
                 ranks:{},
-                parts:[{'id':0,'name':'アイブロウ'}],
+                parts:[{'id':1,'name':'アイブロウ'}],
                 form: new Form({
                     id : '',
                     rank_id : '',
-                    part_id : '',         
+                    part_id : 1,         
                     start_time: '',
                     end_time: '',
                     is_deleted: false
                 }),
-                editMode: false
+                editMode: false,
+                keyword: ''
             }
         },
         methods: {
+            searchit(){
+                axios.get('/api/rank-schedule?keyword=' + this.keyword).
+                    then(({data}) => {
+                        this.data = data;                        
+                        });
+            },
             loadList(){
                 axios.get('/api/rank-schedule').
                     then(({data}) => {
-                        this.data = data;
-                        console.log(this.data)
+                        this.data = data;                        
                         });
 
                 axios.get('/api/rank').

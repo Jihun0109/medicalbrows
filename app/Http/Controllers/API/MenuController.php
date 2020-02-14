@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\TblMenu;
 use Log;
+use DB;
 
 class MenuController extends Controller
 {
@@ -16,6 +17,21 @@ class MenuController extends Controller
      */
     public function index()
     {
+        $keyword = \Request::get('keyword');
+        if ($keyword){
+            return DB::table('tbl_menus')->
+                            join('tbl_ranks','tbl_ranks.id','tbl_menus.rank_id')->
+                            join('tbl_tax_rates','tbl_tax_rates.id','tbl_menus.tax_id')->
+                            select('tbl_menus.*')->
+                            where('tbl_menus.is_deleted',0)->
+                            where(function($query) use ($keyword){
+                                $query->where('tbl_menus.name','LIKE',"%".$keyword."%")->
+                                        orWhere('tbl_menus.code','LIKE',"%".$keyword."%")->
+                                        orWhere('tbl_menus.amount','LIKE',"%".$keyword."%")->
+                                        orWhere('tbl_ranks.name','LIKE',"%".$keyword."%")->
+                                        orWhere('tbl_tax_rates.name','LIKE',"%".$keyword."%");
+                          })->latest()->get();
+        }
         return TblMenu::where('is_deleted', 0)
                     ->latest()                    
                     ->paginate(20);
@@ -32,20 +48,23 @@ class MenuController extends Controller
         Log::error($request);
         $this->validate($request, [
             'name' => 'required|string|max:50',
+            'code' => 'required|string|max:20',
             'rank_id' => 'numeric',
             'tax_id' => 'numeric',
             'amount' => 'numeric',
-            'start_time' => 'required|date',
-            'end_time' => 'required|date|after:start_time',            
+            // 'start_time' => 'required|date',
+            // 'end_time' => 'required|date|after:start_time',
         ]);
         return TblMenu::create([
-            'name' => $request->name, 
+            'name' => $request->name,
+            'code' => $request->code,
             'rank_id' => $request->rank_id, 
             'tax_id' => $request->tax_id,
             'amount' => $request->amount,
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
             'is_deleted' => 0,
+            'is_vacation' => 0,
         ]);
     }
 
@@ -71,6 +90,7 @@ class MenuController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string|max:50',
+            'code' => 'required|string|max:20',
             'rank_id' => 'numeric',
             'tax_id' => 'numeric',
             'amount' => 'numeric',

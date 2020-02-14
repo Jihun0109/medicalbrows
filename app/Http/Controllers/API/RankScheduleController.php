@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\TblRankSchedule;
 use Log;
+use DB;
 
 class RankScheduleController extends Controller
 {
@@ -16,6 +17,18 @@ class RankScheduleController extends Controller
      */
     public function index()
     {
+        $keyword = \Request::get('keyword');
+        if ($keyword){
+            return DB::table('tbl_rank_schedules')->
+                            join('tbl_ranks','tbl_ranks.id','tbl_rank_schedules.rank_id')->
+                            join('tbl_operable_parts','tbl_operable_parts.id','tbl_rank_schedules.part_id')->
+                            select('tbl_rank_schedules.*')->
+                            where('tbl_rank_schedules.is_deleted',0)->
+                            where(function($query) use ($keyword){
+                                $query->where('tbl_ranks.name','LIKE',"%".$keyword."%")->
+                                        orWhere('tbl_operable_parts.name','LIKE',"%".$keyword."%");
+                          })->latest()->get();
+        }
         return TblRankSchedule::where('is_deleted', 0)
                     ->latest()
                     ->get();

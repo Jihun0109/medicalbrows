@@ -4,7 +4,14 @@
           <div class="col-12">              
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title"></h3>
+                <div class="card-title">
+                    <div class="input-group input-group-md">
+                        <input type="text" class="form-control" placeholder="検索したい文字列を入力" v-model="keyword" @keyup.enter="searchit">
+                        <span class="input-group-append">
+                            <button type="button" class="btn btn-info" @click="searchit">検索</button>
+                        </span>
+                    </div>
+                </div>
 
                 <div class="card-tools">
                   <button class="btn btn-success" @click="newModal">追加 <i class="fa fa-plus"></i></button>
@@ -16,6 +23,7 @@
                   <thead>
                     <tr>
                       <th>メニューID</th>
+                      <th>コード</th>
                       <th>メニュー名 </th>
                       <th>ランク名</th>                      
                       <th>料金</th>
@@ -28,6 +36,7 @@
                   <tbody>
                     <tr v-for="(d, index) in data" :key="d.id">
                       <td>{{ index+1 }}</td>
+                      <td>{{ d.code }}</td>
                       <td>{{ d.name }}</td>
                       <td>
                           <div v-for="r in ranks" :key="r.id">
@@ -70,8 +79,13 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label>メニュー名</label>
-                        <input v-model="form.name" type="text" name="name" class="form-control" :class="{'is-invalid':form.errors.has('name')}" placeholder="メニュー名 ">
+                        <input v-model="form.name" type="text" name="name" class="form-control" :class="{'is-invalid':form.errors.has('name')}" placeholder="メニュー名">
                         <has-error :form="form" field="name"></has-error>
+                    </div>
+                    <div class="form-group">
+                        <label>コード</label>
+                        <input v-model="form.code" type="text" name="code" class="form-control" :class="{'is-invalid':form.errors.has('code')}" placeholder="コード">
+                        <has-error :form="form" field="code"></has-error>
                     </div>
                     <div class="form-group">
                         <label>ランク名</label>
@@ -156,12 +170,21 @@
                     tax_id : '',                    
                     start_time: '',
                     end_time: '',
+                    code: '',
                     is_deleted: false
                 }),
-                editMode: false
+                editMode: false,
+                keyword: ''
             }
         },
         methods: {
+            searchit(){
+                axios.get('/api/menu?keyword=' + this.keyword).
+                    then(({data}) => {
+                        this.data = data.data
+                        console.log(this.data)
+                        });
+            },
             loadList(){
                 axios.get('/api/menu').
                     then(({data}) => {

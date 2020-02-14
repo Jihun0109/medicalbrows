@@ -4,8 +4,14 @@
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title"></h3>
-
+                <div class="card-title">
+                    <div class="input-group input-group-md">
+                        <input type="text" class="form-control" placeholder="検索したい文字列を入力" v-model="keyword" @keyup.enter="searchit">
+                        <span class="input-group-append">
+                            <button type="button" class="btn btn-info" @click="searchit">検索</button>
+                        </span>
+                    </div>
+                </div>
                 <div class="card-tools">
                   <button class="btn btn-success" @click="newModal">追加 <i class="fa fa-plus"></i></button>
                 </div>
@@ -116,10 +122,15 @@ import datetime from "vuejs-datetimepicker";
                     promo_date : '',
                     is_deleted : 0,
                 }),
-                editMode: false
+                editMode: false,
+                keyword: '',
             }
         },
-        methods: {            
+        methods: {
+            searchit(){
+                axios.get('/api/staff-rank?keyword=' + this.keyword).
+                    then(({data}) => (this.data = data));
+            },
             loadList(){
                 axios.get('/api/staff-rank').
                     then(({data}) => (this.data = data));
