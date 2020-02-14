@@ -14,7 +14,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
-<body class="hold-transition sidebar-mini sidebar-collapse">
+<body class="hold-transition sidebar-mini" id="body">
 <div class="wrapper" id="app">
 
   <!-- Navbar -->
@@ -22,7 +22,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>        
+        <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+        {{-- <a class="nav-link" data-toggle="control-sidebar" href="#"><i class="fas fa-bars"></i></a> --}}
+        
       </li>      
     </ul>
 
@@ -82,7 +84,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
 
-            <li class="nav-item">
+            <li class="nav-item clickable">
                 <!-- <router-link to="/reservations" class="nav-link"> -->
                 <a href="/admin/reservations"  class="nav-link">
                   <i class="nav-icon fas fa-calendar-alt"></i>
@@ -99,7 +101,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </p>
             </a>
             <ul class="nav nav-treeview">
-                <li class="nav-item"><a href="/admin/settings-clinic" class="nav-link"><p>クリニツク管理</p></a></li>
+                {{-- <li class="nav-item"><a href="/admin/settings-clinic" class="nav-link"><p>クリニツク管理</p></a></li>
                 <li class="nav-item"><a href="/admin/settings-rank" class="nav-link"><p>ランク管理</p></a></li>
                 <li class="nav-item"><a href="/admin/settings-staff" class="nav-link"><p>スタッフ管理</p></a></li>
                 <li class="nav-item"><a href="/admin/settings-staff-rank" class="nav-link"><p>スタッフ ランク管理</p></a></li>
@@ -107,21 +109,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <li class="nav-item"><a href="/admin/settings-tax" class="nav-link"><p>税率管理</p></a></li>
                 <li class="nav-item"><a href="/admin/settings-shift" class="nav-link"><p>シフト管理</p></a></li>
                 <li class="nav-item"><a href="/admin/settings-rank-schedule" class="nav-link"><p>ランクスケジュール管理</p></a></li>
-                <li class="nav-item"><a href="/admin/settings-account" class="nav-link"><p>アカウント管理</p></a></li>
-                <!-- <li class="nav-item"><router-link to="/settings-clinic" class="nav-link"><p>クリニツク管理</p></a></li>
-                <li class="nav-item"><router-link to="/settings-rank" class="nav-link"><p>ランク管理</p></a></li>
-                <li class="nav-item"><router-link to="/settings-staff" class="nav-link"><p>スタッフ管理</p></a></li>
-                <li class="nav-item"><router-link to="/settings-staff-rank" class="nav-link"><p>スタッフ ランク管理</p></a></li>
-                <li class="nav-item"><router-link to="/settings-menu" class="nav-link"><p>メニュー管理</p></a></li>
-                <li class="nav-item"><router-link to="/settings-tax" class="nav-link"><p>税率管理</p></a></li>
-                <li class="nav-item"><router-link to="/settings-shift" class="nav-link"><p>シフト管理</p></a></li>
-                <li class="nav-item"><router-link to="/settings-rank-schedule" class="nav-link"><p>ランクスケジュール管理</p></a></li>
-                <li class="nav-item"><router-link to="/settings-account" class="nav-link"><p>アカウント管理</p></a></li> -->
-                {{-- <li class="nav-item"><router-link to="/settings-order" class="nav-link"><p>order 管理</p></a></li> --}}
+                <li class="nav-item"><a href="/admin/settings-account" class="nav-link"><p>アカウント管理</p></a></li> --}}
+                <li class="nav-item clickable"><router-link to="/admin/settings-clinic" class="nav-link"><p>クリニツク管理</p></a></li>
+                <li class="nav-item clickable"><router-link to="/admin/settings-rank" class="nav-link"><p>ランク管理</p></a></li>
+                <li class="nav-item clickable"><router-link to="/admin/settings-staff" class="nav-link"><p>スタッフ管理</p></a></li>
+                <li class="nav-item clickable"><router-link to="/admin/settings-staff-rank" class="nav-link"><p>スタッフ ランク管理</p></a></li>
+                <li class="nav-item clickable"><router-link to="/admin/settings-menu" class="nav-link"><p>メニュー管理</p></a></li>
+                <li class="nav-item clickable"><router-link to="/admin/settings-tax" class="nav-link"><p>税率管理</p></a></li>
+                <li class="nav-item clickable"><router-link to="/admin/settings-shift" class="nav-link"><p>シフト管理</p></a></li>
+                <li class="nav-item clickable"><router-link to="/admin/settings-rank-schedule" class="nav-link"><p>ランクスケジュール管理</p></a></li>
+                <li class="nav-item clickable"><router-link to="/admin/settings-account" class="nav-link"><p>アカウント管理</p></a></li>
+                {{-- <li class="nav-item"><router-link to="/admin/settings-order" class="nav-link"><p>order 管理</p></a></li> --}}
             </ul>
           </li>
           <li class="nav-item">
-            <!-- <router-link to="/logs" class="nav-link"> -->
+            <!-- <router-link to="/admin/logs" class="nav-link"> -->
             <a href="/logs"  class="nav-link">
               <i class="nav-icon fas fa-file-code"></i>
               <p>
@@ -136,7 +138,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     </div>
     <!-- /.sidebar -->
   </aside>
-
+  
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -149,7 +151,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <!-- Main content -->
     <div class="content">
-      <div class="container-fluid">
+      <div class="container-fluid" id="content">
         <router-view></router-view>
       </div><!-- /.container-fluid -->
     </div>
@@ -172,6 +174,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 <!-- REQUIRED SCRIPTS -->
 <script src="{{ asset('js/app.js') }}" defer></script>
+<script>
 
+</script>
 </body>
 </html>
