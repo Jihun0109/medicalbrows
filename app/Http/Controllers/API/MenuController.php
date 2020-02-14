@@ -34,7 +34,7 @@ class MenuController extends Controller
         }
         return TblMenu::where('is_deleted', 0)
                     ->latest()                    
-                    ->paginate(20);
+                    ->paginate(100);
     }
 
     /**

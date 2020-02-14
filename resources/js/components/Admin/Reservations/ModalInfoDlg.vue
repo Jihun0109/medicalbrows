@@ -50,10 +50,11 @@
                             <p>{{data.order_type}}</p>
                         </div>
                     </div>
-                    <div class="row">
-                        <label class="col-sm-3 col-form-label">施術者:</label>
+                    <div class="row" style="letter-spacing:-1.8px;">
+                        <label class="col-sm-3 col-form-label" v-if="data.rank_name === 'カウゼ'">カウンセラー:</label>
+                        <label class="col-sm-3 col-form-label" v-else>施術者:</label>
                         <div class="col-sm-8" >
-                            <p style="letter-spacing:-1.5px">{{data.staff_name + data.rank_full_name}}</p>
+                            <p style="letter-spacing:-1.5px">{{data.staff_name + '【' + data.rank_full_name + '】'}}</p>
                         </div>
                     </div>
                     <div class="row">
@@ -191,7 +192,7 @@
             }
         },
         mounted () {
-            //this.getUsers()
+
         },
         created(){
             Bus.$on('sendCustInfo',(customerData) =>{
@@ -202,10 +203,11 @@
 
         methods: {
             onClickStateBtn(index){
-                this.tabindex = this.select_color[index];
-                $('#modalMessageBox').modal('show');
-                //this.statusChange();
-
+                if(this.data.order_status !== this.select_color[index]){
+                    this.tabindex = this.select_color[index];
+                    this.$emit('changedStatus', this.tabbtns[index]);
+                    $('#modalMessageBox').modal('show');                
+                }
             },
             statusChange() {                
                 axios.post('/v1/order-statusupdate',{ 'item': this.data, 'status': this.tabindex})

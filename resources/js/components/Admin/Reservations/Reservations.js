@@ -25,6 +25,7 @@ export default {
     },
     data() {
         return {
+            order_status: '',
             hdlayout: [], //JSON.parse(JSON.stringify(hdLayout)),
             conlayout: [], //JSON.parse(JSON.stringify([])),
             timelayout: [],
@@ -54,6 +55,7 @@ export default {
                 staff_name: '',
             },
             item: {},
+            bCallWatch: 0,
         }
     },
     mounted() {
@@ -70,14 +72,19 @@ export default {
         console.log('Component created.');
         this.loadClinicList();
         //Wed Feb 19 2020 00:00:00 GMT+0800 (China Standard Time)
-        this.selectedDate = new Date('2020-02-12');
+        this.selectedDate = new Date();
     },
     watch: {
         selectedDate(val) {
             this.loadStaffRanksList();
         }
     },
+
     methods: {
+        onStatusChanged: function(status) {
+            this.order_status = status;
+        },
+
         confirmBtn: function() {
             Bus.$emit('confirmClicked');
             $('#modalMessageBox').modal('hide');
@@ -85,12 +92,10 @@ export default {
 
         increment: function() {
             this.selectedDate = new Date(moment(this.selectedDate).add(1, "days"));
-            this.loadStaffRanksList();
         },
 
         decrement: function() {
             this.selectedDate = new Date(moment(this.selectedDate).subtract(1, "days"));
-            this.loadStaffRanksList();
         },
         onOrderCreated: function(item) {
             this.conlayout.forEach(function(cell) {
@@ -124,10 +129,6 @@ export default {
                 this.selected_clinic_id = this.clinics[0].id;
                 this.selected_clinic_name = this.clinics[0].name;
                 this.loadStaffRanksList();
-            });
-            axios.get('/api/menu').
-            then(({ data }) => {
-                this.menus = data.data;
             });
         },
         loadStaffRanksList() {
@@ -191,32 +192,37 @@ export default {
                     }
                     return;
                 }
-                axios.post('/v1/reservation/counselor_list', { 'clinic_id': this.selected_clinic_id, 'date': this.selectedDate, 'rank_schedule_id': item.rank_schedule_id }).
+                axios.post('/v1/reservation/menu_list', { 'rank_id': item.rank_id }).
                 then(({ data }) => {
-                    this.counselors = data;
-                    //선택된 시술자에 해당한 상담원목록을 얻고 그들의 현재 x,y좌표를 구한다. 이값은 신규인경우 상담원칸에 정보를 자동으로 채우는데 리용된다.
-                    for (var i = 0; i < this.counselors.length; i++) {
-                        var rs_id = this.counselors[i].interviewer_rank_schedule_id;
-                        var staff_id = this.counselors[i].interviewer_id;
-                        var filteredObj = this.conlayout.find(function(item, i) {
-                            if (item.rank_schedule_id == rs_id && item.staff_id == staff_id) {
-                                return i;
-                            }
-                        });
-                        this.counselors[i].x = filteredObj.x;
-                        this.counselors[i].y = filteredObj.y;
-                    }
-                    console.log(this.counselors);
-                    this.item = item;
-                    this.item['date'] = this.formatDate(this.selectedDate);
-                    if (item.order_history_id == 0) {
-                        // New order creating
-                        this.changeMode = false;
-                        $('#modalUpdateDlg').modal('show');
-                    } else {
-                        // order info and editing
-                        $('#modalInfoDlg').modal('show');
-                    }
+                    this.menus = data;
+                    console.log(this.menus, 'menu list log');
+                    axios.post('/v1/reservation/counselor_list', { 'clinic_id': this.selected_clinic_id, 'date': this.selectedDate, 'rank_schedule_id': item.rank_schedule_id }).
+                    then(({ data }) => {
+                        this.counselors = data;
+                        //선택된 시술자에 해당한 상담원목록을 얻고 그들의 현재 x,y좌표를 구한다. 이값은 신규인경우 상담원칸에 정보를 자동으로 채우는데 리용된다.
+                        for (var i = 0; i < this.counselors.length; i++) {
+                            var rs_id = this.counselors[i].interviewer_rank_schedule_id;
+                            var staff_id = this.counselors[i].interviewer_id;
+                            var filteredObj = this.conlayout.find(function(item, i) {
+                                if (item.rank_schedule_id == rs_id && item.staff_id == staff_id) {
+                                    return i;
+                                }
+                            });
+                            this.counselors[i].x = filteredObj.x;
+                            this.counselors[i].y = filteredObj.y;
+                        }
+                        console.log(this.counselors);
+                        this.item = item;
+                        this.item['date'] = this.formatDate(this.selectedDate);
+                        if (item.order_history_id == 0) {
+                            // New order creating
+                            this.changeMode = false;
+                            $('#modalUpdateDlg').modal('show');
+                        } else {
+                            // order info and editing
+                            $('#modalInfoDlg').modal('show');
+                        }
+                    });
                 });
             }
         },

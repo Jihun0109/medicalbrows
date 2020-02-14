@@ -23,6 +23,7 @@ class TblOrderHistory extends Model
         'staff_choosed',
         'is_deleted',
         'rank_schedule_id',
-        'order_type'
+        'order_type',
+        'order_date',
     ];    
 }

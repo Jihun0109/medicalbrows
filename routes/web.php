@@ -41,6 +41,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
     Route::post('/reservation/staff_list', 'ReservationsController@staff_list');
     Route::post('/reservation/staff_rank_list', 'ReservationsController@staff_rank_list');
     Route::post('/reservation/counselor_list', 'ReservationsController@counselor_list');
+    Route::post('/reservation/menu_list', 'ReservationsController@menu_list');
 
     Route::post('/order-create', 'ReservationsController@orderCreate');
     Route::post('/order-update', 'ReservationsController@orderUpdate');

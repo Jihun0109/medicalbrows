@@ -2,7 +2,7 @@
     <div class="container">
         <!-- Info Modal -->
         <div class="modal fade" id="modalInfoDlg">
-            <ModalInfoDlg v-bind:data="this.item" @statusUpdated="onOrderCreated"></ModalInfoDlg>
+            <ModalInfoDlg v-bind:data="this.item" @statusUpdated="onOrderCreated" v-on:changedStatus="onStatusChanged"></ModalInfoDlg>
         </div>
         <!-- Update Modal -->
         <div class="modal fade" id="modalUpdateDlg" data-backdrop="static">
@@ -15,7 +15,7 @@
                 <div class="modal-content">
                     <!-- dialog body -->
                     <div class="modal-body justify-content-center" style="padding: 70px; font-width:blod;">
-                        ステータスを「XXX」に変更して宜しいですか？
+                        ステータスを「{{order_status}}」に変更して宜しいですか？
                     </div>
                     <!-- dialog buttons -->
                     <div class="modal-footer justify-content-center"> 

@@ -18,7 +18,7 @@
 <body class="layout-top-nav layout-navbar-fixed" style="height:auto;">
   <div class="wrapper">
     <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
-      <div class="container"><a href="index3.html" class="navbar-brand">
+      <div class="container"><a href="/" class="navbar-brand">
           <img src="{{ asset('img/logo.png') }}" alt="" class="brand-image" style="opacity: 0.8;">
           <span class="brand-text font-weight-light"></span>
         </a>
@@ -26,6 +26,9 @@
           <span class="navbar-toggler-icon"></span>
         </button> --}}
         <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
+          <li class="nav-item">
+            <a href="/admin" class="nav-link">管理者ログイン</a>
+          </li>
           <li class="nav-item">
             <a data-widget="control-sidebar" data-slide="true" href="#" class="nav-link">
               <i class="fas fa-th-large"></i>

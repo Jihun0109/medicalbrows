@@ -64,7 +64,7 @@
                                 <option disabled value="">Please select one</option>
                                 <option v-for="n in sr_list" :key="n.id" v-bind:value="n.name">{{n.name}}</option>
                             </select> -->
-                            <div style="letter-spacing: -1.2px">{{item.staff_name + item.rank_full_name}}</div>
+                            <div style="letter-spacing: -1.2px">{{item.staff_name + '【' + item.rank_full_name + '】'}}</div>
                         </div>
                     </div>
                     <fieldset class="form-group" style="margin-bottom:0px;">
@@ -87,7 +87,7 @@
                         <div class="col-sm-8"  style="padding-top: 7px;" v-show="item.rank_name !== 'カウゼ'">
                             <select v-model="form.menu_id" class="custom-select custom-select-sm form-control-sm" >
                                 <option disabled value="">Please select one</option>
-                                <option v-for="m in menus" :key="m.id" v-bind:value="m.id">{{m.name}}</option>
+                                <option v-for="m in menus" :key="m.id" v-bind:value="m.menu_id">{{m.name}}</option>
                             </select>
                         </div>
                     </div>
