@@ -556,7 +556,7 @@ class ReservationsController extends Controller
                     'menu_id' => $payLoad['menu_id'],
                     'order_route' => $payLoad['order_route'],
                     'is_deleted' => 0
-                ]);
+                ]);                
             }
         }
         else if ($payLoad['order_type'] == "カウンセ"){
@@ -592,6 +592,8 @@ class ReservationsController extends Controller
                 'is_deleted' => 0
             ]);
         }
+        Log::info("Order History Date");
+        Log::info($payLoad['item']['date']);
 
         $menu_info = DB::table('tbl_menus')->where('id', $order_history->menu_id)->first();
         $rank_info = DB::table('tbl_ranks')->where('id', $order_history->rank_id)->first();

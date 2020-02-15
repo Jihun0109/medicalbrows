@@ -45,17 +45,7 @@ export default {
             selectedDate: '',
             selected_clinic_id: 0,
             selected_clinic_name: '',
-            message: "Welcome, Please Wait....",
-            staffInfo: {
-                date: '',
-                clinic: '',
-                time: '',
-                order_type: '',
-                staff_rank: '',
-                staff_name: '',
-            },
-            item: {},
-            bCallWatch: 0,
+            item: {},            
         }
     },
     mounted() {
