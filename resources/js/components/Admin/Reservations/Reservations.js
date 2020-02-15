@@ -121,13 +121,16 @@ export default {
             var currentDateWithFormat = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
         },
         loadClinicList() {
-            axios.get('/api/clinic').
+            let url = '/api/clinic';
+            if (this.$gate.isClinic())
+                url = '/api/clinic?email=' + this.$gate.getEmail();
+            axios.get(url).
             then(({ data }) => {
                 this.clinics = data;
                 this.selected_clinic_id = this.clinics[0].id;
                 this.selected_clinic_name = this.clinics[0].name;
                 this.loadStaffRanksList();
-            });
+            });            
         },
         loadStaffRanksList() {
             //axios.get('v1/reservation/staff_list?clinic_id=' + this.selected_clinic_id ).

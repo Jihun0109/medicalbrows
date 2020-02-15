@@ -67,11 +67,12 @@
                         <label>クリニツク名</label>
                         <input v-model="form.name" type="text" name="name" class="form-control" :class="{'is-invalid':form.errors.has('name')}" placeholder="クリニツク名 ">
                         <has-error :form="form" field="name"></has-error>
-                    </div>
+                    </div>                    
                     <div class="form-group">
                         <label>メール</label>
-                        <input v-model="form.email" type="text" name="email" class="form-control" :class="{'is-invalid':form.errors.has('email')}" placeholder="メール">
-                        <has-error :form="form" field="email"></has-error>
+                        <select v-model="form.email" class="custom-select">
+                          <option v-for="u in users" :key="u" v-bind:value="u">{{ u }}</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>住所</label>
@@ -104,6 +105,7 @@
         data() {
             return {
                 data: {},
+                users: {},
                 form: new Form({
                     id : '',
                     name : '',
@@ -117,11 +119,15 @@
         },
         methods: {
             searchit(){
-                this.loadList();
-            },
-            loadList(){
                 axios.get('/api/clinic?keyword='+this.keyword).
                     then(({data}) => (this.data = data));
+            },
+            loadList(){
+                axios.get('/api/clinic').
+                    then(({data}) => (this.data = data));
+                axios.get('/v1/clinic/get-email').then(
+                    ({data}) => (this.users = data)
+                );
             },
             createData(){                
                 this.form.post('/api/clinic')

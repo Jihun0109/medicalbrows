@@ -43,9 +43,10 @@
             <Datepicker v-model="current_date"  @selected="dateSelected()" format="YYYY-MM-DD" width="80px"/>
         </div>
         -<datetime format="MM/DD/YYYY" width="300px" name='dob'></datetime>-->
-        <div class="el-row"> 
+        
+        <div class="el-row" v-if="$gate.isAdmin()">
             <button v-for="c in clinics" 
-                    :key="c.id"                     
+                    :key="c.id"
                     type="button" 
                     @click="clinicSelected(c)" 
                     class="el-button  el-button--primary el-button--medium" 

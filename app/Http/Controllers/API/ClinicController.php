@@ -5,9 +5,19 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\TblClinic;
+use Auth;
 
 class ClinicController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('api');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +25,11 @@ class ClinicController extends Controller
      */
     public function index()
     {
+        // $user = Auth::user();
+        // return $user;
         $keyword = \Request::get('keyword');
+        $clinic_email = \Request::get('email');
+
         if ($keyword){
             return TblClinic::where('is_deleted', 0)->
                               where(function($query) use ($keyword){
@@ -23,6 +37,9 @@ class ClinicController extends Controller
                                             orWhere('email','LIKE',"%".$keyword."%")->
                                             orWhere('address','LIKE',"%".$keyword."%");
                               })->latest()->get();
+        } else if ($clinic_email){
+            return TblClinic::where('is_deleted', 0)->
+                            where('email',$clinic_email)->get();
         }
 
         return TblClinic::where('is_deleted', 0)->latest()->get();

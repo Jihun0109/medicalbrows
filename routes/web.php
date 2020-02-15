@@ -50,6 +50,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
     Route::get('/shift/clinic/{clinic_id}/{staff_type}', 'ShiftController@listStaffList');
     Route::post('/shift/update', 'ShiftController@updateShift');
     Route::post('/shift/get', 'ShiftController@getShift');
+
+    Route::get('/clinic/get-email', 'API\UserController@getClinicIdsWithEmail');
 //     // Clinics
 //     Route::get('/clinic/list', 'ApiController@clinicList');
 //     Route::post('/clinic/add', 'ApiController@clinicAdd');

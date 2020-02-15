@@ -24,6 +24,9 @@ const toast = swal.mixin({
 
 window.toast = toast;
 
+import Gate from "./Gate";
+Vue.prototype.$gate = new Gate(window.user);
+
 Vue.use(VueRouter);
 
 let routes = [{
