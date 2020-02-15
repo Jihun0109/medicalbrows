@@ -50,7 +50,7 @@
                                     <label class="form-check-label">再診</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="order_type" value="カウンセリング" v-model="form.order_type">
+                                    <input class="form-check-input" type="radio" name="order_type" value="カウンセ" v-model="form.order_type">
                                     <label class="form-check-label">カウンセリング</label>
                                 </div>
                             </div>
@@ -61,7 +61,7 @@
                         <label class="col-sm-3 col-form-label" v-else>施術者:</label>
                         <div class="col-sm-8" style="padding-top: 7px;">
                             <!-- <select v-model="staff_rank" class="form-control form-control-sm" data-width="fit" id="exampleFormControlSelect1">
-                                <option disabled value="">Please select one</option>
+                                <option disabled value="">項目を選択してください</option>
                                 <option v-for="n in sr_list" :key="n.id" v-bind:value="n.name">{{n.name}}</option>
                             </select> -->
                             <div style="letter-spacing: -1.2px">{{item.staff_name + '【' + item.rank_full_name + '】'}}</div>
@@ -86,7 +86,7 @@
                         <label class="col-sm-3 col-form-label">メニュー:</label>
                         <div class="col-sm-8"  style="padding-top: 7px;" v-show="item.rank_name !== 'カウゼ'">
                             <select v-model="form.menu_id" class="custom-select custom-select-sm form-control-sm" >
-                                <option disabled value="">Please select one</option>
+                                <option disabled value="">項目を選択してください</option>
                                 <option v-for="m in menus" :key="m.id" v-bind:value="m.menu_id">{{m.name}}</option>
                             </select>
                         </div>
@@ -95,7 +95,7 @@
                         <label class="col-sm-3 col-form-label" style="letter-spacing: -1.8px;">カウンセラー:</label>
                         <div class="col-sm-8" style="padding-top: 7px;"  v-show="isShow(form.order_type)">
                             <select v-model="form.counselor" class="custom-select custom-select-sm form-control-sm">
-                                <option disabled value="">Please select one</option>
+                                <option disabled value="">項目を選択してください</option>
                                 <option v-for="c in counselors" :key="c.id" v-bind:value="c">{{c.timename}}</option>            
                             </select>
                         </div>
@@ -130,7 +130,7 @@
                         <label class="col-sm-3 col-form-label">予約ルー卜:</label>
                         <div class="col-sm-8">
                             <select v-model="form.order_route" class="custom-select custom-select-sm form-control-sm">
-                                <option disabled value="">Please select one</option>
+                                <option disabled value="">項目を選択してください</option>
                                 <option v-for="(r,index) in routes" :key="index" v-bind:value="r">{{r}}</option>
                             </select>
                         </div>
@@ -178,10 +178,9 @@
             }
         },
         mounted () {
-            console.log('modalupdateDlg mounted function');
+            
         },
         created() {
-            console.log('modalupdateDlg Component created.');
             this.loadInfo();            
         },
         methods: {
@@ -247,12 +246,11 @@
                 this.form.order_route = this.item.order_route;
                 this.form.order_serial_id = this.item.order_serial_id;
                 this.form.note = ''; //init
-                console.log(this.form,'log from loadInfo');
+                //console.log(this.form,'log from loadInfo');
             },
         },
         watch:{
             item: function(val){
-                console.log('watch...');
                 this.loadInfo();
             }
         }

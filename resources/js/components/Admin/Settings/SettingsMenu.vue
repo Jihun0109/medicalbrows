@@ -105,18 +105,16 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <h6>運用開始日</h6>
-                        <datetime
-                            format="YYYY-MM-DD H:i"
-                            v-model="form.start_time"
-                            placeholder="運用開始日"
-                            name="start_time"
-                            :class="{
-                                'is-invalid': form.errors.has(
-                                    'start_time'
-                                )
-                            }"
-                        ></datetime>
+                        <h6>運用開始日</h6>                        
+                        <v-date-picker
+                            locale="ja"
+                            mode='single'
+                            tint-color='#f142f4'
+                            v-model='form.start_time'                            
+                            is-double-paned                                 
+                            ref="calendar1"                            
+                        >
+                        </v-date-picker>
                         <has-error
                             :form="form"
                             field="start_time"
@@ -124,17 +122,15 @@
                     </div>
                     <div class="form-group">
                         <h6>運用終了日</h6>
-                        <datetime
-                            format="YYYY-MM-DD H:i"
-                            v-model="form.end_time"
-                            placeholder="運用終了日"
-                            name="end_time"
-                            :class="{
-                                'is-invalid': form.errors.has(
-                                    'end_time'
-                                )
-                            }"
-                        ></datetime>
+                        <v-date-picker
+                            locale="ja"
+                            mode='single'
+                            tint-color='#f142f4'
+                            v-model='form.end_time'
+                            is-double-paned
+                            ref="calendar2"
+                        >
+                        </v-date-picker>
                         <has-error
                             :form="form"
                             field="end_time"
@@ -153,10 +149,10 @@
         </div>
 </template>
 
-<script>
-    import datetime from "vuejs-datetimepicker";
+<script>    
+    import VCalendar from 'v-calendar';
     export default {
-        components: { datetime },
+        components: { VCalendar, },
         data() {
             return {
                 data: {},
@@ -166,15 +162,15 @@
                     id : '',
                     name : '',
                     rank_id : '',
-                    amount: 10000,
-                    tax_id : 1,                    
-                    start_time: new Date(),
-                    end_time: new Date(),
+                    amount: 0,
+                    tax_id : '',                    
+                    start_time: '',
+                    end_time: '',
                     code: '',
                     is_deleted: false
                 }),
                 editMode: false,
-                keyword: ''
+                keyword: '',
             }
         },
         methods: {

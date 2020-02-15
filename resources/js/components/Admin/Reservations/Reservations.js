@@ -59,7 +59,6 @@ export default {
         }
     },
     mounted() {
-        console.log('Component mounted.');
         this.index = this.conlayout.length;
         $('#modalInfoDlg').on('hidden.bs.modal', function() {
             $(".vue-grid-item").removeClass("selectedcolor");
@@ -69,7 +68,6 @@ export default {
         });
     },
     created() {
-        console.log('Component created.');
         this.loadClinicList();
         //Wed Feb 19 2020 00:00:00 GMT+0800 (China Standard Time)
         this.selectedDate = new Date();
@@ -105,6 +103,7 @@ export default {
                     cell.order_history_id = item.order_history_id;
                     cell.order_status = item.order_status;
                     cell.order_type = item.order_type;
+                    cell.order_route = item.order_route;
                     cell.menu_id = item.menu_id;
                     cell.menu_name = item.menu_name;
                     cell.staff_choosed = item.staff_choosed;
@@ -119,7 +118,6 @@ export default {
         },
         callFunction: function() {
             var currentDate = new Date();
-            console.log(currentDate);
             var currentDateWithFormat = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
         },
         loadClinicList() {
@@ -155,7 +153,6 @@ export default {
             var date = ('0' + dt.getDate()).slice(-2);
             var year = dt.getFullYear();
             var currentDateWithFormat = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
-            console.log(currentDateWithFormat);
             //var formattedDate = year + '年' + month + '月' + date + '日';
             var formattedDate = year + '-' + month + '-' + date;
             return formattedDate;
@@ -172,16 +169,18 @@ export default {
         },
 
         onClick: function(event, item, index) {
-            console.log("Item Info");
             if (item.selectable) {
                 console.log(item);
                 $(".vue-grid-item").removeClass("selectedcolor");
                 $(event.currentTarget).addClass("selectedcolor"); //defalt color when click..                
                 // Here this variable is Reservation Vue component (Parent of modals)
+                axios.post('/v1/reservation/menu_list', { 'rank_id': item.rank_id }).
+                then(({ data }) => {
+                    this.menus = data;
+                });
                 if (item.rank_id == 9 || item.rank_id == 8 || item.rank_id == 7) { //NA, T, counseler
                     this.item = item;
                     this.item['date'] = this.formatDate(this.selectedDate);
-                    console.log(this.item, 'after clicked item');
                     if (item.order_history_id == 0) {
                         // New order creating
                         this.changeMode = false;
@@ -192,38 +191,33 @@ export default {
                     }
                     return;
                 }
-                axios.post('/v1/reservation/menu_list', { 'rank_id': item.rank_id }).
+                axios.post('/v1/reservation/counselor_list', { 'clinic_id': this.selected_clinic_id, 'date': this.selectedDate, 'rank_schedule_id': item.rank_schedule_id }).
                 then(({ data }) => {
-                    this.menus = data;
-                    console.log(this.menus, 'menu list log');
-                    axios.post('/v1/reservation/counselor_list', { 'clinic_id': this.selected_clinic_id, 'date': this.selectedDate, 'rank_schedule_id': item.rank_schedule_id }).
-                    then(({ data }) => {
-                        this.counselors = data;
-                        //선택된 시술자에 해당한 상담원목록을 얻고 그들의 현재 x,y좌표를 구한다. 이값은 신규인경우 상담원칸에 정보를 자동으로 채우는데 리용된다.
-                        for (var i = 0; i < this.counselors.length; i++) {
-                            var rs_id = this.counselors[i].interviewer_rank_schedule_id;
-                            var staff_id = this.counselors[i].interviewer_id;
-                            var filteredObj = this.conlayout.find(function(item, i) {
-                                if (item.rank_schedule_id == rs_id && item.staff_id == staff_id) {
-                                    return i;
-                                }
-                            });
-                            this.counselors[i].x = filteredObj.x;
-                            this.counselors[i].y = filteredObj.y;
-                        }
-                        console.log(this.counselors);
-                        this.item = item;
-                        this.item['date'] = this.formatDate(this.selectedDate);
-                        if (item.order_history_id == 0) {
-                            // New order creating
-                            this.changeMode = false;
-                            $('#modalUpdateDlg').modal('show');
-                        } else {
-                            // order info and editing
-                            $('#modalInfoDlg').modal('show');
-                        }
-                    });
+                    this.counselors = data;
+                    //선택된 시술자에 해당한 상담원목록을 얻고 그들의 현재 x,y좌표를 구한다. 이값은 신규인경우 상담원칸에 정보를 자동으로 채우는데 리용된다.
+                    for (var i = 0; i < this.counselors.length; i++) {
+                        var rs_id = this.counselors[i].interviewer_rank_schedule_id;
+                        var staff_id = this.counselors[i].interviewer_id;
+                        var filteredObj = this.conlayout.find(function(item, i) {
+                            if (item.rank_schedule_id == rs_id && item.staff_id == staff_id) {
+                                return i;
+                            }
+                        });
+                        this.counselors[i].x = filteredObj.x;
+                        this.counselors[i].y = filteredObj.y;
+                    }
+                    this.item = item;
+                    this.item['date'] = this.formatDate(this.selectedDate);
+                    if (item.order_history_id == 0) {
+                        // New order creating
+                        this.changeMode = false;
+                        $('#modalUpdateDlg').modal('show');
+                    } else {
+                        // order info and editing
+                        $('#modalInfoDlg').modal('show');
+                    }
                 });
+
             }
         },
 

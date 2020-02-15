@@ -148,3 +148,32 @@ const app = new Vue({
     router
 });
 
+
+var body = document.getElementById('body');
+if (body){
+    if (window.innerWidth <= 1024){
+        document.getElementById('body').classList.add("sidebar-collapse");
+    } else {
+        document.getElementById('body').classList.remove("sidebar-collapse");
+    }
+}
+
+
+function hideSidebar(){
+    console.log("touch clickable item");
+    if (window.innerWidth <= 1024){
+        console.log("cssing...");//layout-fixed layout-navbar-fixed sidebar-mini sidebar-collapse
+        document.getElementById('body').classList.remove("sidebar-mini");        
+        document.getElementById('body').classList.add("sidebar-collapse");
+        document.getElementById('body').classList.remove("sidebar-open");
+    }
+}
+
+var clickableElements = document.getElementsByClassName('clickable');
+if (clickableElements){
+    for (var i=0; i<clickableElements.length; i++){
+        clickableElements[i].addEventListener("click", hideSidebar)
+        clickableElements[i].addEventListener("touch", hideSidebar)
+    }
+}
+

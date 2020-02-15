@@ -204,19 +204,19 @@
         methods: {
             onClickStateBtn(index){
                 if(this.data.order_status !== this.select_color[index]){
-                    this.tabindex = this.select_color[index];
+                    this.tabindex = index;
                     this.$emit('changedStatus', this.tabbtns[index]);
                     $('#modalMessageBox').modal('show');                
                 }
             },
             statusChange() {                
-                axios.post('/v1/order-statusupdate',{ 'item': this.data, 'status': this.tabindex})
+                axios.post('/v1/order-statusupdate',{ 'item': this.data, 'statusIdx': this.tabindex})
                 .then((result)=>{
                      toast.fire({
                         icon: "success",
                         title: "A status was update successfully."
                     });
-                    this.data.order_status = this.tabindex;
+                    this.data.order_status = this.select_color[this.tabindex];
                     this.$emit('statusUpdated', result.data);
                 })
                 .catch(()=>{
@@ -226,7 +226,6 @@
 
             changeBtnClick(){
                 this.changeMode = false;
-                console.log(app.$refs.modalUpdateDlg);
                 app.$refs.modalUpdateDlg.loadInfo();
                 $('#modalShowUpdate').modal('show');
             },

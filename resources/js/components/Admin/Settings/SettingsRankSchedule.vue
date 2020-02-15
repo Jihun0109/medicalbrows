@@ -84,7 +84,7 @@
                     </div>
                     <div class="form-group">
                         <h6>開始時間</h6>
-                        <datetime
+                        <datetime                            
                             format="H:i"
                             v-model="form.start_time"
                             placeholder="開始時間"
