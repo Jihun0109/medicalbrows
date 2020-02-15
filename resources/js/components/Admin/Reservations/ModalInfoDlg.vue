@@ -103,12 +103,12 @@
                     </div>
                     <div class="row">
                         <label class="col-sm-3 col-form-label">備考:</label>
-                        <div class="col-sm-8" >
-                            <p></p>
+                        <div class="col-sm-10" >
+                            <pre>{{data.note}}</pre>
                         </div>
                     </div>
                     <div class="experience">
-                        <div class="row">
+                        <!-- <div class="row">
                             <label class="col-sm-7 col-form-label">経験:</label>
                             <div class="col-sm-3" >
                                 <p></p>
@@ -161,7 +161,7 @@
                             <div class="col-sm-3" >
                                 <p></p>
                             </div>
-                        </div> 
+                        </div>  -->
                     </div>
                 </div>
             </div>

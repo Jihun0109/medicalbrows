@@ -267,7 +267,7 @@ class ReservationsController extends Controller
                     join('tbl_customers','tbl_customers.id','tbl_orders.customer_id')->
                     select('tbl_order_histories.*','tbl_orders.order_serial_id','tbl_orders.order_route',
                             'tbl_customers.id as customer_id','tbl_customers.first_name', 'tbl_customers.last_name',
-                            'tbl_customers.phonenumber','tbl_customers.birthday')->                    
+                            'tbl_customers.phonenumber','tbl_customers.birthday','tbl_orders.note')->                    
                     where(['staff_id' => $staff_rank_with_schedules[$i]['staff_id'],'rank_schedule_id'=>$cur_schedule['id'],['tbl_order_histories.order_date', $selected_date]])->
                     first();
                 }else{
@@ -277,7 +277,7 @@ class ReservationsController extends Controller
                     join('tbl_customers','tbl_customers.id','tbl_orders.customer_id')->
                     select('tbl_order_histories.*','tbl_orders.order_serial_id','tbl_orders.order_route','tbl_menus.id as menu_id','tbl_menus.name as menu_name',
                             'tbl_customers.id as customer_id','tbl_customers.first_name', 'tbl_customers.last_name',
-                            'tbl_customers.phonenumber','tbl_customers.birthday')->                    
+                            'tbl_customers.phonenumber','tbl_customers.birthday','tbl_orders.note')->                    
                     where(['staff_id' => $staff_rank_with_schedules[$i]['staff_id'],'rank_schedule_id'=>$cur_schedule['id'],['tbl_order_histories.order_date', $selected_date]])->
                     first();
                 }
@@ -380,6 +380,8 @@ class ReservationsController extends Controller
                     'customer_phonenumber' => $order_history?$order_history->phonenumber:'',
                     'customer_birthday' => $order_history?$order_history->birthday:'',
                     'order_route' => $order_history?$order_history->order_route:'',
+
+                    'note' => $order_history?$order_history->note:'',
                 ]);
             }
             
