@@ -85,7 +85,7 @@ class ShiftController extends Controller
                                 whereBetween('date',[Carbon::parse($target_day)->startOfMonth(),Carbon::parse($target_day)->endOfMonth()])->
                                 select('date')->pluck('date')->toArray();
 
-        return $shift;        
+        return $shift;
         // return array_map(function($val) {
         //     return new Carbon($val, 'UTC');
         // },$shift);

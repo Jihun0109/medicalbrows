@@ -33,7 +33,7 @@ class UserController extends Controller
         }
         return Voyager::model('User')
                     ->where('is_deleted', 0)
-                    ->latest()                    
+                    ->latest()
                     ->get();
     }
 

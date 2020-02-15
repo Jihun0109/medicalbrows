@@ -14,7 +14,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
-<body class="hold-transition sidebar-mini" id="body">
+<body class="hold-transition layout-fixed layout-navbar-fixed sidebar-mini" id="body">
 <div class="wrapper" id="app">
 
   <!-- Navbar -->

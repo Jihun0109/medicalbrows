@@ -67,6 +67,9 @@
                     </form>
                 </div>
             </div>
+            <div class="d-flex justify-content-center">
+                <a class="btn btn-link" href="/">トップページに戻る</a>
+            </div>
         </div>
     </div>
 </div>
