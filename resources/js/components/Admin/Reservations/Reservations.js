@@ -101,6 +101,7 @@ export default {
                     cell.customer_last_name = item.customer_last_name;
                     cell.customer_phonenumber = item.customer_phonenumber;
                     cell.customer_birthday = item.customer_birthday;
+                    cell.note = item.note;
                     return false;
                 }
             });

@@ -622,6 +622,7 @@ class ReservationsController extends Controller
         $ret['customer_phonenumber']= $customer->phonenumber;//$payLoad['phonenumber'];
         $ret['customer_birthday']= $customer->birthday;//$payLoad['birthday'];
 
+        $ret['note'] = $order->note;
         //$ret['i'] = $order_serial_id.$ret['customer_first_name'];
         $ret['i'] =  '<div>【再診】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><div>';
         $ret_array = [];
@@ -680,6 +681,21 @@ class ReservationsController extends Controller
             //'order_route' => 'string|max:30',
         ]); 
         $order_serial_id = $payLoad['order_serial_id'];
+
+        if ($payLoad['order_type'] == "再診")
+        {
+            $order_history_ret = TblOrderHistory::where(['order_id'=>$order->id, 'is_deleted'=>0])
+                        ->update([
+                            'staff_id' => $payLoad['item']['staff_id'],
+                            'rank_id' => $payLoad['item']['rank_id'],
+                            'order_id' => $order->id,
+                            'status' => $order_status,
+                            'staff_choosed' => $payLoad['stuff_choosed'],
+                            'rank_schedule_id' => $payLoad['item']['rank_schedule_id'],
+                            'order_type' => $payLoad['order_type'],
+                            'is_deleted' => 0
+                        ]);
+        }     
 
         //update order table
                 
