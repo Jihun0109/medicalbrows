@@ -81,7 +81,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>体閉鎖</label>
+                        <label>休退職</label>
                         <select v-model="form.is_vacation" class="custom-select">
                           <option v-bind:value=0>アクティブ</option>
                           <option v-bind:value=1>閉鎖</option>
@@ -124,10 +124,7 @@
             },
             loadList(){
                 axios.get('/api/clinic').
-                    then(({data}) => (this.data = data));
-                axios.get('/v1/clinic/get-email').then(
-                    ({data}) => (this.users = data)
-                );
+                    then(({data}) => (this.data = data));                
             },
             createData(){                
                 this.form.post('/api/clinic')
@@ -175,14 +172,25 @@
             },
             newModal(){
                 this.editMode = false;
-                this.form.reset();                
+                this.form.reset();
+                this.getEmailList('');
                 $('#modalAddUser').modal('show');
             },
             editModal(data){
                 this.editMode = true;
                 this.form.fill(data);
                 this.form.password = "";
+                this.getEmailList(data.email);
                 $('#modalAddUser').modal('show');
+            },
+            getEmailList(targetEmail){
+                axios.get('/v1/clinic/get-email').then(
+                    ({data}) => {
+                        this.users = data;
+                        if (targetEmail)
+                            this.users.push(targetEmail);
+                    }
+                );
             }
         },
         created() {

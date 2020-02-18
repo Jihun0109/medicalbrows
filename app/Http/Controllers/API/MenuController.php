@@ -63,8 +63,8 @@ class MenuController extends Controller
             'rank_id' => $request->rank_id, 
             'tax_id' => $request->tax_id,
             'amount' => $request->amount,
-            'start_time' => Carbon::parse($request->start_time),
-            'end_time' => is_null($request->end_time)?null:Carbon::parse($request->end_time),
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
             'is_deleted' => 0,
             'is_vacation' => 0,
         ]);

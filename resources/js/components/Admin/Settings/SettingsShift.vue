@@ -73,7 +73,10 @@
                             is-inline                  
                             ref="calendar"
                             @update:from-page="pageChange"
-                            :min-date="new Date()"
+                            :min-date="minDate"
+                            :max-date="maxDate"
+                            :attributes='attrs'
+                            :popover="{ placement: 'bottom', visibility: 'click' }"
                       >
                       </v-date-picker>
                     </div>
@@ -96,7 +99,7 @@
 import VCalendar from 'v-calendar';
 import Vuetable from 'vuetable-2'
 
-import moment, { utc } from 'moment'
+import moment from 'moment'
 
 export default {
     methods: {
@@ -125,6 +128,10 @@ export default {
                   'staffs':staffs.length>0?staffs:[this.selected_id],
                   'dates': this.reverseDateArray(this.selectedDate, this.selectedMonth['year'], this.selectedMonth['month'])
                 };
+
+            console.log(payload);
+            console.log("convert from above to below");
+            payload.dates = payload.dates.map(d => moment(d).format("YYYY-MM-DD"));
             console.log(payload);
 
             axios.post('/v1/shift/update', payload).
@@ -143,8 +150,13 @@ export default {
         getShift(staff_id, year, month){
             axios.post('/v1/shift/get', {'staff_id':staff_id, 'year':year, 'month':month}).
             then(({ data }) => {
-                console.log(data);
-                this.selectedDate = this.reverseDateArray(data.map(d => this.localToUTCTime(new Date(d))), this.selectedMonth['year'], this.selectedMonth['month']);
+                let dates = data.map(d => moment(d).toDate());
+                console.log(dates);
+                this.selectedDate = this.reverseDateArray(dates, this.selectedMonth['year'], this.selectedMonth['month'], true);
+                if (this.selectedDate.length)
+                  this.is_selected_all = true;
+                else
+                  this.is_selected_all = false;
             });
         },
         onRowClass (dataItem, index) {
@@ -182,18 +194,20 @@ export default {
                 this.lengthOfStaffs = data.length;
             });
         },
-        utcToLocalTime(date){
-            var userTimezoneOffset = new Date().getTimezoneOffset() * 60000;
-            return new Date(date.getTime() - userTimezoneOffset);
-        },
-        localToUTCTime(date){
-            var userTimezoneOffset = new Date().getTimezoneOffset() * 60000;
-            return new Date(date.getTime() + userTimezoneOffset);
-        },
-        reverseDateArray(arrDates, year, month){
+        reverseDateArray(arrDates, year, month, load=false){
             console.log(year + "/" + month);
             console.log(arrDates);
             let startDay = new Date(year, month-1,1); // Get first day of specified month
+            console.log(moment().year());
+            console.log(moment().month());
+            // min date check
+            if (year === moment().year() && month === moment().month()+1)
+              startDay = new Date();
+
+            //
+            if (load && arrDates.length == 0)
+              return [];
+
             let endDay = new Date(year, month,0); // Get last day of specified month
             let allDays = [new Date(startDay)];
             let restDays = [];
@@ -290,6 +304,16 @@ export default {
                 border: '1px solid #dadada',
               },
             },
+            attrs: [
+                      {
+                        dot: {
+                          class: 'high-light'
+                        },
+                        dates: new Date()
+                      }
+                    ],
+            maxDate: new Date(moment().add(3, 'months').endOf('month')),
+            minDate: new Date()
         };
     },
     watch:{
@@ -336,5 +360,12 @@ export default {
         color:white;
     }
 
-</style>
+    .high-light{
+        background-color: #ff6666;
+        border-radius: 50% !important;
+        // border-width: 1px;
+        // border-style: solid;
+        // opacity: 0.8;
+    }
 
+</style>

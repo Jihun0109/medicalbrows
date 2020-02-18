@@ -156,8 +156,9 @@
         </div>
 </template>
 
-<script>    
+<script>
     import VCalendar from 'v-calendar';
+    var moment = require('moment');
     export default {
         components: { VCalendar, },
         data() {
@@ -209,11 +210,9 @@
                 axios.get('/api/tax').
                     then(({data}) => (this.taxs = data));
             },
-            createData(){
-                console.log(new Date(this.form.start_time));
-                console.log(this.utcToLocalTime(new Date(this.form.start_time)));
-                // this.form.start_time = this.utcToLocalTime(new Date(this.form.start_time));
-                // this.form.end_time = this.utcToLocalTime(new Date(this.form.end_time));
+            createData(){                
+                this.form.start_time = moment(this.form.start_time).format("YYYY-MM-DD");
+                this.form.end_time = this.form.end_time?moment(this.form.end_time).format("YYYY-MM-DD"):null;
                 this.form.post('/api/menu')
                     .then((result)=>{                        
                         toast.fire({
@@ -225,11 +224,15 @@
                     })
                     .catch(()=>{
 
+                    })
+                    .finally(()=>{
+                        this.form.start_time = new Date(this.form.start_time);
+                        this.form.end_time = this.form.end_time?new Date(this.form.end_time):null;
                     });         
             },
             updateRank(){                
-                this.form.start_time = this.utcToLocalTime(this.form.start_time);
-                this.form.end_time = this.utcToLocalTime(this.form.end_time);
+                this.form.start_time = moment(this.form.start_time).format("YYYY-MM-DD");
+                this.form.end_time = this.form.end_time?moment(this.form.end_time).format("YYYY-MM-DD"):null;
                 this.form.put('/api/menu/' + this.form.id)
                     .then(()=>{
                         toast.fire({
@@ -287,14 +290,6 @@
                 this.form.end_time = new Date(this.form.end_time);
                 $('#modalAddItem').modal('show');
             },
-            utcToLocalTime(date){
-                var userTimezoneOffset = new Date().getTimezoneOffset() * 60000;
-                return new Date(date.getTime() - userTimezoneOffset);
-            },
-            localToUTCTime(date){
-                var userTimezoneOffset = new Date().getTimezoneOffset() * 60000;
-                return new Date(date.getTime() + userTimezoneOffset);
-            },
         },
         created() {
             this.loadList();            
@@ -305,9 +300,9 @@
 <style lang="scss">
     .high-light{
         background-color: #ff6666;
+        border-radius: 50% !important;
         // border-width: 1px;
         // border-style: solid;
-        // border-radius: 1.8rem;
         // opacity: 0.8;
     }
 </style>

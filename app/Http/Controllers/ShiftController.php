@@ -59,19 +59,20 @@ class ShiftController extends Controller
         //return Carbon::parse($request->dates[0])->tz('UTC');
         foreach($staff_ids as $staff_id){
             //$o = microtime(true);
-            $target_day = Carbon::createFromDate($month['year'], $month['month'], 15)->tz(config('app.timezone'));
+            $target_day = Carbon::createFromDate($month['year'], $month['month'], 15);
             $dd = TblShiftHistory::where('staff_id',$staff_id)->
                 whereBetween('date',[Carbon::parse($target_day)->startOfMonth(),Carbon::parse($target_day)->endOfMonth()])->
                 delete();
             
             $data = [];
             foreach($dates as $date){
-                array_push($data, array('staff_id'=>$staff_id, 'date'=>Carbon::parse($date)->tz(config('app.timezone'))));
+                array_push($data, array('staff_id'=>$staff_id, 'date'=>$date));
             }
+            Log::error($data);
             TblShiftHistory::insert($data);
             //Log::error(microtime(true)-$o);
         }
-        $elasped = microtime(true) - $old_tick;
+        //$elasped = microtime(true) - $old_tick;
         //Log::info("save time elasped = ".$elasped);
         return array("result"=>"success", "message"=> "Saved successfully.");
     }
