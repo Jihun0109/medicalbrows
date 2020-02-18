@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\TblClinic;
 use Auth;
+use Log;
 
 class ClinicController extends Controller
 {
@@ -57,6 +58,7 @@ class ClinicController extends Controller
             'address' => 'required|string|max:50',
             'name' => 'required|string|max:50',
             'email' => 'required|string|email|max:120',
+            'is_vacation' => 'required|numeric|max:10',
         ]);
         return TblClinic::create([
                             'name' => $request->name,
@@ -87,6 +89,8 @@ class ClinicController extends Controller
      */
     public function update(Request $request, $id)
     {
+        Log::info($request);
+        Log::info($id);
         $this->validate($request, [
             'name' => 'required|string|max:50',
             'email' => 'required|string|email|max:120',//|unique:tbl_clinics,email,'.$id,

@@ -86,23 +86,26 @@
                     
                     <div class="form-group">
                         <label>スタツフ区分</label>
-                        <select v-model="form.staff_type_id" class="custom-select">
+                        <select v-model="form.staff_type_id" class="custom-select" name="staff_type_id" :class="{'is-invalid':form.errors.has('staff_type_id')}">
                           <option v-for="type in staff_types" :key="type.id" v-bind:value="type.id">{{ type.name }}</option>
                         </select>
+                        <has-error :form="form" field="staff_type_id"></has-error>
                     </div>
                     
                     <div class="form-group">
                         <label>クリニック名</label>
-                        <select v-model="form.clinic_id" class="custom-select">
+                        <select v-model="form.clinic_id" class="custom-select" name="clinic_id" :class="{'is-invalid':form.errors.has('clinic_id')}">
                           <option v-for="clinic in clinics" :key="clinic.id" v-bind:value="clinic.id">{{ clinic.name }}</option>
                         </select>
+                        <has-error :form="form" field="clinic_id"></has-error>
                     </div>
                     <div class="form-group">
                         <label>休退職</label>
-                        <select v-model="form.is_vacation" class="custom-select">
+                        <select v-model="form.is_vacation" class="custom-select" name="is_vacation" :class="{'is-invalid':form.errors.has('is_vacation')}">
                           <option v-bind:value=0>アクティブ</option>
                           <option v-bind:value=1>閉鎖</option>
                         </select>
+                        <has-error :form="form" field="is_vacation"></has-error>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -128,9 +131,9 @@
                     id : '',                    
                     full_name : '',
                     alias : '',
-                    staff_type_id : 1,
+                    staff_type_id : '',
                     clinic_id : '',
-                    is_vacation : 0,
+                    is_vacation : '',
                 }),
                 editMode: false,
                 keyword : ""
@@ -154,7 +157,7 @@
                     .then((result)=>{                        
                         toast.fire({
                             icon: "success",
-                            title: "A account was created successfully."
+                            title: "正しく保存!"
                         });
                         $('#modalAddStaff').modal('hide');
                         this.loadList();
@@ -168,7 +171,7 @@
                     .then(()=>{
                         toast.fire({
                                 icon: "success",
-                                title: "Updated successfully!"
+                                title: "更新成功!"
                             });
                             $('#modalAddStaff').modal('hide');
                             this.loadList();
@@ -179,19 +182,35 @@
                     });
             },
             deleteData(id){
-                this.form.delete('/api/staff/' + id)
-                    .then((result)=>{
-                        //if (result.message){
-                            toast.fire({
-                                icon: "success",
-                                title: "Deleted successfully!"
-                            });
-                            this.loadList();
-                        //}
-                    })
-                    .catch(()=>{
+               let _this = this;
+                swal.fire({
+                    title: '本気ですか？',
+                    text: "本当にアイテムを削除しますか？",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'はい',
+                    cancelButtonText: 'いいえ',
+                    reverseButtons: true
+                    }).then(function(isConfirm) {
+                        console.log(isConfirm);
+                    if (isConfirm.value == true) {
+                        _this.form.delete('/api/staff/' + id)
+                            .then((result)=>{
+                                //if (result.message){
+                                    toast.fire({
+                                        icon: "success",
+                                        title: "削除しました。"
+                                    });
+                                    _this.loadList();
+                                //}
+                            })
+                            .catch(()=>{
 
-                    });
+                            });
+                    }
+                })                          
             },
             newModal(){
                 this.editMode = false;

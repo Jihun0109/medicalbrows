@@ -70,7 +70,7 @@
             <div class="card">
                 <div class="card-body">
                     <select v-model="selectedmenu" class="form-control" >
-                        <option value="希望メニューを選択または入力" disabled>希望メニューを選択または入力</option>
+                        <option value="null" disabled>希望メニューを選択または入力</option>
                         <option v-for="m in menus" :key="m.id" v-bind:value="m">{{m.name}}</option>
                     </select>
                 </div>
@@ -107,7 +107,9 @@
         </div>      
         <div class="seldtime-card" v-show="sel_time_clinic !== null">
             <label class="mt-3" style="margin-bottom:0px;">予約可能時間帯・場所</label>            
-            <b-form-radio v-model="sel_time_clinic" v-for="(tc, index) in time_clinics" :key="index" value="tc" name="index" size="lg">{{tc}}</b-form-radio>            
+            <b-form-radio v-model="sel_time_clinic" v-for="(tc, index) in time_clinics" :key="index" :value="tc" name="radio-seltime" size="lg">{{tc}}</b-form-radio> 
+            <!-- <b-form-radio v-model="t" v-for="(mm, index) in test" :key="index + '-prefix'" value="mm" name="index" size="lg">{{mm}}</b-form-radio>     <b-form-radio v-model="t" v-for="(tc, index) in test" :key="index" name="radio-t" value="tc">新規</b-form-radio>    -->
+          
         </div>  
         <div class="confirm-btn">
             <div class="row justify-content-around">
@@ -222,7 +224,6 @@
                         this.time_clinics.push(element + ' ' + item.data.clinic);
                     });
                     this.sel_time_clinic = this.time_clinics[0];
-                    console.log(this.time_clinics);  
                 }
             },
             onClickPriceBtn(){
@@ -230,7 +231,8 @@
             },
             onClickNextBtn:function(){
                 toConfirmOrderInfo.data.menu_info = this.selectedmenu;
-                console.log(toConfirmOrderInfo.data);
+                console.log(toConfirmOrderInfo.data,'menuinfo from choosemenu.vue');
+                console.log(toChooseMenu.data,'orderinfo from choosemenu.vue');
                 this.$emit('changeStage', 2);
             },
             onClickPrevBtn:function(){
@@ -240,7 +242,7 @@
         }
     }
 </script>
-
++987
 <style lang="scss">
     .seldate-card{
         .vue-grid-item.static {

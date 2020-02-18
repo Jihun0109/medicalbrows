@@ -5,8 +5,8 @@
         </div>
         <div class="card">
             <div class="card-body row">
-                <div class="col-3">
-                    pdfImg
+                <div class="col-3 my-auto pdf-btn">
+                    <a data-toggle="modal" href="#"><i class="fas fa-file-pdf" style="font-size:3em; color:rgb(232, 86, 94);"></i></a>
                 </div>
                 <div class="col">
                     <div class="pdf-btn">
@@ -18,8 +18,8 @@
         </div>
         <div class="card">
             <div class="card-body row">
-                <div class="col-3">
-                    pdfImg
+                <div class="col-3 align-self-center pdf-btn">
+                    <a data-toggle="modal" href="#"><i class="fas fa-file-pdf" style="font-size:3em; color:rgb(232, 86, 94);"></i></a>
                 </div>
                 <div class="col">
                     <div class="pdf-btn">

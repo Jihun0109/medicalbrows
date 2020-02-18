@@ -214,7 +214,7 @@
                 .then((result)=>{
                      toast.fire({
                         icon: "success",
-                        title: "A status was update successfully."
+                        title: "状態の変更に成功"
                     });
                     this.data.order_status = this.select_color[this.tabindex];
                     this.$emit('statusUpdated', result.data);

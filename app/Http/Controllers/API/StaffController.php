@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\TblStaff;
 use DB;
+use Log;
 
 class StaffController extends Controller
 {
@@ -52,13 +53,13 @@ class StaffController extends Controller
      */
     public function store(Request $request)
     {
+        Log::info($request);
         $this->validate($request, [
             'full_name' => 'required|string|max:100',
             'alias' => 'required|string|max:100|unique:tbl_staffs',
             'staff_type_id' => 'required',
             'clinic_id' => 'required',
             'is_vacation' => 'required',
-            //'email' => 'required|string|email|max:120|unique:tbl_clinics',
         ]);
         return TblStaff::create([
                             'full_name' => $request->full_name,

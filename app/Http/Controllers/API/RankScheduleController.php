@@ -45,8 +45,8 @@ class RankScheduleController extends Controller
     {
         Log::error($request);
         $this->validate($request, [
-            'rank_id' => 'numeric',
-            'part_id' => 'numeric',
+            'rank_id' => 'required|numeric',
+            'part_id' => 'required|numeric',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',            
         ]);
@@ -80,10 +80,10 @@ class RankScheduleController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'rank_id' => 'numeric',
-            'part_id' => 'numeric',
-            'start_time' => 'required|time',
-            'end_time' => 'required|time|after:start_time',            
+            'rank_id' => 'required|numeric',
+            'part_id' => 'required|numeric',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',             
         ]);     
         $item = TblRankSchedule::findOrFail($id);
         $item->update($request->all());

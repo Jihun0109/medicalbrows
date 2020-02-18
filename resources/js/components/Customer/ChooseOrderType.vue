@@ -201,7 +201,7 @@ export default {
             toChooseMenu.data.date = this.selecteddate;
             toChooseMenu.data.time = '';
             toChooseMenu.data.clinic_info = this.selectedclinic;
-            console.log(toChooseMenu.data);
+            console.log(toChooseMenu.data, 'orderinfo from chooseordertype.vue'); 
             this.$emit('changeStage', 1);
         },
         onNewHelp: function(){

@@ -43,9 +43,15 @@ export default {
             menus: {},
             counselors: {},
             selectedDate: '',
+            attrs: [{
+                dot: {
+                    class: 'high-light'
+                },
+                dates: new Date()
+            }],
             selected_clinic_id: 0,
             selected_clinic_name: '',
-            item: {},            
+            item: {},
         }
     },
     mounted() {
@@ -121,7 +127,7 @@ export default {
                 this.selected_clinic_id = this.clinics[0].id;
                 this.selected_clinic_name = this.clinics[0].name;
                 this.loadStaffRanksList();
-            });            
+            });
         },
         loadStaffRanksList() {
             //axios.get('v1/reservation/staff_list?clinic_id=' + this.selected_clinic_id ).

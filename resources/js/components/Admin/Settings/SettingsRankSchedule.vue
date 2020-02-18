@@ -72,15 +72,17 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label>ランク名</label>
-                        <select v-model="form.rank_id" class="custom-select">
+                        <select v-model="form.rank_id" class="custom-select" name="rank_id" :class="{'is-invalid': form.errors.has('rank_id')}">
                           <option v-for="r in ranks" :key="r.id" v-bind:value="r.id">{{ r.name }}</option>
                         </select>
+                        <has-error :form="form" field="rank_id"></has-error>
                     </div>
                     <div class="form-group">
                         <label>部位</label>
-                        <select v-model="form.part_id" class="custom-select">                           
+                        <select v-model="form.part_id" class="custom-select" name="part_id" :class="{'is-invalid': form.errors.has('part_id')}">                         
                           <option v-for="t in parts" :key="t.id" v-bind:value="t.id">{{ t.name }}</option>
                         </select>
+                        <has-error :form="form" field="part_id"></has-error>
                     </div>
                     <div class="form-group">
                         <h6>開始時間</h6>
@@ -144,7 +146,7 @@
                 form: new Form({
                     id : '',
                     rank_id : '',
-                    part_id : 1,         
+                    part_id : '',         
                     start_time: '',
                     end_time: '',
                     is_deleted: false
@@ -178,7 +180,7 @@
                     .then((result)=>{                        
                         toast.fire({
                             icon: "success",
-                            title: "A Rank Schedule was created successfully."
+                            title: "正しく保存!"
                         });
                         $('#modalAddItem').modal('hide');
                         this.loadList();
@@ -192,7 +194,7 @@
                     .then(()=>{
                         toast.fire({
                                 icon: "success",
-                                title: "Updated successfully!"
+                                title: "更新成功!"
                             });
                             $('#modalAddItem').modal('hide');
                             this.loadList();
@@ -203,19 +205,35 @@
                     });
             },
             deleteData(id){
-                this.form.delete('/api/rank-schedule/' + id)
-                    .then((result)=>{
-                        //if (result.message){
-                            toast.fire({
-                                icon: "success",
-                                title: "Deleted successfully!"
-                            });
-                            this.loadList();
-                        //}
-                    })
-                    .catch(()=>{
+               let _this = this;
+                swal.fire({
+                    title: '本気ですか？',
+                    text: "本当にアイテムを削除しますか？",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'はい',
+                    cancelButtonText: 'いいえ',
+                    reverseButtons: true
+                    }).then(function(isConfirm) {
+                        console.log(isConfirm);
+                    if (isConfirm.value == true) {
+                        _this.form.delete('/api/rank-schedule/' + id)
+                            .then((result)=>{
+                                //if (result.message){
+                                    toast.fire({
+                                        icon: "success",
+                                        title: "削除しました。"
+                                    });
+                                    _this.loadList();
+                                //}
+                            })
+                            .catch(()=>{
 
-                    });
+                            });
+                    }
+                })                      
             },
             newModal(){
                 this.editMode = false;

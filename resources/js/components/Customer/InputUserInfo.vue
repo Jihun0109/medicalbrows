@@ -1,17 +1,18 @@
 <template>
     <div class="">
         <label class="col-8">＜予約者情報＞</label>
-        <form class="user-info">
+        <form id="form" class="user-info">
             <div class="form-group row">
                 <label class="col-4 col-form-label">氏名：</label>
                 <div class="col">
-                    <input type="text" class="form-control" placeholder="麻布　花子">
+                    <input v-model="form.first_name" type="text" class="form-control" placeholder="麻布　花子" 
+                    :class="{'is-invalid': form.errors.has('first_name')}">
                 </div>
             </div>
             <div class="form-group row">
                 <label class="col-4 col-form-label">フリガナ：</label>
                 <div class="col">
-                    <input type="text" class="form-control" placeholder="アザブ ハナコ">
+                    <input v-model="form.last_name" type="text" class="form-control" placeholder="アザブ ハナコ">
                 </div>
             </div>
             <div class="form-group row">
@@ -19,7 +20,7 @@
                 <div class="custom-control custom-switch" style="padding-top: 5px;">
                     <span class="switch switch-sm">
                         <label for="switch-sm">女性</label>
-                        <input type="checkbox" class="switch" id="switch-sm" >
+                        <input v-model="form.sex" type="checkbox" class="switch" id="switch-sm" >
                         <label for="switch-sm">男性</label>
                     </span>
                 </div>
@@ -27,35 +28,32 @@
             <div class="form-group row">
                 <label class="col-4 col-form-label">生年月日：</label>
                 <div class="col">
-                    <input type="date" class="form-control" placeholder="1989/12/01">
+                    <input v-model="form.birthday" type="date" class="form-control" placeholder="1989/12/01">
                 </div>
             </div>
             <div class="form-group row">
                 <label class="col-4 col-form-label">電話番号：</label>
                 <div class="col">
-                    <input type="text" class="form-control" placeholder="080-XXXX-XXXX">
+                    <input v-model="form.phonenumber" type="text" class="form-control" placeholder="080-XXXX-XXXX">
                 </div>
             </div>
             <div class="form-group row">
                 <label class="col-4 col-form-label">email：</label>
                 <div class="col">
-                    <input type="email" class="form-control" placeholder="hanako@aa.com">
+                    <input v-model="form.email" type="email" class="form-control" placeholder="hanako@aa.com" name="email" :class="{'is-invalid':form.errors.has('email')}">
                 </div>
             </div>
             <div class="form-group row">
                 <label class="col-4 col-form-label">郵便番号：</label>
                 <div class="col">
-                    <input type="text" class="form-control" placeholder="106-0031">
+                    <input v-model="form.zip_code" type="text" class="form-control" placeholder="106-0031">
                 </div>
             </div>
             <div class="form-group row">
                 <label class="col-4 col-form-label">都道府県：</label>
                 <div class="col">
-                    <select class="custom-select" required>
-                        <option value="">東京都</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
+                    <select v-model="form.city_name"  class="custom-select" required>
+                        <option v-for="(city, index) in cities" :key="index" :value="city" name="selcet-city">{{city}}</option>
                     </select>
                     <div class="invalid-feedback">Example invalid custom select feedback</div>
                 </div>
@@ -63,23 +61,24 @@
             <div class="form-group row">
                 <label class="col-4 col-form-label">住所1：</label>
                 <div class="col">
-                    <input type="text" class="form-control" placeholder="港区西麻布">
+                    <input v-model="form.address1" type="text" name="address" class="form-control" placeholder="港区西麻布">
                 </div>
             </div>
             <div class="form-group row">
                 <label class="col-4 col-form-label">住所2：</label>
                 <div class="col">
-                    <input type="text" class="form-control" placeholder="1-14-17">
+                    <input v-model="form.address2" type="text" name="address" class="form-control" placeholder="1-14-17">
                 </div>
             </div>
         </form>
+
         <div class="confirm-btn">
             <div class="row justify-content-around">
                 <div class="col-4">
                     <button type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
                 </div>
                 <div class="col-auto" style="margin-left: 40px;">
-                    <button type="button" class="btn btn-primary" style="backgroud:#307DB9; ">次へ</button>
+                    <button  @click="onClickNextBtn" type="button" class="btn btn-primary" style="backgroud:#307DB9; ">次へ</button>
                 </div>
             </div>
         </div>  
@@ -87,9 +86,63 @@
 </template>
 
 <script>
+    window.toConfirm_UserInfo = {
+            array:[],
+            calendar_info:null,
+            menu_info:null,
+            clinic_info:null,
+            staff_info:null,
+            user_info:null,
+        };
+    
     export default {
+        data () {
+            return {                
+                form: new Form({
+                    first_name:'',
+                    last_name:'',
+                    sex: 1,
+                    birthday:'',
+                    phonenumber:'',
+                    email:'',
+                    zip_code:'',
+                    city_name:'東京都',
+                    address1:'',
+                    address2:'',
+                }),
+                cities:['東京都','名古屋市','岡崎市'],
+            }
+
+        },
+        methods:{
+            onClickNextBtn:function(){
+                console.log(this.form,'userinfo from inputuserinfo.vue');  
+                console.log(toConfirmOrderInfo.data,'menuinfo from inputuserinfo.vue');                
+                console.log(toChooseMenu.data,'orderinfo from inputuserinfo.vue');  
+                this.arrayUserInfo();               
+                this.$emit('changeStage', 3);
+                
+            },
+            arrayUserInfo:function(){
+                toConfirm_UserInfo.array.push(this.form.first_name);
+                toConfirm_UserInfo.array.push(this.form.last_name);
+                if(this.form.sex){
+                    toConfirm_UserInfo.array.push('男性');
+                }
+                else{
+                    toConfirm_UserInfo.array.push('女性');
+                }
+                toConfirm_UserInfo.array.push(this.form.birthday);
+                toConfirm_UserInfo.array.push(this.form.phonenumber);
+                toConfirm_UserInfo.array.push(this.form.email);
+                toConfirm_UserInfo.array.push(this.form.zip_code);
+                toConfirm_UserInfo.array.push(this.form.city_name);
+                toConfirm_UserInfo.array.push(this.form.address1);
+                toConfirm_UserInfo.array.push(this.form.address2);
+            },
+        },
         mounted() {
-            console.log('Component mounted.')
+            console.log('Component mounted.');
         }
     }
 </script>

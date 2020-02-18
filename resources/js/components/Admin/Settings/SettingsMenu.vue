@@ -217,7 +217,7 @@
                     .then((result)=>{                        
                         toast.fire({
                             icon: "success",
-                            title: "A menu was created successfully."
+                            title: "正しく保存!"
                         });
                         $('#modalAddItem').modal('hide');
                         this.loadList();
@@ -237,7 +237,7 @@
                     .then(()=>{
                         toast.fire({
                                 icon: "success",
-                                title: "Updated successfully!"
+                                title: "更新成功!"
                             });
                             $('#modalAddItem').modal('hide');
                             this.loadList();
@@ -287,7 +287,7 @@
                 this.editMode = true;
                 this.form.fill(data);
                 this.form.start_time = new Date(this.form.start_time);
-                this.form.end_time = new Date(this.form.end_time);
+                this.form.end_time = this.form.end_time?new Date(this.form.end_time):null;
                 $('#modalAddItem').modal('show');
             },
         },

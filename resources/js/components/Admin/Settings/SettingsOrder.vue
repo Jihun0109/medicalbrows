@@ -221,7 +221,7 @@
                     .then((result)=>{                        
                         toast.fire({
                             icon: "success",
-                            title: "A order was created successfully."
+                            title: "正しく保存!"
                         });
                         $('#modalAddItem').modal('hide');
                         this.loadList();
@@ -229,7 +229,7 @@
                     .catch(()=>{
                         toast.fire({
                             icon: "failed",
-                            title: "A order was failed."
+                            title: "保存に失敗しました!"
                         });
                     });         
             },
@@ -238,7 +238,7 @@
                     .then(()=>{
                         toast.fire({
                                 icon: "success",
-                                title: "Updated successfully!"
+                                title: "更新成功!"
                             });
                             $('#modalAddItem').modal('hide');
                             this.loadList();
@@ -254,7 +254,7 @@
                         //if (result.message){
                             toast.fire({
                                 icon: "success",
-                                title: "Deleted successfully!"
+                                title: "成功を削除!"
                             });
                             this.loadList();
                         //}

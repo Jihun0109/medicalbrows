@@ -143,16 +143,18 @@
                                 <v-date-picker
                                     locale="ja"
                                     mode='single'
-                                    tint-color='#f142f4'
-                                    v-model='form.start_time'
-                                    is-double-paned                                 
-                                    ref="calendar1"                            
+                                    v-model='form.start_time'                            
+                                    :attributes='attrs'
+                                    ref="calendar1"
+                                    :popover="{ placement: 'bottom', visibility: 'click' }"
+                                    :class="{'is-invalid':form.errors.has('start_time')}"
                                 >
+                                    <input type="text" slot-scope='props' :value='props.inputValue' class="form-control" :class="{'is-invalid':form.errors.has('start_time')}">
                                 </v-date-picker>
-                                <has-error
-                                    :form="form"
-                                    field="start_time"
-                                ></has-error>
+                            <has-error
+                                :form="form"
+                                field="start_time"
+                            ></has-error>
                             </div>
                             <div class="form-group">
                                 <label>
@@ -161,16 +163,19 @@
                                 <v-date-picker
                                     locale="ja"
                                     mode='single'
-                                    tint-color='#f142f4'
                                     v-model='form.end_time'
                                     is-double-paned
+                                    :attributes='attrs'
                                     ref="calendar2"
+                                    :popover="{ placement: 'bottom', visibility: 'click' }"
+                                    :class="{'is-invalid':form.errors.has('end_time')}"
                                 >
+                                    <input type="text" slot-scope='props' :value='props.inputValue' class="form-control" :class="{'is-invalid':form.errors.has('end_time')}">
                                 </v-date-picker>
-                                <!-- <has-error
+                                <has-error
                                     :form="form"
                                     field="end_time"
-                                ></has-error> -->
+                                ></has-error>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -205,6 +210,7 @@
 
 <script>
 import VCalendar from 'v-calendar';
+var moment = require('moment');
 export default {
     components: { VCalendar, },
     data() {
@@ -219,7 +225,15 @@ export default {
                 is_deleted: false
             }),
             editMode: false,
-            keyword: ''
+            keyword: '',
+            attrs: [
+                {
+                    dot: {
+                        class: 'high-light'
+                    },
+                    dates: new Date()
+                }
+            ],   
         };
     },
     methods: {
@@ -230,50 +244,74 @@ export default {
             axios.get("/api/tax").then(({ data }) => (this.items = data));
         },
         createItem() {
-            this.form.start_time = this.utcToLocalTime(this.form.start_time);
-            if (this.form.end_time)
-                this.form.end_time = this.utcToLocalTime(this.form.end_time);
+            this.form.start_time = moment(this.form.start_time).format("YYYY-MM-DD");
+            this.form.end_time = this.form.end_time?moment(this.form.end_time).format("YYYY-MM-DD"):null;
             this.form
                 .post("/api/tax")
                 .then(result => {
                     toast.fire({
                         icon: "success",
-                        title: "New Tax rate Created!"
+                        title: "正しく保存!"
                     });
                     $("#modalAddItem").modal("hide");
                     this.loadItems();
                 })
-                .catch(() => {});
+                .catch(() => {})
+                .finally(()=> {
+                    this.form.start_time = new Date(this.form.start_time);
+                    this.form.end_time = this.form.end_time?new Date(this.form.end_time):null;
+                });
         },
         updateItem() {
-            this.form.start_time = this.utcToLocalTime(this.form.start_time);
-            if (this.form.end_time)
-                this.form.end_time = this.utcToLocalTime(this.form.end_time);
+            this.form.start_time = moment(this.form.start_time).format("YYYY-MM-DD");
+            this.form.end_time = this.form.end_time?moment(this.form.end_time).format("YYYY-MM-DD"):null;
+
             this.form
                 .put("/api/tax/" + this.form.id)
                 .then(() => {
                     toast.fire({
                         icon: "success",
-                        title: "Updated successfully!"
+                        title: "更新成功!"
                     });
                     $("#modalAddItem").modal("hide");
                     this.loadItems();
                 })
-                .catch(() => {});
+                .catch(() => {})
+                .finally(()=> {
+                    this.form.start_time = new Date(this.form.start_time);
+                    this.form.end_time = this.form.end_time?new Date(this.form.end_time):null;
+                });
         },
         deleteItem(id) {
-            this.form
-                .delete("/api/tax/" + id)
-                .then(result => {
-                    //if (result.message){
-                    toast.fire({
-                        icon: "success",
-                        title: "Deleted successfully!"
-                    });
-                    this.loadItems();
-                    //}
-                })
-                .catch(() => {});
+            let _this = this;
+            swal.fire({
+                title: '本気ですか？',
+                text: "本当にアイテムを削除しますか？",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'はい',
+                cancelButtonText: 'いいえ',
+                reverseButtons: true
+                }).then(function(isConfirm) {
+                    console.log(isConfirm);
+                if (isConfirm.value == true) {
+                    _this.form.delete('/api/tax/' + id)
+                        .then((result)=>{
+                            //if (result.message){
+                                toast.fire({
+                                    icon: "success",
+                                    title: "削除しました。"
+                                });
+                                _this.loadItems();
+                            //}
+                        })
+                        .catch(()=>{
+
+                        });
+                }
+            })                      
         },
         newModal() {
             this.editMode = false;
@@ -281,17 +319,15 @@ export default {
             $("#modalAddItem").modal("show");
         },
         editModal(item) {
+            console.log(item);
             this.editMode = true;
             this.form.fill(item);
             this.form.start_time = new Date(this.form.start_time);
-            this.form.end_time = new Date(this.form.end_time);
+            this.form.end_time = this.form.end_time?new Date(this.form.end_time):null;
+            
+            console.log(this.form.end_time);
             $("#modalAddItem").modal("show");
-        },
-        utcToLocalTime(date){
-            var userTimezoneOffset = new Date().getTimezoneOffset() * 60000;
-            return new Date(date.getTime() - userTimezoneOffset);
-        }
-        
+        }        
     },
     created() {
         this.loadItems();

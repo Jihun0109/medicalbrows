@@ -39,19 +39,16 @@ class TaxController extends Controller
     {
           $this->validate($request, [
             'name' => 'required|string|max:50',
-            'amount' => 'required|numeric|min:0.01',
+            'amount' => 'required|numeric|min:0|not_in:0',
             'start_time' => 'required|date',
-            //'end_time' => 'required|date|after:start_time',
-            // 'is_deleted' => 'required|numeric|max:1',
-            // 'email' => 'required|string|email|max:120|unique:tbl_users',
-            // 'password' => 'required|string|min:8'
+            'end_time' => 'nullable|date|after:start_time', 
         ]);
       
         return TblTaxRate::create([
             'name' => $request->name, 
             'amount'=>$request->amount, 
             'start_time' => Carbon::parse($request->start_time),
-            'end_time' => Carbon::parse($request->end_time),
+            'end_time' => is_null($request->end_time)?null:Carbon::parse($request->end_time),
             'is_deleted'=>0
         ]);
     }
@@ -79,12 +76,9 @@ class TaxController extends Controller
         $this->validate($request, [
 
             'name' => 'required|string|max:50',
-            'amount' => 'required|numeric|min:0.01',
+            'amount' => 'required|numeric|min:0|not_in:0',
             'start_time' => 'required|date',
-            //'end_time' => 'required|date|after:start_time',
-
-            // 'email' => 'required|string|email|max:120|unique:tbl_users,email,'.$user->id, //for updating for unique email
-            // 'password' => 'required|string|min:8'
+            'end_time' => 'nullable|date|after:start_time', 
         ]);
         Log::info($request);
         $request['start_time'] = Carbon::parse($request->start_time);

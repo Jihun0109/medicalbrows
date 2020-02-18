@@ -86,9 +86,7 @@
     import ConfirmOrderInfo from './ConfirmOrderInfo.vue';
     import OutputPdf from './OutputPdf.vue';
     import CompleteOrder from './CompleteOrder.vue';
-    import VueTimepicker from 'vue2-timepicker'
-    import 'vue2-timepicker/dist/VueTimepicker.css'
-Vue.use(VueTimepicker);
+
     export default {
         components: {        
             ChooseOrderType,
@@ -97,7 +95,6 @@ Vue.use(VueTimepicker);
             ConfirmOrderInfo,
             OutputPdf,
             CompleteOrder,
-            VueTimepicker,
         },
         data () {
             return {

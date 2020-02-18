@@ -109,7 +109,7 @@
                     .then((result)=>{                        
                         toast.fire({
                             icon: "success",
-                            title: "New Rank Created!"
+                            title: "正しく保存!"
                         });
                         $('#modalAddRank').modal('hide');
                         this.loadRanks();
@@ -123,7 +123,7 @@
                     .then(()=>{
                         toast.fire({
                                 icon: "success",
-                                title: "Updated successfully!"
+                                title: "更新成功!"
                             });
                             $('#modalAddRank').modal('hide');
                             this.loadRanks();
@@ -134,19 +134,35 @@
                     });
             },
             deletedRank(id){
-                this.form.delete('/api/rank/' + id)
-                    .then((result)=>{
-                        //if (result.message){
-                            toast.fire({
-                                icon: "success",
-                                title: "Deleted successfully!"
-                            });
-                            this.loadRanks();
-                        //}
-                    })
-                    .catch(()=>{
+                let _this = this;
+                swal.fire({
+                    title: '本気ですか？',
+                    text: "本当にアイテムを削除しますか？",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'はい',
+                    cancelButtonText: 'いいえ',
+                    reverseButtons: true
+                    }).then(function(isConfirm) {
+                        console.log(isConfirm);
+                    if (isConfirm.value == true) {
+                        _this.form.delete('/api/rank/' + id)
+                            .then((result)=>{
+                                //if (result.message){
+                                    toast.fire({
+                                        icon: "success",
+                                        title: "削除しました。"
+                                    });
+                                    _this.loadRanks();
+                                //}
+                            })
+                            .catch(()=>{
 
-                    });
+                            });
+                    }
+                })          
             },
             newModal(){
                 this.editMode = false;

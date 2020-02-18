@@ -6,37 +6,37 @@
                 <div class="row">
                     <label class="col-4 col-form-label">日付：</label>
                     <div class="col" >
-                        <p>2020年2月6日(木)</p>
+                        <p>{{calendar_info.date}}({{calendar_info.week}})</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">区分：</label>
                     <div class="col" >
-                        <p>再診</p>
+                        <p>{{order_type}}</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">時間：</label>
                     <div class="col" >
-                        <p>09:20 ～ 13:00</p>
+                        <p>{{calendar_info.time}}</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">場所：</label>
                     <div class="col" >
-                        <p>表参道院</p>
+                        <p>{{clinic_info.name}}</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">施術者：</label>
                     <div class="col" >
-                        <p>小澤 アーティスト</p>
+                        <p>{{staff_info.name}}</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">施術メニュー：</label>
                     <div class="col" >
-                        <p>アイブロウ2回コース 1/2</p>
+                        <p>{{menu_info.name}}</p>
                     </div>
                 </div>
             </div>
@@ -68,7 +68,12 @@
 <script>
     export default {
         data() {
-            return {
+            return {                
+                calendar_info: toConfirmOrderInfo.data.calendar_info,
+                order_type: toChooseMenu.data.order_type,
+                clinic_info: toChooseMenu.data.clinic_info,
+                staff_info: toChooseMenu.data.staff_info,
+                menu_info: toConfirmOrderInfo.data.menu_info,
                 types: [
                     '氏名：',
                     'フリガナ：',
@@ -81,18 +86,7 @@
                     '住所1：',
                     '住所2：'
                 ],
-                values: [
-                    '麻布 花子',
-                    'アザブ ハナコ',
-                    '女性',
-                    '1989/12/01',
-                    '080-XXXX-XXXX',
-                    'hanako@aa.com',
-                    '106-0031',
-                    '東京都',
-                    '港区西麻布',
-                    '1-14-17'
-                ],
+                values: toConfirm_UserInfo.array,
             }
         },
         mounted() {

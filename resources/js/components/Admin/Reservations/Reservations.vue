@@ -32,9 +32,14 @@
             <button @click="decrement()" type="button" class="btn btn-default btn-sm"><i class="fa fa-chevron-left"></i></button>
                 <v-date-picker
                     locale="ja"
-                    v-model='selectedDate'
-                    :input-debounce='500'
+                    mode='single'
+                    v-model='selectedDate'   
+                    is-double-paned                         
+                    :attributes='attrs'
+                    ref="calendar1"
+                    :popover="{ placement: 'bottom', visibility: 'click' }"
                 >
+                    <input type="text" slot-scope='props' :value='props.inputValue' class="form-control">
                 </v-date-picker>
             <button @click="increment()" type="button" class="btn btn-default btn-sm"><i class="fa fa-chevron-right"></i></button>
         </div>

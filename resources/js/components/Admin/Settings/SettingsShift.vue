@@ -118,7 +118,7 @@ export default {
             if (this.selected_id == -1 && staffs.length == 0){
               toast.fire({
                         icon: "warning",
-                        title: "Select more than one staff!"
+                        title: "複数のスタッフを選択!"
                     });
                     return;
             }

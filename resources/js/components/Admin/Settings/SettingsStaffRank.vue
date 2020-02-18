@@ -77,27 +77,31 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label>ランク名</label>
-                        <select v-model="form.rank_id" class="custom-select">
+                        <select v-model="form.rank_id" class="custom-select" name="rank_id" :class="{'is-invalid':form.errors.has('rank_id')}">
                           <option v-for="rank in ranks" :key="rank.id" v-bind:value="rank.id">{{ rank.name }}</option>
                         </select>
+                        <has-error :form="form" field="rank_id"></has-error>
                     </div>
                     <div class="form-group">
                         <label>スタッフ表記名</label>
-                        <select v-model="form.staff_id" class="custom-select">
+                        <select v-model="form.staff_id" class="custom-select" name="staff_id" :class="{'is-invalid':form.errors.has('staff_id')}">
                           <option v-for="staff in staffs" :key="staff.id" v-bind:value="staff.id">{{ staff.alias }}</option>
                         </select>
+                        <has-error :form="form" field="staff_id"></has-error>
                     </div>
                     <div class="form-group">
                         <label>昇格日</label>
                         <v-date-picker
                             locale="ja"
                             mode='single'
-                            tint-color='#f142f4'
-                            v-model='form.promo_date'
-                            is-double-paned                                 
-                            ref="calendar1"                            
+                            v-model='form.promo_date'   
+                            is-double-paned                         
+                            :attributes='attrs'
+                            ref="calendar1"
+                            :popover="{ placement: 'bottom', visibility: 'click' }"
                         >
-                        </v-date-picker>                        
+                            <input type="text" slot-scope='props' :value='props.inputValue' class="form-control">
+                        </v-date-picker>                      
                         <!-- <datetime format="YYYY-MM-DD" v-model="form.promo_date" placeholder="昇格日" name="promo_date" :class="{'is-invalid': form.errors.has('promo_date')}"></datetime> -->
                         <has-error :form="form" field="promo_date"></has-error>
                     </div>
@@ -133,6 +137,14 @@
                 }),
                 editMode: false,
                 keyword: '',
+                attrs: [
+                    {
+                        dot: {
+                            class: 'high-light'
+                        },
+                        dates: new Date()
+                    }
+                ],                
             }
         },
         methods: {
@@ -154,7 +166,7 @@
                     .then((result)=>{                        
                         toast.fire({
                             icon: "success",
-                            title: "A account was created successfully."
+                            title: "正しく保存!"
                         });
                         $('#modalAddStaffRank').modal('hide');
                         this.loadList();
@@ -169,7 +181,7 @@
                     .then(()=>{
                         toast.fire({
                                 icon: "success",
-                                title: "Updated successfully!"
+                                title: "更新成功!"
                             });
                             $('#modalAddStaffRank').modal('hide');
                             this.loadList();
@@ -180,19 +192,35 @@
                     });
             },
             deleteData(id){
-                this.form.delete('/api/staff-rank/' + id)
-                    .then((result)=>{
-                        //if (result.message){
-                            toast.fire({
-                                icon: "success",
-                                title: "Deleted successfully!"
-                            });
-                            this.loadList();
-                        //}
-                    })
-                    .catch(()=>{
+               let _this = this;
+                swal.fire({
+                    title: '本気ですか？',
+                    text: "本当にアイテムを削除しますか？",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'はい',
+                    cancelButtonText: 'いいえ',
+                    reverseButtons: true
+                    }).then(function(isConfirm) {
+                        console.log(isConfirm);
+                    if (isConfirm.value == true) {
+                        _this.form.delete('/api/staff-rank/' + id)
+                            .then((result)=>{
+                                //if (result.message){
+                                    toast.fire({
+                                        icon: "success",
+                                        title: "削除しました。"
+                                    });
+                                    _this.loadList();
+                                //}
+                            })
+                            .catch(()=>{
 
-                    });
+                            });
+                    }
+                })                          
             },
             newModal(){
                 this.editMode = false;

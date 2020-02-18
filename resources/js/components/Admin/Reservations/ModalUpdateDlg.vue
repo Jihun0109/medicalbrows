@@ -202,12 +202,12 @@
                             if(result.data == 0){
                                 toast.fire({
                                     icon: "error",
-                                    title: "Not exist reservation ID."
+                                    title: "予約IDが存在しません."
                                 });
                             }else{
                                 toast.fire({
                                     icon: "success",
-                                    title: "A Customer was created successfully."
+                                    title: "正しく保存!"
                                 });
                                 console.log(result.data);
                                 result.data.forEach(element => {                                    
@@ -225,7 +225,7 @@
                         .then((result)=>{
                             toast.fire({
                                 icon: "success",
-                                title: "A Customer was update successfully."
+                                title: "更新成功!"
                             });
                             $('#modalUpdateDlg').modal('hide');
                             this.$emit('orderCreated', result.data);
