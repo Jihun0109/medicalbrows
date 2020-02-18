@@ -7,8 +7,9 @@
 require("./bootstrap");
 
 window.Vue = require("vue");
-import BootstrapVue from "bootstrap-vue";
+import { BootstrapVue, FormCheckboxPlugin } from "bootstrap-vue";
 Vue.use(BootstrapVue);
+Vue.use(FormCheckboxPlugin);
 import moment from "moment";
 import VueRouter from "vue-router";
 import swal from "sweetalert2";
@@ -88,6 +89,11 @@ let routes = [{
             .default
     },
     {
+        path: "/admin/settings-operable-part",
+        component: require("./components/Admin/Settings/SettingsOperablePart.vue")
+            .default
+    },
+    {
         path: "/",
         component: require("./components/Customer/Main.vue").default
     }
@@ -153,8 +159,8 @@ const app = new Vue({
 
 
 var body = document.getElementById('body');
-if (body){
-    if (window.innerWidth <= 1024){
+if (body) {
+    if (window.innerWidth <= 1024) {
         document.getElementById('body').classList.add("sidebar-collapse");
     } else {
         document.getElementById('body').classList.remove("sidebar-collapse");
@@ -162,21 +168,20 @@ if (body){
 }
 
 
-function hideSidebar(){
+function hideSidebar() {
     console.log("touch clickable item");
-    if (window.innerWidth <= 1024){
-        console.log("cssing...");//layout-fixed layout-navbar-fixed sidebar-mini sidebar-collapse
-        document.getElementById('body').classList.remove("sidebar-mini");        
+    if (window.innerWidth <= 1024) {
+        console.log("cssing..."); //layout-fixed layout-navbar-fixed sidebar-mini sidebar-collapse
+        document.getElementById('body').classList.remove("sidebar-mini");
         document.getElementById('body').classList.add("sidebar-collapse");
         document.getElementById('body').classList.remove("sidebar-open");
     }
 }
 
 var clickableElements = document.getElementsByClassName('clickable');
-if (clickableElements){
-    for (var i=0; i<clickableElements.length; i++){
+if (clickableElements) {
+    for (var i = 0; i < clickableElements.length; i++) {
         clickableElements[i].addEventListener("click", hideSidebar)
         clickableElements[i].addEventListener("touch", hideSidebar)
     }
 }
-

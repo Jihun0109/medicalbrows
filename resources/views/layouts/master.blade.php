@@ -119,12 +119,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <li class="nav-item clickable"><router-link to="/admin/settings-shift" class="nav-link"><p>シフト管理</p></a></li>
                 <li class="nav-item clickable"><router-link to="/admin/settings-rank-schedule" class="nav-link"><p>ランクスケジュール管理</p></a></li>
                 <li class="nav-item clickable"><router-link to="/admin/settings-account" class="nav-link"><p>アカウント管理</p></a></li>
+                <li class="nav-item clickable"><router-link to="/admin/settings-operable-part" class="nav-link"><p>施術可能部位管理</p></a></li>
                 {{-- <li class="nav-item"><router-link to="/admin/settings-order" class="nav-link"><p>order 管理</p></a></li> --}}
             </ul>
           </li>
-          <li class="nav-item">
+          <li class="nav-item clickable">
             <!-- <router-link to="/admin/logs" class="nav-link"> -->
-            <a href="/logs"  class="nav-link">
+            <a href="/admin/logs"  class="nav-link">
               <i class="nav-icon fas fa-file-code"></i>
               <p>
                 ログ管理                

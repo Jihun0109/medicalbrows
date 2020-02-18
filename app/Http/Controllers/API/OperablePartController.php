@@ -14,7 +14,15 @@ class OperablePartController extends Controller
      */
     public function index()
     {
-        return TblOperablePart::latest()->get();
+        $keyword = \Request::get('keyword');
+        if ($keyword){
+            return TblOperablePart::where('is_deleted', 0)->
+                                    where(function($query) use ($keyword){
+                                    $query->where('name','LIKE',"%".$keyword."%");
+                              })->latest()->get();
+        }
+
+        return TblOperablePart::where('is_deleted', 0)->latest()->get();
     }
 
     /**
@@ -25,7 +33,12 @@ class OperablePartController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required|string|max:50',
+            // 'email' => 'required|string|email|max:120|unique:tbl_users',
+            // 'password' => 'required|string|min:8'
+        ]);
+        return TblOperablePart::create(['name' => $request->name]);
     }
 
     /**
@@ -48,7 +61,14 @@ class OperablePartController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required|string|max:50',
+            // 'email' => 'required|string|email|max:120|unique:tbl_users,email,'.$user->id, //for updating for unique email
+            // 'password' => 'required|string|min:8'
+        ]);
+        $part = TblOperablePart::findOrFail($id);
+        $part->update($request->all());
+        return $id;
     }
 
     /**
@@ -59,6 +79,10 @@ class OperablePartController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $part = TblOperablePart::findOrFail($id);
+        
+        $part->is_deleted = 1;
+        $part->save();
+        return ['message' => 'OperablePart deleted'];
     }
 }

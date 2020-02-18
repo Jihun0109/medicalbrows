@@ -20,7 +20,7 @@
 export default {
     props: ["value"],
     data () {
-        return {            
+        return {
             //data : this.value!=""?this.value:'経験 : \n妊娠・授乳・不妊治療 : \n通院歴・薬 : \n金アレ・アトピー・ケロイド確認 : \n眉ブリーチ・炎症・傷跡確認 : \n美容サービス・美容整形確認 : \n料金・所要時間 : \nHP : \nキャンセル規約 : ',
             cursor: 0,            
         }

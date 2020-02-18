@@ -109,7 +109,6 @@
                         <v-date-picker
                             locale="ja"
                             mode='single'
-                            tint-color='#f142f4'
                             v-model='form.start_time'                            
                             is-double-paned                                 
                             ref="calendar1"                            
@@ -125,7 +124,6 @@
                         <v-date-picker
                             locale="ja"
                             mode='single'
-                            tint-color='#f142f4'
                             v-model='form.end_time'
                             is-double-paned
                             ref="calendar2"
@@ -192,9 +190,11 @@
                     then(({data}) => (this.ranks = data));
 
                 axios.get('/api/tax').
-                    then(({data}) => (this.taxs = data));                    
+                    then(({data}) => (this.taxs = data));
             },
-            createData(){                
+            createData(){    
+                this.form.start_time = this.utcToLocalTime(this.form.start_time);
+                this.form.end_time = this.utcToLocalTime(this.form.end_time);
                 this.form.post('/api/menu')
                     .then((result)=>{                        
                         toast.fire({
@@ -208,7 +208,9 @@
 
                     });         
             },
-            updateRank(){
+            updateRank(){                
+                this.form.start_time = this.utcToLocalTime(this.form.start_time);
+                this.form.end_time = this.utcToLocalTime(this.form.end_time);
                 this.form.put('/api/menu/' + this.form.id)
                     .then(()=>{
                         toast.fire({
@@ -246,11 +248,17 @@
             editModal(data){
                 this.editMode = true;
                 this.form.fill(data);
+                this.form.start_time = new Date(this.form.start_time);
+                this.form.end_time = new Date(this.form.end_time);
                 $('#modalAddItem').modal('show');
+            },
+            utcToLocalTime(date){
+                var userTimezoneOffset = new Date().getTimezoneOffset() * 60000;
+                return new Date(date.getTime() - userTimezoneOffset);
             }
         },
         created() {
-            this.loadList();
+            this.loadList();            
         }
     }
 </script>

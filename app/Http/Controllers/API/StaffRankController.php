@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\TblStaffRank;
 use Carbon\Carbon;
 use DB;
-
+use Log;
 use Illuminate\Validation\Rule;
 
 
@@ -53,7 +53,6 @@ class StaffRankController extends Controller
                             })
                         ],
         ]);
-        
         return TblStaffRank::create([
             'rank_id' => $request->rank_id,
             'staff_id' => $request->staff_id,
@@ -89,9 +88,12 @@ class StaffRankController extends Controller
                             })
                         ],
         ]);
-
+        $values = $request;
+        Log::info($request->promo_date);
+        $request['promo_date'] = Carbon::parse($request->promo_date);
+        Log::info($values->promo_date);
         $staffrank = TblStaffRank::findOrFail($id);        
-        $staffrank->update($request->all());
+        $staffrank->update($values->all());
         return $id;
     }
 

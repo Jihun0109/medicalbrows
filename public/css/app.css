@@ -47285,3 +47285,17 @@ readers do not read off random characters that represent icons */
   margin-bottom: -0.2rem;
 }
 
+.main-footer {
+  padding: 0px !important;
+}
+
+.padding-fill {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#f0ff28), to(#f0ff28)), -webkit-gradient(linear, left top, left bottom, from(#f02828), to(#f02828));
+  background-image: linear-gradient(to bottom, #f0ff28 0%, #f0ff28 100%), linear-gradient(to bottom, #f02828 0%, #f02828 100%);
+  background-clip: content-box, padding-box;
+}
+
+.content-wrapper > .content {
+  padding: 0 0;
+}
+

@@ -205,11 +205,11 @@ export default {
               },
               {
                 name: 'full_name',
-                title: 'Name',
+                title: 'スタツフ名',
               },
               {
                 name: 'name',
-                title: 'Rank',
+                title: 'ランク',
               },
             ],
             css: {

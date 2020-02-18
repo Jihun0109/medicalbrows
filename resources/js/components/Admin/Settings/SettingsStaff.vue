@@ -27,7 +27,7 @@
                       <th>表記名</th>
                       <th>スタッフ区分</th>
                       <th>クリニック名</th>
-                      <th>休閉鎖</th>
+                      <th>休退職</th>
                       <th>編集する</th>
                     </tr>
                   </thead>
@@ -65,8 +65,8 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 v-show="editMode" class="modal-title" id="exampleModalLabel">アカウント更新</h5>
-                    <h5 v-show="!editMode" class="modal-title" id="exampleModalLabel">アカウント追加</h5>
+                    <h5 v-show="editMode" class="modal-title" id="exampleModalLabel">スタッフ更新</h5>
+                    <h5 v-show="!editMode" class="modal-title" id="exampleModalLabel">スタッフ追加</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>

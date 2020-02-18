@@ -67,8 +67,8 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 v-show="editMode" class="modal-title" id="exampleModalLabel">アカウント更新</h5>
-                    <h5 v-show="!editMode" class="modal-title" id="exampleModalLabel">アカウント追加</h5>
+                    <h5 v-show="editMode" class="modal-title" id="exampleModalLabel">スタッフ ランク更新</h5>
+                    <h5 v-show="!editMode" class="modal-title" id="exampleModalLabel">スタッフ ランク追加</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
@@ -89,7 +89,16 @@
                     </div>
                     <div class="form-group">
                         <label>昇格日</label>
-                        <datetime format="YYYY-MM-DD" v-model="form.promo_date" placeholder="昇格日" name="promo_date" :class="{'is-invalid': form.errors.has('promo_date')}"></datetime>
+                        <v-date-picker
+                            locale="ja"
+                            mode='single'
+                            tint-color='#f142f4'
+                            v-model='form.promo_date'
+                            is-double-paned                                 
+                            ref="calendar1"                            
+                        >
+                        </v-date-picker>                        
+                        <!-- <datetime format="YYYY-MM-DD" v-model="form.promo_date" placeholder="昇格日" name="promo_date" :class="{'is-invalid': form.errors.has('promo_date')}"></datetime> -->
                         <has-error :form="form" field="promo_date"></has-error>
                     </div>
                 </div>
@@ -106,9 +115,9 @@
 </template>
 
 <script>
-import datetime from "vuejs-datetimepicker";
+    import VCalendar from 'v-calendar';
     export default {
-        components: { datetime },
+        components: { VCalendar, },
         data() {
             return {
                 data: {},
@@ -139,7 +148,8 @@ import datetime from "vuejs-datetimepicker";
                 axios.get('/api/staff').
                     then(({data}) => (this.staffs = data));
             },
-            createData(){                
+            createData(){               
+                this.form.promo_date = this.utcToLocalTime(this.form.promo_date); 
                 this.form.post('/api/staff-rank')
                     .then((result)=>{                        
                         toast.fire({
@@ -154,6 +164,7 @@ import datetime from "vuejs-datetimepicker";
                     });         
             },
             updateRank(){
+                this.form.promo_date = this.utcToLocalTime(this.form.promo_date);
                 this.form.put('/api/staff-rank/' + this.form.id)
                     .then(()=>{
                         toast.fire({
@@ -185,14 +196,20 @@ import datetime from "vuejs-datetimepicker";
             },
             newModal(){
                 this.editMode = false;
-                this.form.reset();                
+                this.form.reset();
+                this.form.promo_date = new Date();
                 $('#modalAddStaffRank').modal('show');
             },
             editModal(data){
                 this.editMode = true;
                 this.form.fill(data);
+                this.form.promo_date = new Date(this.form.promo_date);
                 this.form.password = "";
                 $('#modalAddStaffRank').modal('show');
+            },
+            utcToLocalTime(date){
+                var userTimezoneOffset = new Date().getTimezoneOffset() * 60000;
+                return new Date(date.getTime() - userTimezoneOffset);
             }
         },
         created() {

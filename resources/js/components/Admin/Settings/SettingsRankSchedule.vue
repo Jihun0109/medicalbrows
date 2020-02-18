@@ -42,8 +42,8 @@
                               <div v-if="d.part_id == p.id">{{p.name}}</div>
                           </div>
                       </td>
-                      <td>{{ d.start_time}}</td>
-                      <td>{{ d.end_time}}</td>                      
+                      <td>{{ formatTime(d.start_time)}}</td>
+                      <td>{{ formatTime(d.end_time)}}</td>                      
                       <td>
                           <a href="#" @click="editModal(d)"><i class="fa fa-edit"></i></a> &nbsp;&nbsp;
                           <a href="#" @click="deleteData(d.id)"><i class="fa fa-trash"></i></a>
@@ -102,6 +102,7 @@
                     </div>
                     <div class="form-group">
                         <h6>終了時間</h6>
+
                         <datetime
                             format="H:i"
                             v-model="form.end_time"
@@ -153,6 +154,9 @@
             }
         },
         methods: {
+            formatTime(time){
+                return  time.substring(0,5);
+            },
             searchit(){
                 axios.get('/api/rank-schedule?keyword=' + this.keyword).
                     then(({data}) => {

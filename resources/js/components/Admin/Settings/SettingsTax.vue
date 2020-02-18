@@ -140,17 +140,15 @@
                                 <label>
                                     運用開始日
                                 </label>
-                                <datetime
-                                    format="YYYY-MM-DD"
-                                    v-model="form.start_time"
-                                    placeholder="適用開始日"
-                                    name="start_time"
-                                    :class="{
-                                        'is-invalid': form.errors.has(
-                                            'start_time'
-                                        )
-                                    }"
-                                ></datetime>
+                                <v-date-picker
+                                    locale="ja"
+                                    mode='single'
+                                    tint-color='#f142f4'
+                                    v-model='form.start_time'
+                                    is-double-paned                                 
+                                    ref="calendar1"                            
+                                >
+                                </v-date-picker>
                                 <has-error
                                     :form="form"
                                     field="start_time"
@@ -160,21 +158,19 @@
                                 <label>
                                     運用終了日
                                 </label>
-                                <datetime
-                                    format="YYYY-MM-DD"
-                                    v-model="form.end_time"
-                                    placeholder="適用終了日"
-                                    name="end_time"
-                                    :class="{
-                                        'is-invalid': form.errors.has(
-                                            'end_time'
-                                        )
-                                    }"
-                                ></datetime>
-                                <has-error
+                                <v-date-picker
+                                    locale="ja"
+                                    mode='single'
+                                    tint-color='#f142f4'
+                                    v-model='form.end_time'
+                                    is-double-paned
+                                    ref="calendar2"
+                                >
+                                </v-date-picker>
+                                <!-- <has-error
                                     :form="form"
                                     field="end_time"
-                                ></has-error>
+                                ></has-error> -->
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -208,9 +204,9 @@
 </template>
 
 <script>
-import datetime from "vuejs-datetimepicker";
+import VCalendar from 'v-calendar';
 export default {
-    components: { datetime },
+    components: { VCalendar, },
     data() {
         return {
             items: {},
@@ -234,6 +230,9 @@ export default {
             axios.get("/api/tax").then(({ data }) => (this.items = data));
         },
         createItem() {
+            this.form.start_time = this.utcToLocalTime(this.form.start_time);
+            if (this.form.end_time)
+                this.form.end_time = this.utcToLocalTime(this.form.end_time);
             this.form
                 .post("/api/tax")
                 .then(result => {
@@ -247,6 +246,9 @@ export default {
                 .catch(() => {});
         },
         updateItem() {
+            this.form.start_time = this.utcToLocalTime(this.form.start_time);
+            if (this.form.end_time)
+                this.form.end_time = this.utcToLocalTime(this.form.end_time);
             this.form
                 .put("/api/tax/" + this.form.id)
                 .then(() => {
@@ -281,8 +283,15 @@ export default {
         editModal(item) {
             this.editMode = true;
             this.form.fill(item);
+            this.form.start_time = new Date(this.form.start_time);
+            this.form.end_time = new Date(this.form.end_time);
             $("#modalAddItem").modal("show");
+        },
+        utcToLocalTime(date){
+            var userTimezoneOffset = new Date().getTimezoneOffset() * 60000;
+            return new Date(date.getTime() - userTimezoneOffset);
         }
+        
     },
     created() {
         this.loadItems();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\TblMenu;
+use Carbon\Carbon; 
 use Log;
 use DB;
 
@@ -30,7 +31,7 @@ class MenuController extends Controller
                                         orWhere('tbl_menus.amount','LIKE',"%".$keyword."%")->
                                         orWhere('tbl_ranks.name','LIKE',"%".$keyword."%")->
                                         orWhere('tbl_tax_rates.name','LIKE',"%".$keyword."%");
-                          })->latest()->get();
+                          })->latest()->paginate(100);
         }
         return TblMenu::where('is_deleted', 0)
                     ->latest()                    
@@ -45,7 +46,6 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
-        Log::error($request);
         $this->validate($request, [
             'name' => 'required|string|max:50',
             'code' => 'required|string|max:20',
@@ -61,8 +61,8 @@ class MenuController extends Controller
             'rank_id' => $request->rank_id, 
             'tax_id' => $request->tax_id,
             'amount' => $request->amount,
-            'start_time' => $request->start_time,
-            'end_time' => $request->end_time,
+            'start_time' => Carbon::parse($request->start_time),
+            'end_time' => Carbon::parse($request->end_time),
             'is_deleted' => 0,
             'is_vacation' => 0,
         ]);
@@ -96,9 +96,13 @@ class MenuController extends Controller
             'amount' => 'numeric',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',            
-        ]);      
+        ]);
+        $values = $request;
+        $values['start_time'] = Carbon::parse($request->start_time);
+        $values['end_time'] = Carbon::parse($request->end_time);
+        
         $item = TblMenu::findOrFail($id);
-        $item->update($request->all());
+        $item->update($values->all());
         return $id;
     }
 
