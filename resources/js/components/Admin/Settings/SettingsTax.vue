@@ -33,8 +33,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(item, index) in items" :key="item.id">
-                                <td>{{ index + 1 }}</td>
+                            <tr v-for="item in items" :key="item.id">
+                                <td>{{ item.id }}</td>
                                 <td>{{ item.name }}</td>
                                 <td>{{ item.amount | percentageSign}}</td>
                                 <td>{{ item.start_time }}</td>

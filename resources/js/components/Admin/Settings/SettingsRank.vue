@@ -29,8 +29,8 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(rank, index) in ranks" :key="rank.id">
-                      <td>{{index + 1}}</td>
+                    <tr v-for="rank in ranks" :key="rank.id">
+                      <td>{{rank.id}}</td>
                       <td>{{rank.name}}</td>
                       <td>{{rank.short_name}}</td>
                       <td>
