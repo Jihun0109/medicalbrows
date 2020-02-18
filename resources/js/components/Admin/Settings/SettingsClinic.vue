@@ -31,8 +31,8 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(d, index) in data" :key="d.id">
-                      <td>{{ index+1 }}</td>
+                    <tr v-for="d in data" :key="d.id">
+                      <td>{{ d.id }}</td>
                       <td>{{ d.name }}</td>
                       <td>{{ d.email }}</td>
                       <td>{{ d.address }}</td>

@@ -112,7 +112,7 @@ class UserController extends Controller
     public function getClinicIdsWithEmail(Request $request)
     {
         $clinic_role_id = DB::table('roles')->where('name','clinic')->value('id');
-        $registered_emails = DB::table('tbl_clinics')->where('is_deleted',0)->select('email')->pluck('email');
+        $registered_emails = DB::table('tbl_clinics')->select('email')->pluck('email');
         return DB::table('users')->                            
                             where('is_deleted',0)->
                             where('role_id', $clinic_role_id)->

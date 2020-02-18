@@ -28,6 +28,7 @@ class MenuController extends Controller
                             where('tbl_menus.is_deleted',0)->
                             where(function($query) use ($keyword){
                                 $query->where('tbl_menus.name','LIKE',"%".$keyword."%")->
+                                        orWhere('tbl_menus.id','LIKE',"%".$keyword."%")->
                                         orWhere('tbl_menus.code','LIKE',"%".$keyword."%")->
                                         orWhere('tbl_menus.amount','LIKE',"%".$keyword."%")->
                                         orWhere('tbl_ranks.name','LIKE',"%".$keyword."%")->
