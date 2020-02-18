@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use DB;
 use Carbon\Carbon;
 use App\TblShiftHistory;
+use Log;
 
 class ShiftController extends Controller
 {
@@ -50,26 +51,28 @@ class ShiftController extends Controller
 
     public function updateShift(Request $request)
     {
+        //$old_tick = microtime(true);
         $staff_ids = $request->staffs;
         $dates = $request->dates;
         $month = $request->month;
 
         //return Carbon::parse($request->dates[0])->tz('UTC');
         foreach($staff_ids as $staff_id){
+            //$o = microtime(true);
             $target_day = Carbon::createFromDate($month['year'], $month['month'], 15)->tz(config('app.timezone'));
-            
             $dd = TblShiftHistory::where('staff_id',$staff_id)->
-                                    whereBetween('date',[Carbon::parse($target_day)->startOfMonth(),Carbon::parse($target_day)->endOfMonth()])->
-                                    delete();
+                whereBetween('date',[Carbon::parse($target_day)->startOfMonth(),Carbon::parse($target_day)->endOfMonth()])->
+                delete();
             
+            $data = [];
             foreach($dates as $date){
-                TblShiftHistory::create([
-                        'staff_id' => $staff_id,
-                        'date' => Carbon::parse($date)->tz(config('app.timezone'))
-                ]);
+                array_push($data, array('staff_id'=>$staff_id, 'date'=>Carbon::parse($date)->tz(config('app.timezone'))));
             }
+            TblShiftHistory::insert($data);
+            //Log::error(microtime(true)-$o);
         }
-
+        $elasped = microtime(true) - $old_tick;
+        //Log::info("save time elasped = ".$elasped);
         return array("result"=>"success", "message"=> "Saved successfully.");
     }
 

@@ -101,7 +101,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </p>
             </a>
             <ul class="nav nav-treeview">
-                {{-- <li class="nav-item"><a href="/admin/settings-clinic" class="nav-link"><p>クリニツク管理</p></a></li>
+                {{-- <li class="nav-item"><a href="/admin/settings-clinic" class="nav-link"><p>クリニック管理</p></a></li>
                 <li class="nav-item"><a href="/admin/settings-rank" class="nav-link"><p>ランク管理</p></a></li>
                 <li class="nav-item"><a href="/admin/settings-staff" class="nav-link"><p>スタッフ管理</p></a></li>
                 <li class="nav-item"><a href="/admin/settings-staff-rank" class="nav-link"><p>スタッフ ランク管理</p></a></li>
@@ -110,7 +110,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <li class="nav-item"><a href="/admin/settings-shift" class="nav-link"><p>シフト管理</p></a></li>
                 <li class="nav-item"><a href="/admin/settings-rank-schedule" class="nav-link"><p>ランクスケジュール管理</p></a></li>
                 <li class="nav-item"><a href="/admin/settings-account" class="nav-link"><p>アカウント管理</p></a></li> --}}
-                <li class="nav-item clickable"><router-link to="/admin/settings-clinic" class="nav-link"><p>クリニツク管理</p></a></li>
+                <li class="nav-item clickable"><router-link to="/admin/settings-clinic" class="nav-link"><p>クリニック管理</p></a></li>
                 <li class="nav-item clickable"><router-link to="/admin/settings-rank" class="nav-link"><p>ランク管理</p></a></li>
                 <li class="nav-item clickable"><router-link to="/admin/settings-staff" class="nav-link"><p>スタッフ管理</p></a></li>
                 <li class="nav-item clickable"><router-link to="/admin/settings-staff-rank" class="nav-link"><p>スタッフ ランク管理</p></a></li>

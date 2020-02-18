@@ -105,13 +105,14 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <h6>運用開始日</h6>                        
+                        <h6>運用開始日</h6>
                         <v-date-picker
                             locale="ja"
                             mode='single'
                             v-model='form.start_time'                            
-                            is-double-paned                                 
-                            ref="calendar1"                            
+                            :attributes='attrs'
+                            ref="calendar1"
+                            :popover="{ placement: 'bottom', visibility: 'click' }"
                         >
                         </v-date-picker>
                         <has-error
@@ -126,7 +127,9 @@
                             mode='single'
                             v-model='form.end_time'
                             is-double-paned
+                            :attributes='attrs'
                             ref="calendar2"
+                            :popover="{ placement: 'bottom', visibility: 'click' }"
                         >
                         </v-date-picker>
                         <has-error
@@ -169,6 +172,14 @@
                 }),
                 editMode: false,
                 keyword: '',
+                attrs: [
+                    {
+                        dot: {
+                            class: 'high-light'
+                        },
+                        dates: new Date()
+                    }
+                ]
             }
         },
         methods: {
@@ -226,19 +237,35 @@
                     });
             },
             deleteData(id){
-                this.form.delete('/api/menu/' + id)
-                    .then((result)=>{
-                        //if (result.message){
-                            toast.fire({
-                                icon: "success",
-                                title: "Deleted successfully!"
-                            });
-                            this.loadList();
-                        //}
-                    })
-                    .catch(()=>{
+                let _this = this;
+                swal.fire({
+                    title: '本気ですか？',
+                    text: "本当にアイテムを削除しますか？",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'はい',
+                    cancelButtonText: 'いいえ',
+                    reverseButtons: true
+                    }).then(function(isConfirm) {
+                        console.log(isConfirm);
+                    if (isConfirm.value == true) {
+                        _this.form.delete('/api/menu/' + id)
+                            .then((result)=>{
+                                //if (result.message){
+                                    toast.fire({
+                                        icon: "success",
+                                        title: "削除しました。"
+                                    });
+                                    _this.loadList();
+                                //}
+                            })
+                            .catch(()=>{
 
-                    });
+                            });
+                    }
+                })                
             },
             newModal(){
                 this.editMode = false;
@@ -262,3 +289,13 @@
         }
     }
 </script>
+
+<style lang="scss">
+    .high-light{
+        background-color: #ff6666;
+        // border-width: 1px;
+        // border-style: solid;
+        // border-radius: 1.8rem;
+        // opacity: 0.8;
+    }
+</style>

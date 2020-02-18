@@ -47299,3 +47299,15 @@ readers do not read off random characters that represent icons */
   padding: 0 0;
 }
 
+.swal2-popup {
+  border-radius: 0.5em !important;
+}
+
+.swal2-icon {
+  border-radius: 50% !important;
+}
+
+.swal2-success-ring {
+  border-radius: 50% !important;
+}
+

@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-          <div class="row d-flex justify-content-center" style="width:100%"><div><h3 class="">予約管理システム (クリニツク管理)</h3></div></div>
+          <div class="row d-flex justify-content-center" style="width:100%"><div><h3 class="">予約管理システム (クリニック管理)</h3></div></div>
           <div class="col-12">              
             <div class="card">
               <div class="card-header">
@@ -22,11 +22,11 @@
                 <table class="table table-hover">
                   <thead>
                     <tr>
-                      <th>クリニツクID</th>
-                      <th>クリニツク名 </th>
+                      <th>クリニックID</th>
+                      <th>クリニック名 </th>
                       <th>メール</th>                      
                       <th>住所</th>
-                      <th>休閉鎖</th>
+                      <th>休退職</th>
                       <th>編集する</th>
                     </tr>
                   </thead>
@@ -55,8 +55,8 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 v-show="editMode" class="modal-title" id="exampleModalLabel">クリニツク更新</h5>
-                    <h5 v-show="!editMode" class="modal-title" id="exampleModalLabel">クリニツク追加</h5>
+                    <h5 v-show="editMode" class="modal-title" id="exampleModalLabel">クリニック更新</h5>
+                    <h5 v-show="!editMode" class="modal-title" id="exampleModalLabel">クリニック追加</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
@@ -64,8 +64,8 @@
                 <form @submit.prevent="editMode ? updateRank() : createData()">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>クリニツク名</label>
-                        <input v-model="form.name" type="text" name="name" class="form-control" :class="{'is-invalid':form.errors.has('name')}" placeholder="クリニツク名 ">
+                        <label>クリニック名</label>
+                        <input v-model="form.name" type="text" name="name" class="form-control" :class="{'is-invalid':form.errors.has('name')}" placeholder="クリニック名 ">
                         <has-error :form="form" field="name"></has-error>
                     </div>                    
                     <div class="form-group">

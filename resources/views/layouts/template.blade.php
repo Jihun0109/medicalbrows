@@ -48,7 +48,7 @@
                     </a>
                     <ul class="collapse list-unstyled" id="homeSubmenu">
                         <li>
-                        <a href="{{ route('settings.clinics') }}">クリニツク管理</a>
+                        <a href="{{ route('settings.clinics') }}">クリニック管理</a>
                         </li>
                         <li>
                             <a href="{{ route('settings.ranks') }}">ランク管理</a>

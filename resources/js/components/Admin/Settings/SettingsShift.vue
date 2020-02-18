@@ -18,7 +18,7 @@
                 </div>
 
                 <!-- /input-group -->
-                <strong>クリニツク</strong>
+                <strong>クリニック</strong>
                 <div class="input-group mb-3">
                   <div class="el-row"> 
                         <button v-for="c in clinics" 
@@ -52,14 +52,15 @@
                             :data="staffs" 
                             :css="css.table"
                             :row-class="onRowClass"                            
-                            @vuetable:row-clicked="onRowCLicked"
+                            @vuetable:cell-clicked="onRowCellCicked"
+                            @vuetable:checkbox-toggled="onCheckBoxClicked"
                             :per-page="lengthOfStaffs"
                     >
                   </vuetable>
                   </div>
                   <div class="col-lg-5 col-md-12">
                     <div class="row mb-3 d-flex justify-content-center">
-                      残りの日を選択してください
+                      出勤日を選択してください
                     </div>
                     <div class="row d-flex justify-content-center">
                       <v-date-picker
@@ -72,12 +73,13 @@
                             is-inline                  
                             ref="calendar"
                             @update:from-page="pageChange"
+                            :min-date="new Date()"
                       >
                       </v-date-picker>
                     </div>
                     
                     <div class="row mt-3 d-flex justify-content-center">
-                      <button class="btn btn-secondary mr-5" @click="selectAllDate">全選択</button>
+                      <button class="btn btn-secondary mr-5" @click="selectAllDate">{{is_selected_all?'クリア':'全選択'}}</button>
                       <button class="btn btn-success" @click="saveShift">保 存</button>
                     </div>
                   </div>
@@ -94,42 +96,40 @@
 import VCalendar from 'v-calendar';
 import Vuetable from 'vuetable-2'
 
-import moment from 'moment'
+import moment, { utc } from 'moment'
 
 export default {
     methods: {
         selectAllDate(){
-            let startDay = new Date(this.selectedMonth['year'], this.selectedMonth['month']-1,1);
-            let endDay = new Date(this.selectedMonth['year'], this.selectedMonth['month'],0);
-
-            this.selectedDate = [new Date(startDay)];
-            
-            while (startDay < endDay){
-              this.selectedDate.push(startDay);
-              var newDate = startDay.setDate(startDay.getDate() + 1);
-              startDay = new Date(newDate);
+            if (this.is_selected_all){
+              this.is_selected_all = false;
+              this.selectedDate = [];
+            } else {
+              this.is_selected_all = true;
+              this.selectedDate = this.reverseDateArray([], this.selectedMonth['year'], this.selectedMonth['month']);
             }
+            
         },
         saveShift(){
-            if (this.selected_id == -1){
+            let staffs = this.$refs.vuetable.selectedTo;
+            if (this.selected_id == -1 && staffs.length == 0){
               toast.fire({
                         icon: "warning",
                         title: "Select more than one staff!"
                     });
                     return;
             }
-            let staffs = this.$refs.vuetable.selectedTo;
-            console.log(staffs);
+            
             let payload = {
                   'month':this.selectedMonth,
                   'staffs':staffs.length>0?staffs:[this.selected_id],
-                  'dates':this.selectedDate
+                  'dates': this.reverseDateArray(this.selectedDate, this.selectedMonth['year'], this.selectedMonth['month'])
                 };
             console.log(payload);
 
             axios.post('/v1/shift/update', payload).
             then(({ data }) => {
-                
+                  this.$refs.vuetable.selectedTo = [];
             });
         },
         pageChange(page){
@@ -143,18 +143,23 @@ export default {
         getShift(staff_id, year, month){
             axios.post('/v1/shift/get', {'staff_id':staff_id, 'year':year, 'month':month}).
             then(({ data }) => {
-                this.selectedDate = data.map(d => moment(d).toDate());
+                console.log(data);
+                this.selectedDate = this.reverseDateArray(data.map(d => this.localToUTCTime(new Date(d))), this.selectedMonth['year'], this.selectedMonth['month']);
             });
         },
         onRowClass (dataItem, index) {
-          //return (dataItem.isOverdue) ? 'active' : 'color-white'
-          
           return dataItem.id == this.selected_id ? 'active':'';
         },
-        onRowCLicked(row){
-            this.selected_id = row.id;
-            if (this.selectedMonth)
+
+        onRowCellCicked(data, cellInfo, mouseEventObj){
+            this.selected_id = data.id;
+            
+            if (this.selectedMonth && this.$refs.vuetable.selectedTo.length == 0)
               this.getShift(this.selected_id, this.selectedMonth.year, this.selectedMonth.month);
+        },
+        onCheckBoxClicked(flag, row){
+            console.log("check item: " );
+            console.log(row);
         },
         loadClinicList() {
             axios.get('/api/clinic').
@@ -176,6 +181,44 @@ export default {
                 this.staffs = data;
                 this.lengthOfStaffs = data.length;
             });
+        },
+        utcToLocalTime(date){
+            var userTimezoneOffset = new Date().getTimezoneOffset() * 60000;
+            return new Date(date.getTime() - userTimezoneOffset);
+        },
+        localToUTCTime(date){
+            var userTimezoneOffset = new Date().getTimezoneOffset() * 60000;
+            return new Date(date.getTime() + userTimezoneOffset);
+        },
+        reverseDateArray(arrDates, year, month){
+            console.log(year + "/" + month);
+            console.log(arrDates);
+            let startDay = new Date(year, month-1,1); // Get first day of specified month
+            let endDay = new Date(year, month,0); // Get last day of specified month
+            let allDays = [new Date(startDay)];
+            let restDays = [];
+
+            // Fill all days of specified month to the "allDays" vairalbe.
+            while (startDay < endDay){
+              allDays.push(startDay);
+              var newDate = startDay.setDate(startDay.getDate() + 1);
+              startDay = new Date(newDate);
+            }            
+
+            if (arrDates.length == 0){
+              console.log("all days because length is zero..");
+              return allDays;
+            }
+            function isInArray(array, value){
+              return !!array.find(item => {return item.getTime() == value.getTime()});
+            };
+            allDays.forEach(day => {
+                if (!isInArray(arrDates, day)){
+                    restDays.push(day);
+                }
+            });
+            console.log(restDays);
+            return restDays;
         }
     },
     components: {        
@@ -184,6 +227,7 @@ export default {
     },
     data() {
         return {
+            is_selected_all: false,
             first_day: moment().startOf('month').toDate(),
             last_day: moment().endOf('month').toDate(),
             selectedDate: [

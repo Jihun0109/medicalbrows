@@ -38,7 +38,7 @@ class OperablePartController extends Controller
             // 'email' => 'required|string|email|max:120|unique:tbl_users',
             // 'password' => 'required|string|min:8'
         ]);
-        return TblOperablePart::create(['name' => $request->name]);
+        return TblOperablePart::create(['name' => $request->name, 'is_deleted' => 0]);
     }
 
     /**

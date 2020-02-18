@@ -98,7 +98,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>休閉鎖</label>
+                        <label>休退職</label>
                         <select v-model="form.is_vacation" class="custom-select">
                           <option v-bind:value=0>アクティブ</option>
                           <option v-bind:value=1>閉鎖</option>
