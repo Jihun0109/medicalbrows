@@ -89,9 +89,10 @@
                     </div>
                     <div class="form-group">
                         <label>ランク名</label>
-                        <select v-model="form.rank_id" class="custom-select">
+                        <select v-model="form.rank_id" class="custom-select" name="rank_id" :class="{'is-invalid':form.errors.has('rank_id')}">
                           <option v-for="r in ranks" :key="r.id" v-bind:value="r.id">{{ r.name }}</option>
                         </select>
+                        <has-error :form="form" field="rank_id"></has-error>
                     </div>
                     <div class="form-group">
                         <label>料金</label>
@@ -100,9 +101,10 @@
                     </div>
                     <div class="form-group">
                         <label>税率</label>
-                        <select v-model="form.tax_id" class="custom-select">                           
+                        <select v-model="form.tax_id" class="custom-select" :class="{'is-invalid':form.errors.has('tax_id')}">                           
                           <option v-for="t in taxs" :key="t.id" v-bind:value="t.id">{{ t.name }}</option>
                         </select>
+                        <has-error :form="form" field="tax_id"></has-error>
                     </div>
                     <div class="form-group">
                         <h6>運用開始日</h6>
@@ -113,7 +115,9 @@
                             :attributes='attrs'
                             ref="calendar1"
                             :popover="{ placement: 'bottom', visibility: 'click' }"
+                            :class="{'is-invalid':form.errors.has('start_time')}"
                         >
+                            <input type="text" slot-scope='props' :value='props.inputValue' class="form-control" :class="{'is-invalid':form.errors.has('start_time')}">
                         </v-date-picker>
                         <has-error
                             :form="form"
@@ -130,7 +134,9 @@
                             :attributes='attrs'
                             ref="calendar2"
                             :popover="{ placement: 'bottom', visibility: 'click' }"
+                            :class="{'is-invalid':form.errors.has('end_time')}"
                         >
+                            <input type="text" slot-scope='props' :value='props.inputValue' class="form-control" :class="{'is-invalid':form.errors.has('end_time')}">
                         </v-date-picker>
                         <has-error
                             :form="form"
@@ -203,9 +209,11 @@
                 axios.get('/api/tax').
                     then(({data}) => (this.taxs = data));
             },
-            createData(){    
-                this.form.start_time = this.utcToLocalTime(this.form.start_time);
-                this.form.end_time = this.utcToLocalTime(this.form.end_time);
+            createData(){
+                console.log(new Date(this.form.start_time));
+                console.log(this.utcToLocalTime(new Date(this.form.start_time)));
+                // this.form.start_time = this.utcToLocalTime(new Date(this.form.start_time));
+                // this.form.end_time = this.utcToLocalTime(new Date(this.form.end_time));
                 this.form.post('/api/menu')
                     .then((result)=>{                        
                         toast.fire({
@@ -282,7 +290,11 @@
             utcToLocalTime(date){
                 var userTimezoneOffset = new Date().getTimezoneOffset() * 60000;
                 return new Date(date.getTime() - userTimezoneOffset);
-            }
+            },
+            localToUTCTime(date){
+                var userTimezoneOffset = new Date().getTimezoneOffset() * 60000;
+                return new Date(date.getTime() + userTimezoneOffset);
+            },
         },
         created() {
             this.loadList();            

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\TblMenu;
 use Carbon\Carbon; 
+use Illuminate\Validation\Rule;
 use Log;
 use DB;
 
@@ -49,12 +50,13 @@ class MenuController extends Controller
         $this->validate($request, [
             'name' => 'required|string|max:50',
             'code' => 'required|string|max:20',
-            'rank_id' => 'numeric',
-            'tax_id' => 'numeric',
-            'amount' => 'numeric',
-            // 'start_time' => 'required|date',
-            // 'end_time' => 'required|date|after:start_time',
+            'rank_id' => 'required',
+            'tax_id' => 'required',
+            'amount' => 'required|numeric|min:0|not_in:0',
+            'start_time' => 'required|date',
+            'end_time' => 'nullable|date|after:start_time',            
         ]);
+        Log::info($request->start_time);
         return TblMenu::create([
             'name' => $request->name,
             'code' => $request->code,
@@ -62,7 +64,7 @@ class MenuController extends Controller
             'tax_id' => $request->tax_id,
             'amount' => $request->amount,
             'start_time' => Carbon::parse($request->start_time),
-            'end_time' => Carbon::parse($request->end_time),
+            'end_time' => is_null($request->end_time)?null:Carbon::parse($request->end_time),
             'is_deleted' => 0,
             'is_vacation' => 0,
         ]);
@@ -93,13 +95,13 @@ class MenuController extends Controller
             'code' => 'required|string|max:20',
             'rank_id' => 'numeric',
             'tax_id' => 'numeric',
-            'amount' => 'numeric',
+            'amount' => 'required|numeric|min:0|not_in:0',
             'start_time' => 'required|date',
-            'end_time' => 'required|date|after:start_time',            
+            'end_time' => 'nullable|date|after:start_time', 
         ]);
         $values = $request;
         $values['start_time'] = Carbon::parse($request->start_time);
-        $values['end_time'] = Carbon::parse($request->end_time);
+        $values['end_time'] = is_null($request->end_time)?null:Carbon::parse($request->end_time);
         
         $item = TblMenu::findOrFail($id);
         $item->update($values->all());

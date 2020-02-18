@@ -47311,3 +47311,7 @@ readers do not read off random characters that represent icons */
   border-radius: 50% !important;
 }
 
+.invalid-feedback {
+  display: block !important;
+}
+
