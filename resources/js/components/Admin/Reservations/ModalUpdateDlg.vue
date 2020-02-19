@@ -254,13 +254,11 @@
                 this.form.order_route = this.item.order_route;
                 this.form.order_serial_id = this.item.order_serial_id;
                 this.form.note = this.item.note != "" ? this.item.note : '経験 : \n妊娠・授乳・不妊治療 : \n通院歴・薬 : \n金アレ・アトピー・ケロイド確認 : \n眉ブリーチ・炎症・傷跡確認 : \n美容サービス・美容整形確認 : \n料金・所要時間 : \nHP : \nキャンセル規約 : ';                
-                console.log(this.counselors);
+                
                 for (var i=0; i<this.counselors.length; i++){
                     if (this.counselors[i]['interviewer_id'] === this.item.interviewer_id)
                         this.form.counselor = this.counselors[i];
-                }
-                    
-                
+                }                
                 console.log(this.form,'log from loadInfo');
             },
         },

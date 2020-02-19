@@ -662,7 +662,7 @@ class ReservationsController extends Controller
                     $ret['i'] =  '<div>【新規】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><div>';
                 }else{
                     $ret['i'] =  '<div>【'.$order_history->order_type.'】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><br><div>カウセ</div><div>'.$payLoad['counselor']['interview_start'].'~'.$payLoad['counselor']['interview_end'].'</div><div>'.$payLoad['counselor']['counselor_name'].'</div>';
-                    $ret['interviewer_id'] = $payLoad['counselor']['counselor_id'];
+                    $ret['interviewer_id'] = $payLoad['counselor']['interviewer_id'];
                     $ret['interviewer_name'] = $payLoad['counselor']['counselor_name'];
 
                     $ret_new = $ret;
