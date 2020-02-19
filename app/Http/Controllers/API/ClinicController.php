@@ -37,13 +37,13 @@ class ClinicController extends Controller
                                     $query->where('name','LIKE',"%".$keyword."%")->
                                             orWhere('email','LIKE',"%".$keyword."%")->
                                             orWhere('address','LIKE',"%".$keyword."%");
-                              })->latest()->get();
+                              })->where('is_vacation', 0)->get();
         } else if ($clinic_email){
-            return TblClinic::where('is_deleted', 0)->
+            return TblClinic::where('is_deleted', 0)->                            
                             where('email',$clinic_email)->get();
         }
 
-        return TblClinic::where('is_deleted', 0)->latest()->get();
+        return TblClinic::where('is_deleted', 0)->where('is_vacation', 0)->latest()->get();
     }
 
     /**

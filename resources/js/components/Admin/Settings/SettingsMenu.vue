@@ -280,11 +280,13 @@
             },
             newModal(){
                 this.editMode = false;
-                this.form.reset();                
+                this.form.reset();    
+                this.form.errors.clear();            
                 $('#modalAddItem').modal('show');
             },
             editModal(data){
                 this.editMode = true;
+                this.form.errors.clear();
                 this.form.fill(data);
                 this.form.start_time = new Date(this.form.start_time);
                 this.form.end_time = this.form.end_time?new Date(this.form.end_time):null;

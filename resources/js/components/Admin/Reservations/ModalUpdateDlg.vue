@@ -102,7 +102,7 @@
                     </div>
                     <br>
                     <div class="row">
-                        <label class="col-sm-3 col-form-label">お客様各:</label>
+                        <label class="col-sm-3 col-form-label">お客様名:</label>
                         <div class="col-sm-8">
                             <input v-model="form.first_name" type="text" class="form-control form-control-sm" placeholder="お客様名を入力" :class="{'is-invalid':form.errors.has('first_name')}">
                         </div>
@@ -123,7 +123,7 @@
                     <div class="row">
                         <label class="col-sm-3 col-form-label">電話番号:</label>
                         <div class="col-sm-8">
-                            <input v-model="form.phonenumber" type="text" class="form-control form-control-sm" placeholder="080-xxx-xxxx" :class="{'is-invalid':form.errors.has('phonenumber')}">
+                            <input v-model="form.phonenumber" type="text" class="form-control form-control-sm" placeholder="電話番号" :class="{'is-invalid':form.errors.has('phonenumber')}">
                         </div>
                     </div>
                     <div class="row">
@@ -156,7 +156,7 @@
 <script>
     import CustomNote from './CustomNote.vue';
     export default {
-        props:['item','sr_list','menus','counselors'],
+        props:['item','sr_list','menus','counselors','childbus'],
         components: {
             CustomNote
         },
@@ -166,8 +166,8 @@
                 form: new Form({
                     order_type : '新規',
                     stuff_choosed : 'あり',
-                    menu_id : 0,
-                    counselor : {},
+                    menu_id : '',
+                    counselor : '',
                     first_name : '',
                     last_name : '',
                     birthday : '',
@@ -179,8 +179,8 @@
                 routes:['システム','電話','Web','チャットボット'],
             }
         },
-        mounted () {
-            
+        mounted () {            
+            this.childbus.$on('clearFormErrors', this.clearErrors);
         },
         created() {
             this.loadInfo();            
@@ -209,7 +209,7 @@
                                     icon: "success",
                                     title: "正しく保存!"
                                 });
-                                console.log(result.data);
+                                //console.log(result.data);
                                 result.data.forEach(element => {                                    
                                     this.$emit('orderCreated', element);
                                 });
@@ -236,21 +236,32 @@
                 }
 
             },
+            clearErrors(){
+                this.form.first_name = '';
+                this.form.last_name = '';
+                this.form.birthday = '';
+                this.form.phonenumber = '';
+                this.form.errors.clear();
+            },
             loadInfo(){
                 this.form.order_type = this.item.order_type;
                 this.form.stuff_choosed = this.item.staff_choosed;
-                this.form.menu_id = this.item.menu_id;
-                this.form.counselor = this.item.counselor;
+                this.form.menu_id = this.item.menu_id;                
                 this.form.first_name = this.item.customer_first_name;
                 this.form.last_name = this.item.customer_last_name;
                 this.form.birthday = this.item.customer_birthday;
                 this.form.phonenumber = this.item.customer_phonenumber;
                 this.form.order_route = this.item.order_route;
                 this.form.order_serial_id = this.item.order_serial_id;
-                this.form.note = this.item.note != "" ? this.item.note : '経験 : \n妊娠・授乳・不妊治療 : \n通院歴・薬 : \n金アレ・アトピー・ケロイド確認 : \n眉ブリーチ・炎症・傷跡確認 : \n美容サービス・美容整形確認 : \n料金・所要時間 : \nHP : \nキャンセル規約 : '
-
+                this.form.note = this.item.note != "" ? this.item.note : '経験 : \n妊娠・授乳・不妊治療 : \n通院歴・薬 : \n金アレ・アトピー・ケロイド確認 : \n眉ブリーチ・炎症・傷跡確認 : \n美容サービス・美容整形確認 : \n料金・所要時間 : \nHP : \nキャンセル規約 : ';                
+                console.log(this.counselors);
+                for (var i=0; i<this.counselors.length; i++){
+                    if (this.counselors[i]['interviewer_id'] === this.item.interviewer_id)
+                        this.form.counselor = this.counselors[i];
+                }
+                    
                 
-                //console.log(this.form,'log from loadInfo');
+                console.log(this.form,'log from loadInfo');
             },
         },
         watch:{

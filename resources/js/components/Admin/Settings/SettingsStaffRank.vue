@@ -225,11 +225,13 @@
             newModal(){
                 this.editMode = false;
                 this.form.reset();
+                this.form.errors.clear();
                 this.form.promo_date = new Date();
                 $('#modalAddStaffRank').modal('show');
             },
             editModal(data){
                 this.editMode = true;
+                this.form.errors.clear();
                 this.form.fill(data);
                 this.form.promo_date = new Date(this.form.promo_date);
                 this.form.password = "";

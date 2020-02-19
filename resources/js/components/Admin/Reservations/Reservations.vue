@@ -7,7 +7,7 @@
         <!-- Update Modal -->
         <div class="modal fade" id="modalUpdateDlg" data-backdrop="static">
             <ModalUpdateDlg v-bind:sr_list="this.staff_rank_list" :item="this.item" 
-                v-bind:menus="this.menus" v-bind:counselors="this.counselors" @orderCreated="onOrderCreated"></ModalUpdateDlg>
+                v-bind:menus="this.menus" v-bind:counselors="this.counselors" @orderCreated="onOrderCreated" :childbus="bus" ref="modalUpdateDlg"></ModalUpdateDlg>
         </div>
         <!-- Info Modal -->
         <div id="modalMessageBox" class="modal fade">
@@ -100,7 +100,7 @@
                             :margin="[ -2 , -1]"
                             :use-css-transforms="true"
                         >
-                            <grid-item @click.native="onClick($event, item, index)" v-for="(item, index) in conlayout"
+                            <grid-item @click.native="onCellClicked($event, item, index)" v-for="(item, index) in conlayout"
                                     :x="item.x"
                                     :y="item.y"
                                     :w="item.w"

@@ -72,12 +72,12 @@
                     <div class="row">
                         <label class="col-sm-3 col-form-label" style="letter-spacing:-1.5px" >カウンセラー:</label>
                         <div class="col-sm-8" >
-                            <p>-</p>
+                            <p>{{data.interviewer_name}}</p>
                         </div>
                     </div>
                     <br>
                     <div class="row">
-                        <label class="col-sm-3 col-form-label">お客様各:</label>
+                        <label class="col-sm-3 col-form-label">お客様名:</label>
                         <div class="col-sm-8" >
                             <p>{{data.customer_first_name}}</p>
                         </div>
@@ -187,8 +187,7 @@
                 tabindex: '',
                 customer:{},
                 dialog: false,
-                changeMode:false,
-                updatedOrderInfo:store.orderdata,
+                changeMode:false,                
             }
         },
         mounted () {
@@ -225,6 +224,7 @@
             },
 
             changeBtnClick(){
+                console.log("Click edit button from info modal");
                 this.changeMode = false;
                 app.$refs.modalUpdateDlg.loadInfo();
                 $('#modalShowUpdate').modal('show');

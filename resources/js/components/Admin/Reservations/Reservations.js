@@ -3,18 +3,8 @@ import Datepicker from 'vuejs-datetimepicker';
 import ModalInfoDlg from './ModalInfoDlg.vue';
 import ModalUpdateDlg from './ModalUpdateDlg.vue';
 
-window.Bus = new Vue({});
-window.store = {
-    orderdata: {
-        reserve_id: '',
-        order_type: '',
-        staff_rank: '',
-        appoint: '',
-        menu: '',
-        counselor_info: '',
-    }
-}
 var moment = require('moment');
+window.Bus = new Vue();
 export default {
     components: {
         GridLayout: VueGridLayout.GridLayout,
@@ -25,6 +15,7 @@ export default {
     },
     data() {
         return {
+            bus: new Vue(),
             order_status: '',
             hdlayout: [], //JSON.parse(JSON.stringify(hdLayout)),
             conlayout: [], //JSON.parse(JSON.stringify([])),
@@ -108,6 +99,10 @@ export default {
                     cell.customer_phonenumber = item.customer_phonenumber;
                     cell.customer_birthday = item.customer_birthday;
                     cell.note = item.note;
+                    if (item.interviewer_id){
+                        cell.interviewer_id = item.interviewer_id;
+                        cell.interviewer_name = item.interviewer_name;
+                    }
                     return false;
                 }
             });
@@ -131,7 +126,7 @@ export default {
         },
         loadStaffRanksList() {
             //axios.get('v1/reservation/staff_list?clinic_id=' + this.selected_clinic_id ).
-            axios.post('/v1/reservation/staff_list', { 'clinic_id': this.selected_clinic_id, 'date': this.selectedDate }).
+            axios.post('/v1/reservation/staff_list', { 'clinic_id': this.selected_clinic_id, 'date': moment(this.selectedDate).format("YYYY-MM-DD") }).
             then(({ data }) => {
                 this.staffs = data.staff_layout;
                 //this.timelayout = JSON.parse(JSON.stringify(timeLayout));                
@@ -168,19 +163,22 @@ export default {
             this.loadStaffRanksList();
         },
 
-        onClick: function(event, item, index) {
+        onCellClicked: function(event, item, index) {
+            console.log(item, "cellClicked.");
             if (item.selectable) {
-                console.log(item);
+                this.bus.$emit('clearFormErrors');
                 $(".vue-grid-item").removeClass("selectedcolor");
                 $(event.currentTarget).addClass("selectedcolor"); //defalt color when click..                
                 // Here this variable is Reservation Vue component (Parent of modals)
-                axios.post('/v1/reservation/menu_list', { 'rank_id': item.rank_id }).
+                axios.post('/v1/reservation/menu_list', { 'rank_id': item.rank_id, 'date': moment(this.selectedDate).format("YYYY-MM-DD") }).
                 then(({ data }) => {
                     this.menus = data;
                 });
+                
                 if (item.rank_id == 9 || item.rank_id == 8 || item.rank_id == 7) { //NA, T, counseler
                     this.item = item;
                     this.item['date'] = this.formatDate(this.selectedDate);
+                    this.$refs.modalUpdateDlg.loadInfo();
                     if (item.order_history_id == 0) {
                         // New order creating
                         this.changeMode = false;
@@ -191,7 +189,13 @@ export default {
                     }
                     return;
                 }
-                axios.post('/v1/reservation/counselor_list', { 'clinic_id': this.selected_clinic_id, 'date': this.selectedDate, 'rank_schedule_id': item.rank_schedule_id }).
+                axios.post('/v1/reservation/counselor_list', 
+                        { 
+                            'clinic_id': this.selected_clinic_id, 
+                            'date': moment(this.selectedDate).format("YYYY-MM-DD"), 
+                            'rank_schedule_id': item.rank_schedule_id,
+                            'order_history_id':item.order_history_id
+                        }).
                 then(({ data }) => {
                     this.counselors = data;
                     //선택된 시술자에 해당한 상담원목록을 얻고 그들의 현재 x,y좌표를 구한다. 이값은 신규인경우 상담원칸에 정보를 자동으로 채우는데 리용된다.
@@ -208,6 +212,7 @@ export default {
                     }
                     this.item = item;
                     this.item['date'] = this.formatDate(this.selectedDate);
+                    this.$refs.modalUpdateDlg.loadInfo();
                     if (item.order_history_id == 0) {
                         // New order creating
                         this.changeMode = false;

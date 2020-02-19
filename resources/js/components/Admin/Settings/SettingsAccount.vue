@@ -207,11 +207,13 @@
             },
             newModal(){
                 this.editMode = false;
-                this.form.reset();                
+                this.form.reset();       
+                this.form.errors.clear();         
                 $('#modalAddUser').modal('show');
             },
             editModal(data){
                 this.editMode = true;
+                this.form.errors.clear();
                 this.form.fill(data);
                 this.form.password = "";
                 $('#modalAddUser').modal('show');

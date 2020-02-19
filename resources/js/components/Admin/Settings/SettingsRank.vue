@@ -167,10 +167,12 @@
             newModal(){
                 this.editMode = false;
                 this.form.reset();
+                this.form.errors.clear();
                 $('#modalAddRank').modal('show');
             },
             editModal(rank){
                 this.editMode = true;
+                this.form.errors.clear();
                 this.form.fill(rank);
                 $('#modalAddRank').modal('show');
             }

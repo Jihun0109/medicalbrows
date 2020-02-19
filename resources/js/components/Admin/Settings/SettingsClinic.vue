@@ -192,13 +192,15 @@
             },
             newModal(){
                 this.editMode = false;
+                this.form.errors.clear();     
                 this.form.reset();
                 this.getEmailList('');
                 $('#modalAddUser').modal('show');
             },
             editModal(data){
                 this.editMode = true;
-                this.form.fill(data);
+                this.form.errors.clear();     
+                this.form.fill(data);                
                 this.form.password = "";
                 this.getEmailList(data.email);
                 $('#modalAddUser').modal('show');

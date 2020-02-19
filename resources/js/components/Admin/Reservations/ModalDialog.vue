@@ -19,7 +19,7 @@
                     <div>指名 : {{user.inCnt}}</div>
                     <div>メニュー : アイブ口ウ2回 </div>
                     <div>カウンセラー : {{user.pwd}}</div>
-                    <div>お客様各 : {{user.inCnt}}</div>
+                    <div>お客様名 : {{user.inCnt}}</div>
                     <div>生年月日 : {{user._id}}</div>
                     <div>電話番号 : {{user.pwd}}</div>
                     <div>予約ルー卜 : {{user.inCnt}}</div>

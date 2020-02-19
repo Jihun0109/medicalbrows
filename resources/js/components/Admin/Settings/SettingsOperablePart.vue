@@ -159,10 +159,12 @@
             newModal(){
                 this.editMode = false;
                 this.form.reset();
+                this.form.errors.clear();
                 $('#modalAddPart').modal('show');
             },
             editModal(part){
                 this.editMode = true;
+                this.form.errors.clear();
                 this.form.fill(part);
                 $('#modalAddPart').modal('show');
             }
