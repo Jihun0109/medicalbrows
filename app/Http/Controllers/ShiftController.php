@@ -28,15 +28,11 @@ class ShiftController extends Controller
         $ranks = DB::table('tbl_ranks')->select('short_name')->get();
         
         $filter = [];
-        foreach($ranks as $rank){
-            $obj = get_object_vars($rank);
-            
-            if ($staff_type == 1 && $obj['short_name'] != 'カウゼ')
-                array_push($filter, $obj['short_name']);
-            else if ($staff_type == 0 && $obj['short_name'] == 'カウゼ')
-                array_push($filter, $obj['short_name']);
-        }
-        
+        if ($staff_type == 1)
+            $filter = DB::table('tbl_ranks')->where('short_name', '<>', 'カウセ')->pluck('short_name');
+        else
+            $filter = DB::table('tbl_ranks')->where('short_name', '=', 'カウセ')->pluck('short_name');
+                
         $staff_rank_names = DB::table('tbl_staffs')
                 ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id','tbl_staffs.id')  
                 ->join('tbl_ranks', 'tbl_ranks.id','tbl_staff_ranks.rank_id')    
