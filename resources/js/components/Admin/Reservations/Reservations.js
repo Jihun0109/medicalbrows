@@ -3,7 +3,6 @@ import Datepicker from 'vuejs-datetimepicker';
 import ModalInfoDlg from './ModalInfoDlg.vue';
 import ModalUpdateDlg from './ModalUpdateDlg.vue';
 
-var moment = require('moment');
 window.Bus = new Vue();
 export default {
     components: {

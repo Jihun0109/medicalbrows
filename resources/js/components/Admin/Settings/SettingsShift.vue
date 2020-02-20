@@ -99,8 +99,6 @@
 import VCalendar from 'v-calendar';
 import Vuetable from 'vuetable-2'
 
-import moment from 'moment'
-
 export default {
     methods: {
         selectAllDate(){

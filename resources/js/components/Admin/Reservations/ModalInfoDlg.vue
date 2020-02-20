@@ -86,7 +86,7 @@
                     <div class="row">
                         <label class="col-sm-3 col-form-label">生年月日:</label>
                         <div class="col-sm-8" >
-                            <p>{{data.customer_birthday}}</p>
+                            <p>{{formatBirthday(data.customer_birthday)}}</p>
                         </div>
                     </div>
                     <div class="row">
@@ -229,6 +229,10 @@
                 app.$refs.modalUpdateDlg.loadInfo();
                 $('#modalShowUpdate').modal('show');
             },
+
+            formatBirthday(birthday){
+                return birthday + " (" + moment().diff(birthday, 'years')+"歳)";
+            }
 
         }
     }

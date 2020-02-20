@@ -5,6 +5,7 @@
  */
 
 require("./bootstrap");
+window.moment = require('moment');
 
 window.Vue = require("vue");
 import { BootstrapVue, FormCheckboxPlugin } from "bootstrap-vue";
