@@ -38,8 +38,8 @@
                     :attributes='attrs'
                     ref="calendar1"
                     :popover="{ placement: 'bottom', visibility: 'click' }"
+                    :masks="formats"
                 >
-                    <input type="text" slot-scope='props' :value='props.inputValue' class="form-control">
                 </v-date-picker>
             <button @click="increment()" type="button" class="btn btn-default btn-sm"><i class="fa fa-chevron-right"></i></button>
         </div>

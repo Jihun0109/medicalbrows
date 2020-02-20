@@ -40,8 +40,16 @@ export default {
                 },
                 dates: new Date()
             }],
-            selected_clinic: '',            
+            selected_clinic: '',
             item: {},
+            formats: {
+                title: 'YYYY年 MMMM',
+                weekdays: 'W',
+                navMonths: 'MMM',
+                input: ['YYYY年MM月DD日 (W)'],
+                dayPopover: 'L',
+                data: ['L', 'YYYY-MM-DD', 'YYYY/MM/DD']
+              }
         }
     },
     mounted() {
