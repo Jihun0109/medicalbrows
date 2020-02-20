@@ -1,5 +1,6 @@
 <?php
 
+use App\Mail\WelcomeMail;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,12 +17,16 @@
 // });
 
 Route::group(['prefix' => 'cadmin'], function () {
-    Voyager::routes();    
+    Voyager::routes();
 });
 
 Auth::routes();
 
-Route::get('/admin', 'HomeController@index')->name('home');
+Route::get('/admin', function(){
+    return redirect('/admin/reservations');
+});
+Route::get('/admin/reservations', 'HomeController@index')->name('home');
+
 Route::get('/', 'CustomerController@index')->name('customer');
 // Left Sidebar Main Category
 // Route::get('reservations', 'ReservationsController@index')->name('reservations.index');
@@ -58,3 +63,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
 //     Route::post('/clinic/remove', 'ApiController@clinicRemove');
 //     Route::post('/clinic/update', 'ApiController@clinicUpdate');
 });
+
+
+Route::get('/email', function(){
+    return new WelcomeMail();   
+});
+
+Route::get('/test', 'HomeController@test');

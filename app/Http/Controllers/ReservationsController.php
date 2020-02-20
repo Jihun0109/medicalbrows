@@ -95,10 +95,9 @@ class ReservationsController extends Controller
         
         //order_history에 예약된 상담원의 시간대를 구하고 제거한다.
         for ( $i = 0; $i < sizeof($counselor_list); $i++ ){
-            
             $temp = [];
             // 상담원이 인터뷰어로 예약되여 있으면 그 시간을 리턴.
-            $remove_time_with_order = DB::table('tbl_order_histories')                            
+            $remove_time_with_order = DB::table('tbl_order_histories')
                             ->where([['is_deleted', 0],['interviewer_id',$counselor_list[$i]->interviewer_id],['order_date', $selected_date]])
                             ->select('id', DB::raw('HOUR(tbl_order_histories.interview_end) as end_hour'))
                             ->get();
@@ -109,7 +108,7 @@ class ReservationsController extends Controller
                     $bflag = true;
                     break;
                 }
-            }            
+            }
             if(!$bflag){
                 $interview_start = ($min - 1).':20';
                 $interview_end = $min.':00';
@@ -162,10 +161,10 @@ class ReservationsController extends Controller
         // 스타프 staff_id, full_name, rank_id, rank_name, rank_short_name, clinic_name 얻는다.
         $staff_rank_names = DB::table('tbl_staffs')
                 ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id','tbl_staffs.id')  
-                ->join('tbl_ranks', 'tbl_ranks.id','tbl_staff_ranks.rank_id')                
+                ->join('tbl_ranks', 'tbl_ranks.id','tbl_staff_ranks.rank_id')
                 ->join('tbl_clinics', 'tbl_clinics.id','tbl_staffs.clinic_id')
                 ->select('tbl_staffs.id as staff_id','tbl_staffs.full_name','tbl_staff_ranks.rank_id', 'tbl_ranks.short_name','tbl_ranks.name','tbl_clinics.name as clinic_name')       
-                ->where([['tbl_staffs.is_deleted', 0], ['tbl_staffs.clinic_id', $clinic_id]])                
+                ->where([['tbl_staffs.is_deleted', 0], ['tbl_staffs.clinic_id', $clinic_id]])
                 ->orderBy('rank_id','asc')
                 ->get();
 
@@ -189,7 +188,7 @@ class ReservationsController extends Controller
                         'rank_name'=> $staff_rank_names[$i]->short_name,
                         'rank_full_name'=> $staff_rank_names[$i]->name,
                         'time_schedule'=> $rank_schedule
-                    );            
+                    );
             array_push($staff_rank_with_schedules, $temp);
         }
         //Log::info($staff_rank_with_schedules);
@@ -260,7 +259,6 @@ class ReservationsController extends Controller
                 'is_new' => '',
                 'staff_rank' => '',
             ]);
-            
             $total_height_arr = [];
             for ($k=0; $k < $cell_height * sizeof($idx_arr); $k++)
                 array_push($total_height_arr, 0);
@@ -273,11 +271,9 @@ class ReservationsController extends Controller
                 // 매 스타프쎌의 height
                 $h = $cell_height * ($cur_schedule['end_hour'] - $cur_schedule['start_hour']);
                 $sign = $cur_schedule['end_minute'] > $cur_schedule['start_minute'] ? 1 : -1;
-                $h += (int)(abs($cur_schedule['end_minute'] - $cur_schedule['start_minute']) / 15) * $sign;                
-
+                $h += (int)(abs($cur_schedule['end_minute'] - $cur_schedule['start_minute']) / 15) * $sign;
                 // 공백쎌은 0 아니면 1
                 for ($k=0; $k<$h; $k++) $total_height_arr[$y+$k] = 1;
-                
                 $order_history; // 지정된 날자의 해당 schedule타임에 설정된 order_history정보를 검사하고 있으면 필요한 자료 뽑는다.
                 if($staff_rank_with_schedules[$i]['rank_name'] == 'カウゼ')
                 {
@@ -287,7 +283,7 @@ class ReservationsController extends Controller
                     join('tbl_customers','tbl_customers.id','tbl_orders.customer_id')->
                     select('tbl_order_histories.*','tbl_orders.order_serial_id','tbl_orders.order_route',
                             'tbl_customers.id as customer_id','tbl_customers.first_name', 'tbl_customers.last_name',
-                            'tbl_customers.phonenumber','tbl_customers.birthday','tbl_orders.note')->                    
+                            'tbl_customers.phonenumber','tbl_customers.birthday','tbl_orders.note')->
                     where(['staff_id' => $staff_rank_with_schedules[$i]['staff_id'],'rank_schedule_id'=>$cur_schedule['id'],['tbl_order_histories.order_date', $selected_date]])->
                     first();
                 }else{ // 상담원이 아닌 의사인경우 메뉴정보도 같이 얻는다,
@@ -297,11 +293,10 @@ class ReservationsController extends Controller
                     join('tbl_customers','tbl_customers.id','tbl_orders.customer_id')->
                     select('tbl_order_histories.*','tbl_orders.order_serial_id','tbl_orders.order_route','tbl_menus.id as menu_id','tbl_menus.name as menu_name',
                             'tbl_customers.id as customer_id','tbl_customers.first_name', 'tbl_customers.last_name',
-                            'tbl_customers.phonenumber','tbl_customers.birthday','tbl_orders.note')->                    
+                            'tbl_customers.phonenumber','tbl_customers.birthday','tbl_orders.note')->
                     where(['staff_id' => $staff_rank_with_schedules[$i]['staff_id'],'rank_schedule_id'=>$cur_schedule['id'],['tbl_order_histories.order_date', $selected_date]])->
                     first();
                 }
-            
                 $start_minute = $cur_schedule['start_minute'];
                 $end_minute = $cur_schedule['end_minute'];
                 if($start_minute == 0){
@@ -359,7 +354,7 @@ class ReservationsController extends Controller
                                 $content = '<div>【'.$order_history->order_type.'】</div><div>'.$order_history->order_serial_id.'</div><div>'.$order_history->first_name.'</div><div>指名:'.$order_history->staff_choosed.'</div><div>'.$order_history->menu_name.'</div>';
                             }
                             else{ // 나머지 시술은 상담원정보를 뽑아야 한다.
-                                $counselor_name = $interviewer?$interviewer->full_name:'';                                
+                                $counselor_name = $interviewer?$interviewer->full_name:'';
                                 $content = '<div>【'.$order_history->order_type.'】</div><div>'.$order_history->order_serial_id.'</div><div>'.$order_history->first_name.'</div><div>指名:'.$order_history->staff_choosed.'</div><div>'.$order_history->menu_name.'</div><br><div>カウセ</div><div>'.date('H:i', strtotime($order_history->interview_start)).'~'.date('H:i', strtotime($order_history->interview_end)).'</div><div>'.$counselor_name.'</div>';
                             }
                             $menu_id = $order_history->menu_id;
@@ -411,7 +406,7 @@ class ReservationsController extends Controller
                     'interviewer_name' => $interviewer?$interviewer->full_name:'',
                 ]);
             }
-            
+
             // 공백쎌추가
             $max_height = $cell_height * sizeof($idx_arr);
             $start = -1;
@@ -423,7 +418,7 @@ class ReservationsController extends Controller
                     $h += 1;
                 }
 
-                if ($start > -1 && ($total_height_arr[$k] == 1 || ($k + 1) % $cell_height == 0))                
+                if ($start > -1 && ($total_height_arr[$k] == 1 || ($k + 1) % $cell_height == 0))
                     $draw_flag = true;
 
                 if ($draw_flag){
@@ -440,7 +435,6 @@ class ReservationsController extends Controller
                     $start = -1;
                     $h = 0;
                 }
-                
             }
         }
         $ret = array('count'=>sizeof($staff_rank_with_schedules), 'staff_layout' => $staff, 'content_layout'=> $layout);
@@ -503,8 +497,8 @@ class ReservationsController extends Controller
                     'menu_id' => $payLoad['menu_id'],
                     'order_route' => $payLoad['order_route'],
                     'is_deleted' => 0,
-                ]);         
-                
+                ]);
+
                 // 우에서 금방 창조했으므로 오브젝트 아래 2오브젝트는 존재함. 따라서 쿼리 할필요는 없을거 같음.
                 //$order = TblOrder::where(['order_serial_id'=>$order_serial_id, 'is_deleted'=>0])->orderBy('created_at','desc')->first();
                 //$customer = TblCustomer::where(['id'=>$order->customer_id, 'is_deleted'=>0])->orderBy('created_at','desc')->first();
@@ -583,7 +577,7 @@ class ReservationsController extends Controller
                     'menu_id' => $payLoad['menu_id'],
                     'order_route' => $payLoad['order_route'],
                     'is_deleted' => 0
-                ]);                
+                ]);
             }
         }
         else if ($payLoad['order_type'] == "カウンセ"){
@@ -661,7 +655,7 @@ class ReservationsController extends Controller
                     $ret['i'] =  '<div>【新規】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><div>';
                 }else{
                     $ret['i'] =  '<div>【'.$order_history->order_type.'】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><br><div>カウセ</div><div>'.$payLoad['counselor']['interview_start'].'~'.$payLoad['counselor']['interview_end'].'</div><div>'.$payLoad['counselor']['counselor_name'].'</div>';
-                    
+
                     $ret_new = $ret;
                     $ret_new['x'] = $payLoad['counselor']['x'];
                     $ret_new['y'] = $payLoad['counselor']['y'];
@@ -672,12 +666,12 @@ class ReservationsController extends Controller
                     $ret['interviewer_name'] = $payLoad['counselor']['counselor_name'];
                     $ret['old_itvr_x'] = $payLoad['counselor']['x'];
                     $ret['old_itvr_y'] = $payLoad['counselor']['y'];
-                }                
+                }
             } 
             else{ // カウンセ
                 $ret['i'] =  '<div>【カウンセリ】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div>';
             }
-        }              
+        }
 
         array_push($ret_array, $ret);
         return $ret_array;
@@ -730,7 +724,6 @@ class ReservationsController extends Controller
         // }     
 
         //update order table
-                
         $order = TblOrder::where(['order_serial_id'=>$order_serial_id, 'is_deleted'=>0])->orderBy('created_at','desc')->first();
         
         $order->menu_id = $payLoad['menu_id'];
@@ -801,7 +794,7 @@ class ReservationsController extends Controller
                 if($payLoad['item']['rank_name']  == 'NA' || $payLoad['item']['rank_name']  == 'T')
                 {
                     $ret['i'] =  '<div>【新規】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><div>';
-                }else{                    
+                }else{
                     $ret_new = $ret;
                     $ret_new['x'] = $payLoad['counselor']['x'];
                     $ret_new['y'] = $payLoad['counselor']['y'];
@@ -820,12 +813,12 @@ class ReservationsController extends Controller
                     $ret['interviewer_name'] = $payLoad['counselor']['counselor_name'];
                     $ret['old_itvr_x'] = $payLoad['counselor']['x'];
                     $ret['old_itvr_y'] = $payLoad['counselor']['y'];
-                }                
+                }
             } 
             else{ // カウンセ
                 $ret['i'] =  '<div>【カウンセリ】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div>';
             }
-        }              
+        }
 
         array_push($ret_array, $ret);
         return $ret_array;

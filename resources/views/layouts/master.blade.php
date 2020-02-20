@@ -43,7 +43,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <li class="nav-item">
-      @guest                            
+      @guest
       @else
       <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
         ログアウト
@@ -128,7 +128,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <a href="/admin/logs"  class="nav-link">
               <i class="nav-icon fas fa-file-code"></i>
               <p>
-                ログ管理                
+                ログ管理
               </p>
             </a>
           </li>
