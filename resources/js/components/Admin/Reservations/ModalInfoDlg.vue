@@ -3,14 +3,14 @@
 
         <div class="modal-content">
             <div class="modal-header">
-                <div class="el-row"> 
+                <div class="el-row">
                     <button v-for="(tab, index) in tabbtns" 
-                            :key="index"                     
-                            type="button" 
+                            :key="index"
+                            type="button"
                             @click="onClickStateBtn(index)"
                             class="el-button  el-button--primary el-button--medium" 
                             :class="['tab-btn', { setcolor: data.order_status === select_color[index] }]"                    
-                            >
+                    >
                         <span>{{tab}}</span>
                     </button>
                 </div>
@@ -31,7 +31,7 @@
                         <div class="col-sm-8" >
                             <p>{{data.date}}</p>
                         </div>
-                    </div>                    
+                    </div>
                     <div class="row">
                         <label class="col-sm-3 col-form-label">院名:</label>
                         <div class="col-sm-8" >
@@ -63,7 +63,7 @@
                             <p>{{data.staff_choosed}}</p>
                         </div>
                     </div>
-                    <div class="row">           
+                    <div class="row">
                         <label class="col-sm-3 col-form-label">メニュー:</label>
                         <div class="col-sm-8" >
                             <p>{{data.menu_name}}</p>
@@ -165,8 +165,8 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button v-show="changeMode" type="button" class="btn btn-secondary" style="background:rgb(197, 224, 180); color:black" data-dismiss="modal">メール送信</button>
+            <div class="modal-footer d-flex justify-content-between">
+                <a v-show="true" type="button" class="btn btn-secondary" style="background:rgb(197, 224, 180); color:black" v-bind:href="'mailto:'+clinic.email">メール送信</a>
                 <button v-show="changeMode" type="button" class="btn btn-secondary" style="background:rgb(197, 224, 180); color:black" data-dismiss="modal">予約取消</button>
                 <a data-toggle="modal" href="#modalUpdateDlg" class="btn btn-primary" style="background:rgb(197, 224, 180); color:black">変更</a>
             </div>
@@ -179,7 +179,7 @@
 <script>
 
     export default {
-        props:['data','selected'],
+        props:['data','clinic'],
         data () {
             return {
                 tabbtns:['来院','会計','終了','キャンセル'],
@@ -187,7 +187,7 @@
                 tabindex: '',
                 customer:{},
                 dialog: false,
-                changeMode:false,                
+                changeMode:false,
             }
         },
         mounted () {
@@ -197,7 +197,7 @@
             Bus.$on('sendCustInfo',(customerData) =>{
                 this.customer = customerData;
             });     
-            Bus.$on('confirmClicked', this.statusChange);       
+            Bus.$on('confirmClicked', this.statusChange);
         },
 
         methods: {
@@ -205,7 +205,7 @@
                 if(this.data.order_status !== this.select_color[index]){
                     this.tabindex = index;
                     this.$emit('changedStatus', this.tabbtns[index]);
-                    $('#modalMessageBox').modal('show');                
+                    $('#modalMessageBox').modal('show');
                 }
             },
             statusChange() {                

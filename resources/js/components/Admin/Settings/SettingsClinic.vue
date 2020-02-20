@@ -26,7 +26,7 @@
                       <th>クリニック名 </th>
                       <th>メール</th>                      
                       <th>住所</th>
-                      <th>休退職</th>
+                      <th>休閉鎖</th>
                       <th>編集する</th>
                     </tr>
                   </thead>
@@ -82,7 +82,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>休退職</label>
+                        <label>休閉鎖</label>
                         <select v-model="form.is_vacation" class="custom-select" name="is_vacation" :class="{'is-invalid':form.errors.has('is_vacation')}">
                           <option v-bind:value=0>アクティブ</option>
                           <option v-bind:value=1>閉鎖</option>
@@ -133,7 +133,7 @@
                     .then((result)=>{                        
                         toast.fire({
                             icon: "success",
-                            title: "正しく保存!"
+                            title: "データ追加しました"
                         });
                         $('#modalAddUser').modal('hide');
                         this.loadList();
@@ -162,14 +162,14 @@
             deleteData(id){
              let _this = this;
                 swal.fire({
-                    title: '本気ですか？',
-                    text: "本当にアイテムを削除しますか？",
+                    //title: '本気ですか？',
+                    text: "データ削除しても宜しいですか？",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'はい',
-                    cancelButtonText: 'いいえ',
+                    confirmButtonText: '実行',
+                    cancelButtonText: 'キャンセル',
                     reverseButtons: true
                     }).then(function(isConfirm) {
                         console.log(isConfirm);

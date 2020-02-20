@@ -101,7 +101,7 @@
                     .then((result)=>{                        
                         toast.fire({
                             icon: "success",
-                            title: "正しく保存!"
+                            title: "データ追加しました"
                         });
                         $('#modalAddPart').modal('hide');
                         this.loadParts();
@@ -128,14 +128,14 @@
             deletedPart(id){
                 let _this = this;
                 swal.fire({
-                    title: '本気ですか？',
-                    text: "本当にアイテムを削除しますか？",
+                    //title: '本気ですか？',
+                    text: "データ削除しても宜しいですか？",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'はい',
-                    cancelButtonText: 'いいえ',
+                    confirmButtonText: '実行',
+                    cancelButtonText: 'キャンセル',
                     reverseButtons: true
                     }).then(function(isConfirm) {
                         console.log(isConfirm);

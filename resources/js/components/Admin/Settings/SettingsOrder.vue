@@ -221,7 +221,7 @@
                     .then((result)=>{                        
                         toast.fire({
                             icon: "success",
-                            title: "正しく保存!"
+                            title: "データ追加しました"
                         });
                         $('#modalAddItem').modal('hide');
                         this.loadList();

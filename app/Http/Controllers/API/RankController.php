@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\TblRank;
 
 class RankController extends Controller
@@ -34,14 +35,32 @@ class RankController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
+    {    
         $this->validate($request, [
-            'name' => 'required|string|max:50',
-            'short_name' => 'required|string|max:5',
-            // 'email' => 'required|string|email|max:120|unique:tbl_users',
-            // 'password' => 'required|string|min:8'
+            'name' => ['required',
+                            Rule::unique('tbl_ranks')->where(function ($query){
+                                return $query->where('is_deleted','0');
+                            })
+                        ],
+            'short_name' => ['required',
+                            Rule::unique('tbl_ranks')->where(function ($query){
+                                return $query->where('is_deleted','0');
+                            })
+                        ],
         ]);
-        return TblRank::create(['name' => $request->name, 'short_name' => $request->short_name]);
+
+        $duplicateRank = TblRank::where('is_deleted','1')->where(function($query) use ($request) {
+            return $query->where('name',$request->name)->orWhere('short_name',$request->short_name);
+        })->first();
+
+        if ($duplicateRank){
+            $duplicateRank->name = $request->name;
+            $duplicateRank->short_name = $request->short_name;
+            $duplicateRank->is_deleted = 0;
+            $duplicateRank->save();
+            return ['result'=>'success', 'message'=>'Data created successfully'];
+        } else
+            return TblRank::create(['name' => $request->name, 'short_name' => $request->short_name]);
     }
 
     /**
@@ -65,10 +84,16 @@ class RankController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'name' => 'required|string|max:50',
-            'short_name' => 'required|string|max:5',
-            // 'email' => 'required|string|email|max:120|unique:tbl_users,email,'.$user->id, //for updating for unique email
-            // 'password' => 'required|string|min:8'
+            'name' => ['required',
+                            Rule::unique('tbl_ranks')->where(function ($query) use ($request){
+                                return $query->where('is_deleted','0')->where('id',"<>", $request->id);
+                            })
+                        ],
+            'short_name' => ['required',
+                            Rule::unique('tbl_ranks')->where(function ($query) use ($request){
+                                return $query->where('is_deleted','0')->where('id',"<>", $request->id);
+                            })
+                        ],
         ]);
         $rank = TblRank::findOrFail($id);
         $rank->update($request->all());

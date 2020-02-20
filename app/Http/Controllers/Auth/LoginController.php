@@ -7,6 +7,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -87,4 +88,19 @@ class LoginController extends Controller
 
         return redirect('/admin/reservations');
     }
+
+    // protected function login(Request $request)
+    // {
+    //     $identity = $request->identity;
+    //     $password = $request->password;
+    //     $remember = $request->remember; //on
+    //     $_token = $request->_token;
+
+    //     $field = filter_var($identity, FILTER_VALIDATE_EMAIL) ? 'email' : 'user_id';
+    //     //dd($request);
+    //     if (Auth::attempt([$field=>$identity, 'password'=>$password], true)) {
+    //         // Authentication passed...
+    //         return redirect()->intended('test');
+    //     }
+    // }
 }

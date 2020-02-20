@@ -210,7 +210,7 @@
                             }else{
                                 toast.fire({
                                     icon: "success",
-                                    title: "正しく保存!"
+                                    title: "データ追加しました"
                                 });
                                 //console.log(result.data);
                                 result.data.forEach(element => {                                    

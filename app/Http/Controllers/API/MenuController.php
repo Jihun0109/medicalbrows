@@ -50,12 +50,12 @@ class MenuController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string|max:50',
-            'code' => 'required|string|max:20',
+            'code' => 'required|string|max:20|unique:tbl_menus',
             'rank_id' => 'required',
             'tax_id' => 'required',
             'amount' => 'required|numeric|min:0|not_in:0',
             'start_time' => 'required|date',
-            'end_time' => 'nullable|date|after:start_time',            
+            'end_time' => 'nullable|date|after:start_time',
         ]);
         Log::info($request->start_time);
         return TblMenu::create([
@@ -93,7 +93,7 @@ class MenuController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string|max:50',
-            'code' => 'required|string|max:20',
+            'code' => 'required|string|max:20|unique:tbl_menus'.$id,
             'rank_id' => 'numeric',
             'tax_id' => 'numeric',
             'amount' => 'required|numeric|min:0|not_in:0',

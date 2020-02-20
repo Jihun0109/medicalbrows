@@ -53,7 +53,6 @@ class StaffController extends Controller
      */
     public function store(Request $request)
     {
-        Log::info($request);
         $this->validate($request, [
             'full_name' => 'required|string|max:100',
             'alias' => 'required|string|max:100|unique:tbl_staffs',

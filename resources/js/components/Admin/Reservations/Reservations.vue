@@ -2,7 +2,7 @@
     <div class="container">
         <!-- Info Modal -->
         <div class="modal fade" id="modalInfoDlg">
-            <ModalInfoDlg v-bind:data="this.item" @statusUpdated="onOrderCreated" v-on:changedStatus="onStatusChanged"></ModalInfoDlg>
+            <ModalInfoDlg v-bind:data="this.item" @statusUpdated="onOrderCreated" v-on:changedStatus="onStatusChanged" :clinic="selected_clinic"></ModalInfoDlg>
         </div>
         <!-- Update Modal -->
         <div class="modal fade" id="modalUpdateDlg" data-backdrop="static">
@@ -55,7 +55,7 @@
                     type="button" 
                     @click="clinicSelected(c)" 
                     class="el-button  el-button--primary el-button--medium" 
-                    :class="['tab-btn', { active: selected_clinic_id === c.id }]"                    
+                    :class="['tab-btn', { active: selected_clinic.id === c.id }]"                    
                     >
                 <span>{{c.name}}</span>
             </button>

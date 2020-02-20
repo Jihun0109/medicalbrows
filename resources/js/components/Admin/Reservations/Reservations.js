@@ -40,8 +40,7 @@ export default {
                 },
                 dates: new Date()
             }],
-            selected_clinic_id: 0,
-            selected_clinic_name: '',
+            selected_clinic: '',            
             item: {},
         }
     },
@@ -122,14 +121,13 @@ export default {
             axios.get(url).
             then(({ data }) => {
                 this.clinics = data;
-                this.selected_clinic_id = this.clinics[0].id;
-                this.selected_clinic_name = this.clinics[0].name;
+                this.selected_clinic = this.clinics[0];
                 this.loadStaffRanksList();
             });
         },
         loadStaffRanksList() {
             //axios.get('v1/reservation/staff_list?clinic_id=' + this.selected_clinic_id ).
-            axios.post('/v1/reservation/staff_list', { 'clinic_id': this.selected_clinic_id, 'date': moment(this.selectedDate).format("YYYY-MM-DD") }).
+            axios.post('/v1/reservation/staff_list', { 'clinic_id': this.selected_clinic.id, 'date': moment(this.selectedDate).format("YYYY-MM-DD") }).
             then(({ data }) => {
                 this.staffs = data.staff_layout;
                 //this.timelayout = JSON.parse(JSON.stringify(timeLayout));                
@@ -139,7 +137,7 @@ export default {
                 this.hdlayout = JSON.parse(JSON.stringify(data.staff_layout));
                 this.conlayout = JSON.parse(JSON.stringify(data.content_layout));
             });
-            axios.post('/v1/reservation/staff_rank_list', { 'clinic_id': this.selected_clinic_id, 'date': this.selectedDate }).
+            axios.post('/v1/reservation/staff_rank_list', { 'clinic_id': this.selected_clinic.id, 'date': this.selectedDate }).
             then(({ data }) => {
                 this.staff_rank_list = data;
                 //console.log(this.staffInfo);
@@ -161,8 +159,7 @@ export default {
         },
 
         clinicSelected(clinic) {
-            this.selected_clinic_id = clinic.id;
-            this.selected_clinic_name = clinic.name;
+            this.selected_clinic = clinic;
             this.loadStaffRanksList();
         },
 
@@ -194,7 +191,7 @@ export default {
                 }
                 axios.post('/v1/reservation/counselor_list', 
                         { 
-                            'clinic_id': this.selected_clinic_id, 
+                            'clinic_id': this.selected_clinic.id,
                             'date': moment(this.selectedDate).format("YYYY-MM-DD"), 
                             'rank_schedule_id': item.rank_schedule_id,
                             'order_history_id':item.order_history_id

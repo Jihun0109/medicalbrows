@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
+use Log;
 trait AuthenticatesUsers
 {
     use RedirectsUsers, ThrottlesLogins;
@@ -78,6 +79,7 @@ trait AuthenticatesUsers
      */
     protected function attemptLogin(Request $request)
     {
+        Log::info($request);
         return $this->guard()->attempt(
             $this->credentials($request), $request->filled('remember')
         );
@@ -161,7 +163,7 @@ trait AuthenticatesUsers
 
         $request->session()->regenerateToken();
 
-        return $this->loggedOut($request) ?: redirect('/');
+        return $this->loggedOut($request) ?: redirect('/login');
     }
 
     /**
