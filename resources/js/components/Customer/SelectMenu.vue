@@ -30,35 +30,57 @@
                     <p>{{passdata.order_type}}</p>
                 </div>
             </div>
-            <div class="row">
-                <label class="col-3 col-form-label">時間：</label>
+            <div class="row" v-show="passdata.date !== null">
+                <label class="col-3 col-form-label">希望日：</label>
                 <div class="col" >
-                    <p>{{passdata.time}}</p>
+                    <p>{{passdata.date}}({{passdata.week}})</p>
                 </div>
             </div>
-            <div class="row">
+
+            <div class="row" v-show="passdata.staff_info.id !== ''">
                 <label class="col-3 col-form-label">施術者：</label>
                 <div class="col" >
                     <p style="letter-spacing: -2px;" v-if="passdata.staff_info">{{passdata.staff_info.name}}</p>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" v-show="passdata.staff_info.id !== ''">
                 <label class="col-sm-4 col-form-label">施術可能部位：</label>
                 <div class="col-sm-6" >
-                    <p style="letter-spacing: -2.5px;">眉・アイライン上・アイライン下・リップ</p>
+                    <p style="letter-spacing: -2.5px;">{{passdata.staff_info.area}}</p>
                 </div>
             </div>
-            <div class="row">
+
+            <div class="row" v-show="passdata.clinic_info.id !== ''">
                 <label class="col-3 col-form-label">場所：</label>
                 <div class="col" >
                     <p v-if="passdata.clinic_info">{{passdata.clinic_info.name}}</p>
                 </div>
             </div>
         </div> 
-        <div class="text-center" style="margin-top: 20px; margin-bottom: 10px;">       
+        <div class="selstaff-card" v-show="passdata.staff_info.id === ''">            
+            <div class="row justify-content-between">
+                <div class="col-5" style="margin-bottom:0px;">
+                    <label >施術者</label>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <select v-model="selectedstaff" class="form-control" >
+                        <option value="null" disabled>施術者を選択または入力</option>
+                        <option v-for="s in staffs" :key="s.id" v-bind:value="s">{{s.name}}</option>
+                    </select>
+                    <div v-show="selectedstaff !== null">
+                        <label class="col-6 col-form-label">施術可能部位：</label>
+                        <div class="col-auto" style="letter-spacing: -2.5px;" v-if="selectedstaff">{{selectedstaff.area}}</div>   
+                        <label style="margin-left: 10px; width:75%">※ランクアップ変更の場合は 別途 追加費用が発生します</label>                      
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-show="passdata.staff_info.id !== ''" class="text-center" style="margin-top: 20px; margin-bottom: 10px;">       
             <label style="letter-spacing: -1.2px;">予約メニュー、希望枠の日付を選択して下さい</label>
         </div>
-        <div class="selmenu-card">            
+        <div class="selmenu-card" v-show="passdata.staff_info.id !=='' || selectedstaff != null"> 
             <div class="row justify-content-between">
                 <div class="col-5" style="margin-bottom:0px;">
                     <label >希望メニュー</label>
@@ -71,14 +93,14 @@
                 <div class="card-body">
                     <select v-model="selectedmenu" class="form-control" >
                         <option value="null" disabled>希望メニューを選択または入力</option>
-                        <option v-for="m in menus" :key="m.id" v-bind:value="m">{{m.name}}</option>
+                        <option v-for="m in menus" :key="m.id" v-bind:value="m">{{m.name}}</option>                        
                     </select>
                 </div>
             </div>
         </div>
-        <div class="seldate-card">
+        <div class="seldate-card" v-show="passdata.staff_info.id !=='' || selectedstaff != null"> 
             <label class="mt-3" style="margin-bottom:0px;">希望枠</label>
-            <div class="calendar">
+            <div class="calendar" style="margin: auto;">
                 <grid-layout
                     :layout.sync="callayout"
                     :col-num="this.colNum"
@@ -108,13 +130,12 @@
         <div class="seldtime-card" v-show="sel_time_clinic !== null">
             <label class="mt-3" style="margin-bottom:0px;">予約可能時間帯・場所</label>            
             <b-form-radio v-model="sel_time_clinic" v-for="(tc, index) in time_clinics" :key="index" :value="tc" name="radio-seltime" size="lg">{{tc}}</b-form-radio> 
-            <!-- <b-form-radio v-model="t" v-for="(mm, index) in test" :key="index + '-prefix'" value="mm" name="index" size="lg">{{mm}}</b-form-radio>     <b-form-radio v-model="t" v-for="(tc, index) in test" :key="index" name="radio-t" value="tc">新規</b-form-radio>    -->
-          
+         
         </div>  
         <div class="confirm-btn">
             <div class="row justify-content-around">
                 <div class="col-4">
-                    <button type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
+                    <button @click="onClickPrevBtn" type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
                 </div>
                 <div class="col-auto" style="margin-left: 40px;">
                     <button v-show="sel_time_clinic !== null && selectedmenu !== null"  @click="onClickNextBtn" type="button" class="btn btn-primary" style="backgroud:#307DB9; ">次へ</button>
@@ -125,8 +146,17 @@
 </template>
 
 <script>
-    window.toConfirmOrderInfo = {
-        data: {            
+    window.gOrderInfo = {
+        data: {
+            order_type:'',
+            staff_info: {
+                id:'',
+                name:'',
+            },
+            clinic_info: {
+                id:'',
+                name:'',
+            },
             menu_info: {
                     id:'',
                     name:'',
@@ -139,6 +169,23 @@
             },
         }
     };
+        var onedayLayout = [
+        {"x":0,"y":0,"w":2,"h":4,"i":"", "static": false, "selectable":false},
+
+        {"x":2,"y":0,"w":2,"h":1,"i":"2020", "static": false, "selectable":false},
+        
+        {"x":2,"y":1,"w":2,"h":1,"i":"2月", "static": false, "selectable":false},
+        
+        {"x":2,"y":2,"w":2,"h":2,"i":"6<br>(木)", "static": false, "selectable":false},
+
+        {"x":0,"y":4,"w":2,"h":1,"i":"午前", "static": false, "selectable":false},
+        {"x":0,"y":5,"w":2,"h":1,"i":"日中", "static": false, "selectable":false},
+        {"x":0,"y":6,"w":2,"h":1,"i":"夕方", "static": false, "selectable":false},
+        
+        {"x":2,"y":4,"w":2,"h":1,"i":"◯", "static": true, "selectable":true, "data":{"date":"2020-02-05", "week":"木", "time":["09:20~12:00","11:20~14:00"],"clinic":"表参道院"}},
+        {"x":2,"y":5,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
+        {"x":2,"y":6,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},  
+    ];
     var calendarLayout = [
         {"x":0,"y":0,"w":2,"h":4,"i":"", "static": false, "selectable":false},
 
@@ -191,11 +238,18 @@
     export default {
         data() {
             return {
-                colNum: 16,
+                selectedstaff: null,
+                staffs: [
+                    { id: "1", name:"池田　グランドマスタートレイナー", area:"眉・アイライン上・アイライン下・リップ"}, 
+                    { id: "2", name:"吉田(も)　マスター" , area:"眉・アイライン上・アイ"}, 
+                    { id: "3", name:"松原 ロイヤルアーティスト" , area:"アイライン下・リップ"}
+                ],
+                colNum: 16,//16
                 activeColor: '',
                 callayout: JSON.parse(JSON.stringify(calendarLayout)),
+                //callayout: JSON.parse(JSON.stringify(onedayLayout)),
 
-                passdata: toChooseMenu.data,
+                passdata: gOrderTypeInfo.data,
                 price_content: '',
                 selectedmenu: null,
                 menus: [
@@ -211,14 +265,16 @@
             
         },
         mounted() {
-            console.log('Component mounted.')
+            
         },
         methods:{
             onClickCalItem($event, item, index){
                 if(item.selectable){
                     $(".vue-grid-item").removeClass("selectedcolor");
                     $(event.currentTarget).addClass("selectedcolor"); //defalt color when click..                     
-                    toConfirmOrderInfo.data.calendar_info = item;
+                    gOrderInfo.data.calendar_info.date = item.data.date;                    
+                    gOrderInfo.data.calendar_info.week = item.data.week;
+                    gOrderInfo.data.calendar_info.clinic = item.data.clinic;
                     this.time_clinics = [];
                     item.data.time.forEach(element => {                                    
                         this.time_clinics.push(element + ' ' + item.data.clinic);
@@ -230,19 +286,30 @@
                 $('#modalPrice').modal('show');
             },
             onClickNextBtn:function(){
-                toConfirmOrderInfo.data.menu_info = this.selectedmenu;
-                console.log(toConfirmOrderInfo.data,'menuinfo from choosemenu.vue');
-                console.log(toChooseMenu.data,'orderinfo from choosemenu.vue');
+                gOrderInfo.data.order_type = this.passdata.order_type;
+                gOrderInfo.data.staff_info = this.selectedstaff?this.selectedstaff:this.passdata.staff_info;      
+                gOrderInfo.data.clinic_info = this.passdata.clinic_info;
+                gOrderInfo.data.menu_info = this.selectedmenu;
+                gOrderInfo.data.calendar_info.time = this.sel_time_clinic;
                 this.$emit('changeStage', 2);
             },
             onClickPrevBtn:function(){
-                toChooseMenu.data = null;
-                this.$emit('changeStage', 2);
+                this.reset();
+                this.$emit('changeStage', 0);
             },
+            reset(){
+                this.selectedstaff = null;
+                this.selectedmenu = null;
+                this.sel_time_clinic = null;
+                this.time_clinics = null;
+
+                gOrderTypeInfo.data.staff_info.id = "";
+                gOrderTypeInfo.data.date = null;
+                gOrderTypeInfo.data.clinic_info.id = "";
+            }
         }
     }
 </script>
-+987
 <style lang="scss">
     .seldate-card{
         .vue-grid-item.static {

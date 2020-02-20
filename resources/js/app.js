@@ -10,6 +10,8 @@ window.Vue = require("vue");
 import { BootstrapVue, FormCheckboxPlugin } from "bootstrap-vue";
 Vue.use(BootstrapVue);
 Vue.use(FormCheckboxPlugin);
+import VueInputMask from "vue-inputmask"
+Vue.use(VueInputMask.default);
 import moment from "moment";
 import VueRouter from "vue-router";
 import swal from "sweetalert2";

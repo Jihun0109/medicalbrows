@@ -99,6 +99,8 @@ export default {
                     cell.customer_phonenumber = item.customer_phonenumber;
                     cell.customer_birthday = item.customer_birthday;
                     cell.note = item.note;
+                    cell.old_itvr_x = item.old_itvr_x;
+                    cell.old_itvr_y = item.old_itvr_y;
                     if (item.interviewer_id){
                         cell.interviewer_id = item.interviewer_id;
                         cell.interviewer_name = item.interviewer_name;
@@ -106,6 +108,7 @@ export default {
                     return false;
                 }
             });
+            this.$refs.modalUpdateDlg.loadInfo();
 
         },
         callFunction: function() {
@@ -235,19 +238,6 @@ export default {
                 result += " - Static";
             }
             return result;
-        },
-        removeItem: function(item) {
-            //console.log("### REMOVE " + item.i);
-            this.conlayout.splice(this.conlayout.indexOf(item), 2);
-        },
-        addItem: function() {
-            // let self = this;
-            //console.log("### LENGTH: " + this.layout.length);
-            //newX = 0;
-            //newY = 0;
-            let item = { "x": 3, "y": 2, "w": 2, "h": 2, "i": this.index + "", whatever: "bbb" };
-            this.index++;
-            this.conlayout.push(item);
-        },
+        }
     }
 }

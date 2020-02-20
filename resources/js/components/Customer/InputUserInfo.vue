@@ -1,81 +1,126 @@
 <template>
     <div class="">
-        <label class="col-8">＜予約者情報＞</label>
-        <form id="form" class="user-info">
-            <div class="form-group row">
-                <label class="col-4 col-form-label">氏名：</label>
-                <div class="col">
-                    <input v-model="form.first_name" type="text" class="form-control" placeholder="麻布　花子" 
-                    :class="{'is-invalid': form.errors.has('first_name')}">
+        <div class="exist-order-info" v-show="order_id_data.order_serial_id !== null">
+            <label class="col-8">＜前回予約情報＞</label>
+            <div class="info">
+                <div class="row">
+                    <label class="col-4 col-form-label">日付：</label>
+                    <div class="col" >
+                        <p>{{menu_info.calendar_info.date}}({{menu_info.calendar_info.week}})</p>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-4 col-form-label">フリガナ：</label>
-                <div class="col">
-                    <input v-model="form.last_name" type="text" class="form-control" placeholder="アザブ ハナコ">
+                <div class="row">
+                    <label class="col-4 col-form-label">区分：</label>
+                    <div class="col" >
+                        <p>再診</p>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-4 col-form-label">性別：</label>
-                <div class="custom-control custom-switch" style="padding-top: 5px;">
-                    <span class="switch switch-sm">
-                        <label for="switch-sm">女性</label>
-                        <input v-model="form.sex" type="checkbox" class="switch" id="switch-sm" >
-                        <label for="switch-sm">男性</label>
-                    </span>
+                <div class="row">
+                    <label class="col-4 col-form-label">時間：</label>
+                    <div class="col" >
+                        <p>{{menu_info.calendar_info.time}}</p>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-4 col-form-label">生年月日：</label>
-                <div class="col">
-                    <input v-model="form.birthday" type="date" class="form-control" placeholder="1989/12/01">
+                <div class="row">
+                    <label class="col-4 col-form-label">場所：</label>
+                    <div class="col" >
+                        <p>{{menu_info.calendar_info.clinic}}</p>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-4 col-form-label">電話番号：</label>
-                <div class="col">
-                    <input v-model="form.phonenumber" type="text" class="form-control" placeholder="080-XXXX-XXXX">
+                <div class="row">
+                    <label class="col-4 col-form-label">施術者：</label>
+                    <div class="col" >
+                        <p>{{order_info.staff_info.name}}</p>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-4 col-form-label">email：</label>
-                <div class="col">
-                    <input v-model="form.email" type="email" class="form-control" placeholder="hanako@aa.com" name="email" :class="{'is-invalid':form.errors.has('email')}">
+                <div class="row">
+                    <label class="col-4 col-form-label">施術メニュー：</label>
+                    <div class="col" >
+                        <p>{{menu_info.menu_info.name}}</p>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-4 col-form-label">郵便番号：</label>
-                <div class="col">
-                    <input v-model="form.zip_code" type="text" class="form-control" placeholder="106-0031">
+            </div>  
+            <p style="font-weight: bold; margin-top:15px;">個人情報保護の観点から、過去入力したお客様情報の内容は表示しません。<br><br>お手数ですが、再度入力をお願いします。</p>          
+        </div>
+        <div class="customer-infor">
+            <label class="col-8" v-if="order_id_data.order_serial_id !== null">＜お客様情報＞   </label>
+            <label class="col-8" v-else>＜予約者情報＞</label>
+            <form id="form" class="user-info">
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">氏名：</label>
+                    <div class="col">
+                        <input v-model="form.first_name" type="text" class="form-control" placeholder="麻布　花子" 
+                        :class="{'is-invalid': form.errors.has('first_name')}">
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-4 col-form-label">都道府県：</label>
-                <div class="col">
-                    <select v-model="form.city_name"  class="custom-select" required>
-                        <option v-for="(city, index) in cities" :key="index" :value="city" name="selcet-city">{{city}}</option>
-                    </select>
-                    <div class="invalid-feedback">Example invalid custom select feedback</div>
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">フリガナ：</label>
+                    <div class="col">
+                        <input v-model="form.last_name" type="text" class="form-control" placeholder="アザブ ハナコ">
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-4 col-form-label">住所1：</label>
-                <div class="col">
-                    <input v-model="form.address1" type="text" name="address" class="form-control" placeholder="港区西麻布">
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">性別：</label>
+                    <div class="custom-control custom-switch" style="padding-top: 5px;">
+                        <span class="switch switch-sm">
+                            <label for="switch-sm">女性</label>
+                            <input v-model="form.sex" type="checkbox" class="switch" id="switch-sm" >
+                            <label for="switch-sm">男性</label>
+                        </span>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label class="col-4 col-form-label">住所2：</label>
-                <div class="col">
-                    <input v-model="form.address2" type="text" name="address" class="form-control" placeholder="1-14-17">
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">生年月日：</label>
+                    <div class="col">
+                        <input v-model="form.birthday" type="date" class="form-control" placeholder="1989/12/01">
+                    </div>
                 </div>
-            </div>
-        </form>
-
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">電話番号：</label>
+                    <div class="col">
+                        <!-- <input v-model="form.phonenumber" type="text" class="form-control" placeholder="080-XXXX-XXXX"> -->
+                        <input v-model="form.phonenumber" type="tel" class="form-control" v-mask="{mask:'9999-999-9999', placeholder:'#'}">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">email：</label>
+                    <div class="col">
+                        <input v-model="form.email" type="email" class="form-control" placeholder="hanako@aa.com" name="email" :class="{'is-invalid':form.errors.has('email')}">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">郵便番号：</label>
+                    <div class="col">
+                        <!-- <input v-model="form.zip_code" type="text" class="form-control" placeholder="106-0031"> -->
+                        <input v-model="form.zip_code" type="text" class="form-control" v-mask="{ mask: ['999-9999','9A9 A9A'], placeholder: '#' }">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">都道府県：</label>
+                    <div class="col">
+                        <select v-model="form.city_name"  class="custom-select" required>
+                            <option v-for="(city, index) in cities" :key="index" :value="city" name="selcet-city">{{city}}</option>
+                        </select>                    
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">住所1：</label>
+                    <div class="col">
+                        <input v-model="form.address1" type="text" name="address" class="form-control" placeholder="港区西麻布">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">住所2：</label>
+                    <div class="col">
+                        <input v-model="form.address2" type="text" name="address" class="form-control" placeholder="1-14-17">
+                    </div>
+                </div>
+            </form>
+        </div>
         <div class="confirm-btn">
             <div class="row justify-content-around">
                 <div class="col-4">
-                    <button type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
+                    <button  v-show="order_id_data.order_serial_id === null" @click="onClickPrevBtn" type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
                 </div>
                 <div class="col-auto" style="margin-left: 40px;">
                     <button  @click="onClickNextBtn" type="button" class="btn btn-primary" style="backgroud:#307DB9; ">次へ</button>
@@ -86,22 +131,21 @@
 </template>
 
 <script>
-    window.toConfirm_UserInfo = {
+    window.gUserInfo = {
             array:[],
-            calendar_info:null,
-            menu_info:null,
-            clinic_info:null,
-            staff_info:null,
             user_info:null,
         };
     
     export default {
         data () {
-            return {                
+            return {   
+                order_id_data:gIDInfo.data,
+                order_info:gOrderTypeInfo.data,
+                menu_info:gOrderInfo.data,              
                 form: new Form({
                     first_name:'',
                     last_name:'',
-                    sex: 1,
+                    sex: 0,
                     birthday:'',
                     phonenumber:'',
                     email:'',
@@ -116,38 +160,47 @@
         },
         methods:{
             onClickNextBtn:function(){
-                console.log(this.form,'userinfo from inputuserinfo.vue');  
-                console.log(toConfirmOrderInfo.data,'menuinfo from inputuserinfo.vue');                
-                console.log(toChooseMenu.data,'orderinfo from inputuserinfo.vue');  
-                this.arrayUserInfo();               
+                this.arrayUserInfo();
+                gUserInfo.user_info = this.form;
                 this.$emit('changeStage', 3);
                 
             },
             arrayUserInfo:function(){
-                toConfirm_UserInfo.array.push(this.form.first_name);
-                toConfirm_UserInfo.array.push(this.form.last_name);
+                gUserInfo.array.push(this.form.first_name);
+                gUserInfo.array.push(this.form.last_name);
                 if(this.form.sex){
-                    toConfirm_UserInfo.array.push('男性');
+                    gUserInfo.array.push('男性');
                 }
                 else{
-                    toConfirm_UserInfo.array.push('女性');
+                    gUserInfo.array.push('女性');
                 }
-                toConfirm_UserInfo.array.push(this.form.birthday);
-                toConfirm_UserInfo.array.push(this.form.phonenumber);
-                toConfirm_UserInfo.array.push(this.form.email);
-                toConfirm_UserInfo.array.push(this.form.zip_code);
-                toConfirm_UserInfo.array.push(this.form.city_name);
-                toConfirm_UserInfo.array.push(this.form.address1);
-                toConfirm_UserInfo.array.push(this.form.address2);
+                gUserInfo.array.push(this.form.birthday);
+                gUserInfo.array.push(this.form.phonenumber);
+                gUserInfo.array.push(this.form.email);
+                gUserInfo.array.push(this.form.zip_code);
+                gUserInfo.array.push(this.form.city_name);
+                gUserInfo.array.push(this.form.address1);
+                gUserInfo.array.push(this.form.address2);
+            },
+            onClickPrevBtn:function(){
+                this.form.reset();
+                this.$emit('changeStage', 1);
             },
         },
         mounted() {
-            console.log('Component mounted.');
+
         }
     }
 </script>
 
 <style lang="scss">
+    .exist-order-info{
+        .info{
+            div{
+                margin-bottom: 5px;
+            }
+        }
+    }
     .user-info{
         margin-bottom: 55px;
         .form-group{

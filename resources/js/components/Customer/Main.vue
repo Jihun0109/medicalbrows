@@ -1,6 +1,11 @@
 <template>
     <div class="container  d-flex flex-column justify-content-between">
-        <div>
+        <div class="cancelorder-page" v-show="cancelmode === 0">
+            <div class="row justify-content-center">
+                <cancel-order @toOrderMode="changeMode" ></cancel-order>
+            </div>
+        </div>
+        <div class="reservation-page" v-show="cancelmode === 1">
             <div class="row justify-content-center">
                 <b-button-group style=" width:100%; padding-right: 20px;">
                     <b-button variant="secondary" class="arrow0 btn btn-lg btn-primary btn-arrow-right" style="z-index:5;" 
@@ -9,7 +14,7 @@
                         <p style="letter-spacing: -2.5px;  margin-left: 0px;">区分・方法・決定</p>
                     </b-button>
 
-                    <b-button variant="secondary" class="arrow1 btn btn-lg btn-primary btn-arrow-right" style="z-index:4"
+                    <b-button  variant="secondary" class="arrow1 btn btn-lg btn-primary btn-arrow-right" style="z-index:4"
                                 @click="onClickArrowBtn($event, 1)" 
                                 :class="{setbtn:stage == 1}">
                         <p style="letter-spacing: -2.5px;!important">メニュー・枠決定</p>
@@ -55,11 +60,14 @@
             </div>
             <div class="row justify-content-center">
                 <div class="col-md-8">
-                    <div v-show="stage === 0" class="tab-content-div">
-                        <choose-order-type  @changeStage="changeStageTab"></choose-order-type>
+                    <div v-show="stage === 0 && !existId" class="tab-content-div">
+                        <select-order-type  @changeStage="changeStageTab" @toExistIdPage="changeExistIdPage">></select-order-type>
                     </div>
+                    <div v-show="stage === 0 && existId" class="tab-content-div">
+                        <exist-reservation-id  @changeStage="changeStageTab"></exist-reservation-id>
+                    </div>                    
                     <div v-show="stage === 1" class="tab-content-div">
-                        <choose-menu @changeStage="changeStageTab"></choose-menu>
+                        <select-menu @changeStage="changeStageTab"></select-menu>
                     </div>
                     <div v-show="stage === 2" class="tab-content-div">
                         <input-user-info @changeStage="changeStageTab"></input-user-info>
@@ -80,37 +88,49 @@
 </template>
 
 <script>
-    import ChooseOrderType from './ChooseOrderType.vue';
-    import ChooseMenu from './ChooseMenu.vue';
+    import SelectOrderType from './SelectOrderType.vue';
+    import SelectMenu from './SelectMenu.vue';
     import InputUserInfo from './InputUserInfo.vue';
     import ConfirmOrderInfo from './ConfirmOrderInfo.vue';
     import OutputPdf from './OutputPdf.vue';
     import CompleteOrder from './CompleteOrder.vue';
+    import ExistReservationId from './ExistReservationId.vue';
+    import CancelOrder from './CancelOrder.vue';
 
     export default {
         components: {        
-            ChooseOrderType,
-            ChooseMenu,
+            SelectOrderType,
+            SelectMenu,
             InputUserInfo,
             ConfirmOrderInfo,
             OutputPdf,
             CompleteOrder,
+            ExistReservationId,
+            CancelOrder,
         },
         data () {
             return {
-                componentname:'choose-order-type',
+                componentname:'select-order-type',
                 arrowbtns:['区分・方法・決定','メニュー・枠決定','情報入力','情報碓認','PDF出力','予約完了'],
                 stage: 0,
+                existId: 0,
+                cancelmode:0,
             }
         },
         methods: {
             onClickArrowBtn(event, index){
-                $(".btn-arrow-right").removeClass("setbtn");
-                $(event.currentTarget).addClass("setbtn"); 
-                this.stage = index;
+                // $(".btn-arrow-right").removeClass("setbtn");
+                // $(event.currentTarget).addClass("setbtn"); 
+                // this.stage = index;
             },
             changeStageTab: function(index) {
                 this.stage = index;
+            },
+            changeExistIdPage: function(index){
+                this.existId = index;
+            },
+            changeMode(){
+                this.cancelmode = 1;
             }
         }
     }

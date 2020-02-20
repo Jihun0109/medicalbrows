@@ -35,10 +35,10 @@
         <div class="confirm-btn">
             <div class="row justify-content-around">
                 <div class="col-auto mr-auto">
-                    <button type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
+                    <button @click="onClickPrevBtn" type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
                 </div>
                 <div class="col-auto" >
-                    <button type="button" class="btn btn-primary" style="backgroud:#307DB9;" v-show="checked">次へ</button>
+                    <button  @click="onClickNextBtn" type="button" class="btn btn-primary" style="backgroud:#307DB9;" v-show="checked">次へ</button>
                 </div>
             </div>
         </div>  
@@ -53,8 +53,17 @@
             }
         },
         mounted() {
-            console.log('Component mounted.')
+            
+        },
+        methods:{
+            onClickNextBtn:function(){
+                this.$emit('changeStage', 5);
+            },
+            onClickPrevBtn:function(){
+                this.$emit('changeStage', 3);
+            },
         }
+
     }
 </script>
 

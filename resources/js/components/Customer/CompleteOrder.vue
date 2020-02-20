@@ -4,7 +4,7 @@
             <div class="col-md-8">
                     <h5 class="title">予約が完了しました</h5>
                     <div class="content-data">
-                        予約番号： 011-XXXXXXXXXXXX
+                        予約番号： {{order_serial_id}}
                         <br>
                         です。
                         <br>
@@ -24,8 +24,13 @@
 
 <script>
     export default {
+        data(){
+            return{
+                order_serial_id:'',
+            }
+        },
         mounted() {
-            console.log('Component mounted.')
+            
         }
     }
 </script>

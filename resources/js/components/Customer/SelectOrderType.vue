@@ -48,7 +48,7 @@
                                     <a @click="onOldHelp" data-toggle="modal" href="#modalInput"><i class="help-icon fas fa-question-circle"></i></a>
                                 </b-col>
                             </b-row>
-                            <label v-show="order_type === '再診'" style="margin-top: 10px;">前回予約IDをお持ちの方は<a href="#" class="card-link">こちら</a></label>
+                            <label v-show="order_type === '再診'" style="margin-top: 10px;">前回予約IDをお持ちの方は<a @click="existIDPage" href="#" class="card-link">こちら</a></label>
                         </div> 
                     </b-card-text>
                 </b-card>
@@ -59,8 +59,8 @@
                     <b-card-text>
                         <div class="radiobtns">
                             <div>
-                                <b-form-radio v-model="order_method" value="staff" name="radio-method" size="sm">施術者を優先して予約</b-form-radio>
-                                <b-form-select v-show="order_method === 'staff'" v-model="selectedstaff" :options="staffs" size="sm" class="mt-3" style="margin-bottom: 4px;"></b-form-select>
+                                <b-form-radio v-model="order_method" value="staff" name="radio-method" size="lg">施術者を優先して予約</b-form-radio>
+                                <b-form-select v-show="order_method === 'staff'" v-model="selectedstaff" :options="staffs" style="margin-bottom: 8px;"></b-form-select>
                                 <div v-show="selectedstaff !== null && order_method === 'staff'">
                                     <label class="" style="margin-bottom:0px;">施術可能部位:</label>
                                     <div style="letter-spacing:-1.5px;" v-if="selectedstaff">{{selectedstaff.area}}</div>
@@ -70,6 +70,7 @@
                                     locale="ja"                                    
                                     tint-color='#f142f4'
                                     v-model='selecteddate'
+                                    :attributes='attrs'                                    
                                     :theme-styles='themeStyles'
                                     is-double-paned
                                     is-inline                  
@@ -79,7 +80,7 @@
                                 >
                                 </v-date-picker>
                                 <b-form-radio v-model="order_method" value="clinic" name="radio-method" size="lg">場所を優先して予約</b-form-radio>
-                                <b-form-select v-show="order_method === 'clinic'" v-model="selectedclinic" :options="clinics" size="sm" class="mt-3" style="margin-bottom: 10px;"></b-form-select>
+                                <b-form-select v-show="order_method === 'clinic'" v-model="selectedclinic" :options="clinics" style="margin-bottom: 10px;"></b-form-select>
                                 <label v-show="order_method === 'clinic' && order_type ==='再診'" style="margin-left: 10px; width:65%">※院変更の場合は 別途 初診料2,000円（税別）が発生します</label>
                             </div>                            
                         </div> 
@@ -106,20 +107,24 @@ import VCalendar from 'v-calendar';
 import Vuetable from 'vuetable-2';
 import moment from 'moment';
 
-window.toChooseMenu = {
-  data: {
-    order_type: null,
-    staff_info: {
-            id:'',
-            name:'',
-        },
-    date: null,
-    time: null,
-    clinic_info: {
-            id:'',
-            name:'',
-        },
-  }
+window.gOrderTypeInfo = initialState();
+function initialState(){
+    console.log('I am intial function');
+    return{
+        data: {
+            order_type: null,
+            staff_info: {
+                    id:'',
+                    name:'',
+                },
+            date: null,
+            week: null,
+            clinic_info: {
+                    id:'',
+                    name:'',
+                },
+        }
+    } 
 }
 
 export default {
@@ -149,6 +154,8 @@ export default {
             text1: '',
 
             //Date variables
+            selectedweek: null,
+            daysOfWeek:['月', '火', '水', '木', '金', '土', '日'],
             selecteddate: null,
             themeStyles: {
               wrapper: {
@@ -177,31 +184,53 @@ export default {
                 border: '1px solid #dadada',
               },
             },
+            attrs: [
+                    {
+                        dot: {
+                            class: 'high-light'
+                        },
+                        dates: new Date()
+                    }
+                ],
         };
     },
     methods: {
         showNextBtn: function(method){                
             if(method =="staff"){
-                if(this.selectedstaff != null)
+                if(this.selectedstaff != null){
+                    this.selecteddate = null;
+                    this.selectedclinic = null;
                     return true;
+                }
             }
             if(method =="date"){
-                if(this.selecteddate != null)
+                if(this.selecteddate != null){
+                    this.selectedstaff = null;
+                    this.selectedclinic = null;
                     return true;
+                }
             }
             if(method =="clinic"){
-                if(this.selectedclinic != null)
+                if(this.selectedclinic != null){
+                    this.selecteddate = null;
+                    this.selectedstaff = null;
                     return true;
+                }
             }
             return false;
         },
         onClickNextBtn:function(){
-            toChooseMenu.data.order_type = this.order_type;
-            toChooseMenu.data.staff_info = this.selectedstaff;
-            toChooseMenu.data.date = this.selecteddate;
-            toChooseMenu.data.time = '';
-            toChooseMenu.data.clinic_info = this.selectedclinic;
-            console.log(toChooseMenu.data, 'orderinfo from chooseordertype.vue'); 
+            gOrderTypeInfo.data.order_type = this.order_type;
+            if(this.selectedstaff)
+                gOrderTypeInfo.data.staff_info = this.selectedstaff;
+            else if(this.selecteddate){
+                gOrderTypeInfo.data.date = moment(this.selecteddate).format("YYYY-MM-DD");
+                gOrderTypeInfo.data.week = this.selectedweek;
+                console.log( gOrderTypeInfo.data.date, gOrderTypeInfo.data.week);
+            }
+            else if(this.selectedclinic)
+                gOrderTypeInfo.data.clinic_info = this.selectedclinic;
+            console.log(gOrderTypeInfo.data, 'orderinfo from Selectordertype.vue'); 
             this.$emit('changeStage', 1);
         },
         onNewHelp: function(){
@@ -213,12 +242,33 @@ export default {
         pageChange(page){
           console.log(page);
         },
+        getWeek(date){
+            let i = new Date(date).getDay(date)
+            return this.daysOfWeek[i];
+        },
+        existIDPage:function(){
+            this.$emit('toExistIdPage', 'true');
+        },
+        reset:function(){
+
+        }
     },
-    created() {}
+    created() {
+        this.selecteddate = new Date();        
+    },
+    watch: {
+        selecteddate(val) {
+            this.selectedweek = this.getWeek(val);            
+        }
+    },
 };
 </script>
 
 <style lang="scss">
+    .custom-radio{
+        margin-bottom: 8px;
+    }
+
     .bottombtn-home {
         a {
             display: inline-block;

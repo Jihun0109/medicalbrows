@@ -104,7 +104,8 @@ class ReservationsController extends Controller
                             ->get();
             $bflag = false;
             for( $j = 0; $j < sizeof($remove_time_with_order); $j++ ){
-                if($remove_time_with_order[$j]->end_hour == $min && $order_history_id != $remove_time_with_order[$j]->id){
+                if($remove_time_with_order[$j]->end_hour === $min && $order_history_id != $remove_time_with_order[$j]->id){
+                    Log::info($remove_time_with_order[$j]->id);
                     $bflag = true;
                     break;
                 }
@@ -618,9 +619,7 @@ class ReservationsController extends Controller
                 'is_deleted' => 0
             ]);
         }
-        Log::info("Order History Date");
-        Log::info($payLoad['item']['date']);
-
+    
         $menu_info = DB::table('tbl_menus')->where('id', $order_history->menu_id)->first();
         $rank_info = DB::table('tbl_ranks')->where('id', $order_history->rank_id)->first();
         $staff_info = DB::table('tbl_staffs')->where('id',$order_history->staff_id)->first();
@@ -662,14 +661,17 @@ class ReservationsController extends Controller
                     $ret['i'] =  '<div>【新規】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><div>';
                 }else{
                     $ret['i'] =  '<div>【'.$order_history->order_type.'】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><br><div>カウセ</div><div>'.$payLoad['counselor']['interview_start'].'~'.$payLoad['counselor']['interview_end'].'</div><div>'.$payLoad['counselor']['counselor_name'].'</div>';
-                    $ret['interviewer_id'] = $payLoad['counselor']['interviewer_id'];
-                    $ret['interviewer_name'] = $payLoad['counselor']['counselor_name'];
-
+                    
                     $ret_new = $ret;
                     $ret_new['x'] = $payLoad['counselor']['x'];
                     $ret_new['y'] = $payLoad['counselor']['y'];
                     $ret_new['i'] = '<div>【'.$order_history->order_type.'】</div><div>'.$order_serial_id.'</div><div>カウセ</div><div>';
                     array_push($ret_array, $ret_new);
+
+                    $ret['interviewer_id'] = $payLoad['counselor']['interviewer_id'];
+                    $ret['interviewer_name'] = $payLoad['counselor']['counselor_name'];
+                    $ret['old_itvr_x'] = $payLoad['counselor']['x'];
+                    $ret['old_itvr_y'] = $payLoad['counselor']['y'];
                 }                
             } 
             else{ // カウンセ
@@ -678,7 +680,6 @@ class ReservationsController extends Controller
         }              
 
         array_push($ret_array, $ret);
-        Log::info("ordercreate function exection time: ".(microtime(true)-$start_tick)); 
         return $ret_array;
     }
     
@@ -699,8 +700,7 @@ class ReservationsController extends Controller
     // 예약수정 함수
     public function orderUpdate(Request $request)
     {
-        $start_tick = microtime(true);
-        $payLoad = json_decode(request()->getContent(), true); 
+        $payLoad = json_decode(request()->getContent(), true);
         Log::error($payLoad);
         
         //confirm field 
@@ -746,7 +746,20 @@ class ReservationsController extends Controller
         $customer->birthday = $payLoad['birthday'];
         $customer->save();
         
-        $order_history = TblOrderHistory::where(['order_id'=>$order->id, 'is_deleted'=>0])->orderBy('created_at','desc')->first();
+        $order_history = TblOrderHistory::where('id',$payLoad['item']['order_history_id'])->first();
+        $bChangedInterviewer = false;
+        if ($order_history->interviewer_id && $payLoad['counselor']){
+            if ($order_history->interviewer_id !== $payLoad['counselor']['interviewer_id']){
+                $interviewer = TblOrderHistory::where(['order_id'=>$order_history->order_id, 
+                        'staff_id'=>$order_history->interviewer_id,
+                        'rank_schedule_id'=>$payLoad['counselor']['interviewer_rank_schedule_id']])->first();
+                $interviewer->staff_id = $payLoad['counselor']['interviewer_id'];
+                $interviewer->save();
+
+                $order_history->interviewer_id = $payLoad['counselor']['interviewer_id'];
+                $bChangedInterviewer = true;
+            }
+        }
         $order_history->staff_id = $payLoad['item']['staff_id'];
         $order_history->rank_id = $payLoad['item']['rank_id'];
         $order_history->order_id = $order->id;
@@ -776,11 +789,45 @@ class ReservationsController extends Controller
         $ret['customer_last_name']= $payLoad['last_name'];
         $ret['customer_phonenumber']= $payLoad['phonenumber'];
         $ret['customer_birthday']= $payLoad['birthday'];
-
+        $ret['order_route'] = $order->order_route;
         $ret['note'] = $payLoad['note'];
         //$ret['i'] = $order_serial_id.$ret['customer_first_name'];
         $ret['i'] =  '<div>【'.$order_history->order_type.'】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><br><div>カウセ</div><div>'.$ret['time'].'</div><div>'.$ret['staff_choosed'].'</div>' ;
-        Log::info("orderupdate function exection time: ".(microtime(true)-$start_tick)); 
-        return $ret;
+
+        $ret_array = [];
+
+        if ($payLoad['order_type'] != "再診"){
+            if ($payLoad['order_type'] == "新規"){
+                if($payLoad['item']['rank_name']  == 'NA' || $payLoad['item']['rank_name']  == 'T')
+                {
+                    $ret['i'] =  '<div>【新規】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><div>';
+                }else{                    
+                    $ret_new = $ret;
+                    $ret_new['x'] = $payLoad['counselor']['x'];
+                    $ret_new['y'] = $payLoad['counselor']['y'];
+                    $ret_new['i'] = '<div>【'.$order_history->order_type.'】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>';
+                    array_push($ret_array, $ret_new);
+                    if ($bChangedInterviewer){
+                        $ret_old = [];
+                        $ret_old['x'] = $payLoad['old_itvr_x'];
+                        $ret_old['y'] = $payLoad['old_itvr_y'];
+                        $ret_old['order_serial_id'] = $ret_old['order_history_id'] = '';
+                        $ret_old['i'] = '新';
+                        array_push($ret_array, $ret_old);
+                    }
+                    $ret['i'] =  '<div>【'.$order_history->order_type.'】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><br><div>カウセ</div><div>'.$payLoad['counselor']['interview_start'].'~'.$payLoad['counselor']['interview_end'].'</div><div>'.$payLoad['counselor']['counselor_name'].'</div>';
+                    $ret['interviewer_id'] = $payLoad['counselor']['interviewer_id'];
+                    $ret['interviewer_name'] = $payLoad['counselor']['counselor_name'];
+                    $ret['old_itvr_x'] = $payLoad['counselor']['x'];
+                    $ret['old_itvr_y'] = $payLoad['counselor']['y'];
+                }                
+            } 
+            else{ // カウンセ
+                $ret['i'] =  '<div>【カウンセリ】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div>';
+            }
+        }              
+
+        array_push($ret_array, $ret);
+        return $ret_array;
     }
 }

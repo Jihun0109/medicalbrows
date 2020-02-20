@@ -6,37 +6,37 @@
                 <div class="row">
                     <label class="col-4 col-form-label">日付：</label>
                     <div class="col" >
-                        <p>{{calendar_info.date}}({{calendar_info.week}})</p>
+                        <p>{{menu_info.calendar_info.date}}({{menu_info.calendar_info.week}})</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">区分：</label>
                     <div class="col" >
-                        <p>{{order_type}}</p>
+                        <p>{{order_info.order_type}}</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">時間：</label>
                     <div class="col" >
-                        <p>{{calendar_info.time}}</p>
+                        <p>{{menu_info.calendar_info.time}}</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">場所：</label>
                     <div class="col" >
-                        <p>{{clinic_info.name}}</p>
+                        <p>{{menu_info.calendar_info.clinic}}</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">施術者：</label>
                     <div class="col" >
-                        <p>{{staff_info.name}}</p>
+                        <p>{{order_info.staff_info.name}}</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">施術メニュー：</label>
                     <div class="col" >
-                        <p>{{menu_info.name}}</p>
+                        <p>{{menu_info.menu_info.name}}</p>
                     </div>
                 </div>
             </div>
@@ -55,10 +55,10 @@
         <div class="confirm-btn">
             <div class="row justify-content-around">
                 <div class="col-4">
-                    <button type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
+                    <button @click="onClickPrevBtn" type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
                 </div>
                 <div class="col-auto" style="margin-left: 40px;">
-                    <button type="button" class="btn btn-primary" style="backgroud:#307DB9; ">次へ</button>
+                    <button @click="onClickNextBtn" type="button" class="btn btn-primary" style="backgroud:#307DB9; ">次へ</button>
                 </div>
             </div>
         </div>  
@@ -68,12 +68,10 @@
 <script>
     export default {
         data() {
-            return {                
-                calendar_info: toConfirmOrderInfo.data.calendar_info,
-                order_type: toChooseMenu.data.order_type,
-                clinic_info: toChooseMenu.data.clinic_info,
-                staff_info: toChooseMenu.data.staff_info,
-                menu_info: toConfirmOrderInfo.data.menu_info,
+            return {     
+                order_info:gOrderTypeInfo.data,
+                menu_info:gOrderInfo.data,           
+
                 types: [
                     '氏名：',
                     'フリガナ：',
@@ -86,11 +84,19 @@
                     '住所1：',
                     '住所2：'
                 ],
-                values: toConfirm_UserInfo.array,
+                values: gUserInfo.array,
             }
         },
         mounted() {
-            console.log('Component mounted.')
+            
+        },
+        methods:{
+            onClickNextBtn:function(){
+                this.$emit('changeStage', 4);
+            },
+            onClickPrevBtn:function(){
+                this.$emit('changeStage', 2);
+            },
         }
     }
 </script>

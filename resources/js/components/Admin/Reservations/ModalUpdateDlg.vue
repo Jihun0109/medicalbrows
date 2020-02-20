@@ -123,7 +123,8 @@
                     <div class="row">
                         <label class="col-sm-3 col-form-label">電話番号:</label>
                         <div class="col-sm-8">
-                            <input v-model="form.phonenumber" type="text" class="form-control form-control-sm" placeholder="電話番号" :class="{'is-invalid':form.errors.has('phonenumber')}">
+                            <input v-model="form.phonenumber" type="tel" class="form-control form-control-sm" v-mask="{mask:'999-9999-999', placeholder:'#'}" :class="{'is-invalid':form.errors.has('phonenumber')}">
+                            <!-- <input v-model="form.phonenumber" type="text" class="form-control form-control-sm" placeholder="080-xxx-xxxx" :class="{'is-invalid':form.errors.has('phonenumber')}"> -->
                         </div>
                     </div>
                     <div class="row">
@@ -175,6 +176,8 @@
                     order_route : 'システム',
                     order_serial_id : '',
                     note:'',
+                    old_itvr_x: '',
+                    old_itvr_y: '',
                 }),
                 routes:['システム','電話','Web','チャットボット'],
             }
@@ -228,7 +231,10 @@
                                 title: "更新成功!"
                             });
                             $('#modalUpdateDlg').modal('hide');
-                            this.$emit('orderCreated', result.data);
+                            result.data.forEach(element => {                                    
+                                this.$emit('orderCreated', element);
+                            });
+                            //this.$emit('orderCreated', result.data);
                         })
                         .catch(()=>{
                             console.log('update error');
@@ -256,9 +262,13 @@
                 this.form.note = this.item.note != "" ? this.item.note : '経験 : \n妊娠・授乳・不妊治療 : \n通院歴・薬 : \n金アレ・アトピー・ケロイド確認 : \n眉ブリーチ・炎症・傷跡確認 : \n美容サービス・美容整形確認 : \n料金・所要時間 : \nHP : \nキャンセル規約 : ';                
                 
                 for (var i=0; i<this.counselors.length; i++){
-                    if (this.counselors[i]['interviewer_id'] === this.item.interviewer_id)
-                        this.form.counselor = this.counselors[i];
-                }                
+                    
+                    if (this.counselors[i]['interviewer_id'] === this.item.interviewer_id){
+                        this.form.counselor = this.counselors[i];                        
+                        this.form['old_itvr_x'] = this.counselors[i].x;
+                        this.form['old_itvr_y'] = this.counselors[i].y;
+                    }
+                }
                 console.log(this.form,'log from loadInfo');
             },
         },
