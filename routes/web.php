@@ -62,6 +62,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
 //     Route::post('/clinic/add', 'ApiController@clinicAdd');
 //     Route::post('/clinic/remove', 'ApiController@clinicRemove');
 //     Route::post('/clinic/update', 'ApiController@clinicUpdate');
+    //client APIs
+    Route::post('/client/rank_list', 'API\ClientController@rank_list');
+    Route::post('/client/staff_list', 'API\ClientController@staff_list');
+    Route::post('/client/clinic_list', 'API\ClientController@clinic_list');
+    Route::post('/client/menu_list', 'API\ClientController@menu_list');
+    Route::post('/client/canledar_info', 'API\ClientController@canledar_info');
+
 });
 
 

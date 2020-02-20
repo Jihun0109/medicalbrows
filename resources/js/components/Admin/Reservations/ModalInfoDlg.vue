@@ -207,6 +207,11 @@
                     this.$emit('changedStatus', this.tabbtns[index]);
                     $('#modalMessageBox').modal('show');
                 }
+                else{
+                    this.tabindex = -1;
+                    this.$emit('changedStatus', 'オリジナル');
+                    $('#modalMessageBox').modal('show');
+                } 
             },
             statusChange() {                
                 axios.post('/v1/order-statusupdate',{ 'item': this.data, 'statusIdx': this.tabindex})

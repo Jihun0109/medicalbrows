@@ -1,11 +1,11 @@
 <template>
     <div class="container  d-flex flex-column justify-content-between">
-        <div class="cancelorder-page" v-show="cancelmode === 0">
+        <div class="cancelorder-page" v-show="cancelmode === 1">
             <div class="row justify-content-center">
                 <cancel-order @toOrderMode="changeMode" ></cancel-order>
             </div>
         </div>
-        <div class="reservation-page" v-show="cancelmode === 1">
+        <div class="reservation-page" v-show="cancelmode === 0">
             <div class="row justify-content-center">
                 <b-button-group style=" width:100%; padding-right: 20px;">
                     <b-button variant="secondary" class="arrow0 btn btn-lg btn-primary btn-arrow-right" style="z-index:5;" 
@@ -61,7 +61,7 @@
             <div class="row justify-content-center">
                 <div class="col-md-8">
                     <div v-show="stage === 0 && !existId" class="tab-content-div">
-                        <select-order-type  @changeStage="changeStageTab" @toExistIdPage="changeExistIdPage">></select-order-type>
+                        <select-order-type  v-bind:ranks="this.ranks" v-bind:clinics="this.clinics" @changeStage="changeStageTab" @toExistIdPage="changeExistIdPage">></select-order-type>
                     </div>
                     <div v-show="stage === 0 && existId" class="tab-content-div">
                         <exist-reservation-id  @changeStage="changeStageTab"></exist-reservation-id>
@@ -108,13 +108,19 @@
             ExistReservationId,
             CancelOrder,
         },
+        created() {
+            this.rankList();
+            this.clinicList();
+        },
         data () {
             return {
                 componentname:'select-order-type',
                 arrowbtns:['区分・方法・決定','メニュー・枠決定','情報入力','情報碓認','PDF出力','予約完了'],
-                stage: 0,
+                stage: 1,
                 existId: 0,
                 cancelmode:0,
+                ranks:[],
+                clinics:[],
             }
         },
         methods: {
@@ -130,7 +136,19 @@
                 this.existId = index;
             },
             changeMode(){
-                this.cancelmode = 1;
+                this.cancelmode = 0;
+            },
+            rankList: function(){
+                axios.post('/v1/client/rank_list').
+                then(({ data }) => {
+                    this.ranks = data;
+                });
+            },
+            clinicList: function(){
+                axios.post('/v1/client/clinic_list').
+                then(({ data }) => {
+                    this.clinics = data;
+                });   
             }
         }
     }

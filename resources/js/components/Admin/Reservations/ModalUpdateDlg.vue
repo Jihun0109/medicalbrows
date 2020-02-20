@@ -123,7 +123,7 @@
                     <div class="row">
                         <label class="col-sm-3 col-form-label">電話番号:</label>
                         <div class="col-sm-8">
-                            <input v-model="form.phonenumber" type="tel" class="form-control form-control-sm" v-mask="{mask:'999-9999-999', placeholder:'#'}" :class="{'is-invalid':form.errors.has('phonenumber')}">
+                            <input v-model="form.phonenumber" type="tel" class="form-control form-control-sm" v-mask="{mask:'999-999-9999', placeholder:'#'}" :class="{'is-invalid':form.errors.has('phonenumber')}">
                             <!-- <input v-model="form.phonenumber" type="text" class="form-control form-control-sm" placeholder="080-xxx-xxxx" :class="{'is-invalid':form.errors.has('phonenumber')}"> -->
                         </div>
                     </div>

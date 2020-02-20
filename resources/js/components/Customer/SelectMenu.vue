@@ -40,7 +40,7 @@
             <div class="row" v-show="passdata.staff_info.id !== ''">
                 <label class="col-3 col-form-label">施術者：</label>
                 <div class="col" >
-                    <p style="letter-spacing: -2px;" v-if="passdata.staff_info">{{passdata.staff_info.name}}</p>
+                    <p style="letter-spacing: -2px;" v-if="passdata.staff_info">{{passdata.staff_info.name}}【{{passdata.rank_info.name}}】</p>
                 </div>
             </div>
             <div class="row" v-show="passdata.staff_info.id !== ''">
@@ -93,13 +93,19 @@
                 <div class="card-body">
                     <select v-model="selectedmenu" class="form-control" >
                         <option value="null" disabled>希望メニューを選択または入力</option>
-                        <option v-for="m in menus" :key="m.id" v-bind:value="m">{{m.name}}</option>                        
+                        <option v-for="m in passdata.menu_array" :key="m.id" v-bind:value="m">{{m.name}}</option>                        
                     </select>
                 </div>
             </div>
         </div>
-        <div class="seldate-card" v-show="passdata.staff_info.id !=='' || selectedstaff != null"> 
+        <!-- <div class="seldate-card" v-show="passdata.staff_info.id !=='' || selectedstaff != null">  -->
+        <div class="seldate-card" > 
             <label class="mt-3" style="margin-bottom:0px;">希望枠</label>
+            <div class="smnext row justify-content-between">
+                <span @click="prevWeekBtn" class="col-4"><i v-show="nextweek_count" class='fas fa-caret-left ' style='font-size:24px;'></i></span>
+                <span @click="nextWeekBtn" class="col-auto"><i class='fas fa-caret-right' style='font-size:24px;'></i></span>
+            </div>
+
             <div class="calendar" style="margin: auto;">
                 <grid-layout
                     :layout.sync="callayout"
@@ -169,7 +175,7 @@
             },
         }
     };
-        var onedayLayout = [
+    var onedayLayout = [
         {"x":0,"y":0,"w":2,"h":4,"i":"", "static": false, "selectable":false},
 
         {"x":2,"y":0,"w":2,"h":1,"i":"2020", "static": false, "selectable":false},
@@ -186,55 +192,7 @@
         {"x":2,"y":5,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
         {"x":2,"y":6,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},  
     ];
-    var calendarLayout = [
-        {"x":0,"y":0,"w":2,"h":4,"i":"", "static": false, "selectable":false},
 
-        {"x":2,"y":0,"w":14,"h":1,"i":"2020", "static": false, "selectable":false},
-
-        {"x":2,"y":1,"w":2,"h":1,"i":"1月", "static": false, "selectable":false},
-        {"x":4,"y":1,"w":12,"h":1,"i":"2月", "static": false, "selectable":false},
-        
-        {"x":2,"y":2,"w":2,"h":2,"i":"31<br>(金)", "static": false, "selectable":false},
-        {"x":4,"y":2,"w":2,"h":2,"i":"<div style='color:green; '>1<br>(土)</div>", "static": false, "selectable":false},
-        {"x":6,"y":2,"w":2,"h":2,"i":"<div style='color:red; '>2<br>(日)</div>", "static": false, "selectable":false},
-        {"x":8,"y":2,"w":2,"h":2,"i":"3<br>(月)", "static": false, "selectable":false},
-        {"x":10,"y":2,"w":2,"h":2,"i":"4<br>(火)", "static": false, "selectable":false},
-        {"x":12,"y":2,"w":2,"h":2,"i":"5<br>(水)", "static": false, "selectable":false},
-        {"x":14,"y":2,"w":2,"h":2,"i":"6<br>(木)", "static": false, "selectable":false},
-
-        {"x":0,"y":4,"w":2,"h":1,"i":"午前", "static": false, "selectable":false},
-        {"x":0,"y":5,"w":2,"h":1,"i":"日中", "static": false, "selectable":false},
-        {"x":0,"y":6,"w":2,"h":1,"i":"夕方", "static": false, "selectable":false},
-        
-        {"x":2,"y":4,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-        {"x":2,"y":5,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-        {"x":2,"y":6,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-
-        {"x":4,"y":4,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-        {"x":4,"y":5,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-        {"x":4,"y":6,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-        
-        {"x":6,"y":4,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-        {"x":6,"y":5,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-        {"x":6,"y":6,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-
-        {"x":8,"y":4,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-        {"x":8,"y":5,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-        {"x":8,"y":6,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-        
-        {"x":10,"y":4,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-        {"x":10,"y":5,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-        {"x":10,"y":6,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-        
-        {"x":12,"y":4,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-        {"x":12,"y":5,"w":2,"h":1,"i":"◯", "static": true, "selectable":true, "data":{"date":"2020-02-05", "week":"水", "time":["13:20~16:00"],"clinic":"表参道院"}},
-        {"x":12,"y":6,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-        
-        {"x":14,"y":4,"w":2,"h":1,"i":"◯", "static": true, "selectable":true, "data":{"date":"2020-02-05", "week":"木", "time":["09:20~12:00","11:20~14:00"],"clinic":"表参道院"}},
-        {"x":14,"y":5,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-        {"x":14,"y":6,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-
-    ];
     export default {
         data() {
             return {
@@ -244,28 +202,34 @@
                     { id: "2", name:"吉田(も)　マスター" , area:"眉・アイライン上・アイ"}, 
                     { id: "3", name:"松原 ロイヤルアーティスト" , area:"アイライン下・リップ"}
                 ],
-                colNum: 16,//16
+                colNum: 4,//16
                 activeColor: '',
-                callayout: JSON.parse(JSON.stringify(calendarLayout)),
+                callayout:[], 
                 //callayout: JSON.parse(JSON.stringify(onedayLayout)),
 
                 passdata: gOrderTypeInfo.data,
                 price_content: '',
                 selectedmenu: null,
-                menus: [
-                    { id: 1, name: 'アイブロウ２回コース　1/2'},
-                    { id: 2, name: 'アイライン上2回コース　1/2'},
-                    { id: 3, name: 'アイライン下２回コース　1/2'},                    
-                ],
+                menus: [],
                 sel_time_clinic: null,
                 time_clinics:null,
+
+                nextweek_count: 0,
             }
         },
         components: {        
             
         },
         mounted() {
-            
+
+        },
+        created(){
+            axios.post('/v1/client/canledar_info', { 'staff_info': this.selectedstaff, 'count': this.nextweek_count}).
+            then(({ data }) => {
+                this.colNum = data.layout_width;
+                this.callayout = JSON.parse(JSON.stringify(data.layout));
+                console.log(data);
+            });   
         },
         methods:{
             onClickCalItem($event, item, index){
@@ -303,10 +267,30 @@
                 this.sel_time_clinic = null;
                 this.time_clinics = null;
 
-                gOrderTypeInfo.data.staff_info.id = "";
-                gOrderTypeInfo.data.date = null;
-                gOrderTypeInfo.data.clinic_info.id = "";
-            }
+                // gOrderTypeInfo.data.staff_info.id = "";
+                // gOrderTypeInfo.data.date = null;
+                // gOrderTypeInfo.data.clinic_info.id = "";
+            },
+            nextWeekBtn:function(){
+                this.nextweek_count++;
+                axios.post('/v1/client/canledar_info', { 'staff_info': this.selectedstaff, 'count': this.nextweek_count}).
+                then(({ data }) => {
+                    this.colNum = data.layout_width;
+                    this.callayout = JSON.parse(JSON.stringify(data.layout));
+                    console.log(data);
+                });   
+            },
+            prevWeekBtn:function(){
+                if(this.nextweek_count >= 1){
+                    this.nextweek_count--;
+                    axios.post('/v1/client/canledar_info', { 'staff_info': this.selectedstaff, 'count': this.nextweek_count}).
+                        then(({ data }) => {
+                            this.colNum = data.layout_width;
+                            this.callayout = JSON.parse(JSON.stringify(data.layout));
+                            console.log(data);
+                    });   
+                }                    
+            },
         }
     }
 </script>

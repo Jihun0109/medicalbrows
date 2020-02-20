@@ -60,7 +60,14 @@
                         <div class="radiobtns">
                             <div>
                                 <b-form-radio v-model="order_method" value="staff" name="radio-method" size="lg">施術者を優先して予約</b-form-radio>
-                                <b-form-select v-show="order_method === 'staff'" v-model="selectedstaff" :options="staffs" style="margin-bottom: 8px;"></b-form-select>
+                                <select v-show="order_method === 'staff'" v-model="selectedrank" class="form-control" style="margin-bottom: 8px;">
+                                    <option value="null" disabled>ランクを選択または入力</option>
+                                    <option v-for="(r,index) in ranks" :key="index" v-bind:value="r">{{r.name}}</option>
+                                </select>
+                                <select v-show="order_method === 'staff' && selectedrank !== null" v-model="selectedstaff" class="form-control" style="margin-bottom: 8px;">
+                                    <option value="null" disabled>施術者を選択または入力</option>
+                                    <option v-for="(s, index) in staffs" :key="index" v-bind:value="s">{{s.name}}</option>
+                                </select>
                                 <div v-show="selectedstaff !== null && order_method === 'staff'">
                                     <label class="" style="margin-bottom:0px;">施術可能部位:</label>
                                     <div style="letter-spacing:-1.5px;" v-if="selectedstaff">{{selectedstaff.area}}</div>
@@ -70,7 +77,9 @@
                                     locale="ja"                                    
                                     tint-color='#f142f4'
                                     v-model='selecteddate'
-                                    :attributes='attrs'                                    
+                                    :attributes='attrs'
+                                    :min-date="minDate"
+                                    :max-date="maxDate"                                                                        
                                     :theme-styles='themeStyles'
                                     is-double-paned
                                     is-inline                  
@@ -80,7 +89,10 @@
                                 >
                                 </v-date-picker>
                                 <b-form-radio v-model="order_method" value="clinic" name="radio-method" size="lg">場所を優先して予約</b-form-radio>
-                                <b-form-select v-show="order_method === 'clinic'" v-model="selectedclinic" :options="clinics" style="margin-bottom: 10px;"></b-form-select>
+                                <select v-show="order_method === 'clinic'" v-model="selectedclinic" class="form-control" style="margin-bottom: 10px;">
+                                    <option value="null" disabled>場所を選択または入力</option>
+                                    <option v-for="(c, index) in clinics" :key="index" v-bind:value="c">{{c.name}}</option>
+                                </select>
                                 <label v-show="order_method === 'clinic' && order_type ==='再診'" style="margin-left: 10px; width:65%">※院変更の場合は 別途 初診料2,000円（税別）が発生します</label>
                             </div>                            
                         </div> 
@@ -109,13 +121,17 @@ import moment from 'moment';
 
 window.gOrderTypeInfo = initialState();
 function initialState(){
-    console.log('I am intial function');
     return{
         data: {
             order_type: null,
+            rank_info:{
+                rank_id:'',
+                name:'',             
+            },
             staff_info: {
                     id:'',
                     name:'',
+                    area:'',
                 },
             date: null,
             week: null,
@@ -123,11 +139,13 @@ function initialState(){
                     id:'',
                     name:'',
                 },
+            menu_array:[],
         }
     } 
 }
 
 export default {
+    props:['ranks','clinics'],
     components: {        
         VCalendar,
         Vuetable,
@@ -137,25 +155,19 @@ export default {
             //Option variables(Radio Button)
             order_type:'新規',
             order_method: 'staff', 
+
+            selectedrank: null,
+            // ranks: [],
+
             selectedstaff: null,
-            staffs: [
-                { value: null, text: '施術者を選択または入力' , disabled: true},
-                { value: { id: "1", name:"池田　グランドマスタートレイナー", area:'眉・アイライン上・アイライン下・リップ'}, text: '池田　グランドマスタートレイナー' },
-                { value: { id: "2", name:"吉田(も)　マスター" , area:'眉・アイライン上・アイ'}, text: '吉田(も)　マスター' },
-                { value: { id: "3", name:"松原 ロイヤルアーティスト" , area:'アイライン下・リップ'}, text: '松原 ロイヤルアーティスト' },
-            ],
+            staffs: [],
+
             selectedclinic: null,
-            clinics: [
-                { value: null, text: '場所を選択または入力', disabled: true },
-                { value: { id: "1", name:"表参道院"}, text: '表参道院' },
-                { value: { id: "2", name:"新宿院"}, text: '新宿院' },
-                { value: { id: "3", name:"六本木院"}, text: '六本木院' },
-            ],
+            // clinics: [],
             text1: '',
 
             //Date variables
-            selectedweek: null,
-            daysOfWeek:['月', '火', '水', '木', '金', '土', '日'],
+            selectedweek: null,            
             selecteddate: null,
             themeStyles: {
               wrapper: {
@@ -185,13 +197,15 @@ export default {
               },
             },
             attrs: [
-                    {
-                        dot: {
-                            class: 'high-light'
-                        },
-                        dates: new Date()
-                    }
-                ],
+                {
+                    dot: {
+                        class: 'high-light'
+                    },
+                    dates: new Date()
+                }
+            ],
+            maxDate: new Date(moment().add(3, 'months').endOf('month')),
+            minDate: new Date(),
         };
     },
     methods: {
@@ -202,6 +216,7 @@ export default {
                     this.selectedclinic = null;
                     return true;
                 }
+                return false;
             }
             if(method =="date"){
                 if(this.selecteddate != null){
@@ -209,6 +224,7 @@ export default {
                     this.selectedclinic = null;
                     return true;
                 }
+                return false;
             }
             if(method =="clinic"){
                 if(this.selectedclinic != null){
@@ -216,22 +232,41 @@ export default {
                     this.selectedstaff = null;
                     return true;
                 }
+                return false;
             }
             return false;
         },
         onClickNextBtn:function(){
             gOrderTypeInfo.data.order_type = this.order_type;
-            if(this.selectedstaff)
+            if(this.selectedstaff){
+                gOrderTypeInfo.data.date = null;
+                gOrderTypeInfo.data.clinic_info.id = "";
                 gOrderTypeInfo.data.staff_info = this.selectedstaff;
+                gOrderTypeInfo.data.rank_info = this.selectedrank;
+
+                axios.post('/v1/client/clinic_list', { 'staff_info': this.selectedstaff}).
+                then(({ data }) => {
+                    var clinic_info = data;
+                    gOrderTypeInfo.data.clinic_info = clinic_info[0];
+                    this.$emit('changeStage', 1);
+                    console.log(gOrderTypeInfo.data.clinic_info,'=============');
+                });   
+            }                
             else if(this.selecteddate){
                 gOrderTypeInfo.data.date = moment(this.selecteddate).format("YYYY-MM-DD");
                 gOrderTypeInfo.data.week = this.selectedweek;
+                gOrderTypeInfo.data.staff_info.id = "";
+                gOrderTypeInfo.data.clinic_info.id = "";                
                 console.log( gOrderTypeInfo.data.date, gOrderTypeInfo.data.week);
             }
-            else if(this.selectedclinic)
-                gOrderTypeInfo.data.clinic_info = this.selectedclinic;
+            else if(this.selectedclinic){
+                gOrderTypeInfo.data.staff_info.id = "";
+                gOrderTypeInfo.data.date = null;
+                gOrderTypeInfo.data.clinic_info = this.selectedclinic;            
+            }
+
             console.log(gOrderTypeInfo.data, 'orderinfo from Selectordertype.vue'); 
-            this.$emit('changeStage', 1);
+            //this.$emit('changeStage', 1);
         },
         onNewHelp: function(){
             this.order_type = '新規';
@@ -243,11 +278,25 @@ export default {
           console.log(page);
         },
         getWeek(date){
+            var daysOfWeek = ['日','月', '火', '水', '木', '金', '土'];
             let i = new Date(date).getDay(date)
-            return this.daysOfWeek[i];
+            return daysOfWeek[i];
         },
         existIDPage:function(){
             this.$emit('toExistIdPage', 'true');
+        },
+        staff_rank_List:function(){
+            axios.post('/v1/client/staff_list', { 'rank_info': this.selectedrank}).
+            then(({ data }) => {
+                this.staffs = data;
+                //console.log(this.staffs);
+            });   
+        },
+        menu_List:function(){
+            axios.post('/v1/client/menu_list', { 'staff_info': this.selectedstaff}).
+            then(({ data }) => {
+                gOrderTypeInfo.data.menu_array = data;
+            });   
         },
         reset:function(){
 
@@ -259,7 +308,15 @@ export default {
     watch: {
         selecteddate(val) {
             this.selectedweek = this.getWeek(val);            
-        }
+        },
+        selectedrank(val) {
+            this.selectedstaff = null;
+            this.staff_rank_List();  
+        },
+        selectedstaff(val) {
+            if(this.selectedstaff)
+                this.menu_List();  
+        },
     },
 };
 </script>
