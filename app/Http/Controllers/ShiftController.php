@@ -63,8 +63,7 @@ class ShiftController extends Controller
             $data = [];
             foreach($dates as $date){
                 array_push($data, array('staff_id'=>$staff_id, 'date'=>$date));
-            }
-            Log::error($data);
+            }            
             TblShiftHistory::insert($data);
             //Log::error(microtime(true)-$o);
         }

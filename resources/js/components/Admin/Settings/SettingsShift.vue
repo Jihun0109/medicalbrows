@@ -202,7 +202,7 @@ export default {
             console.log(moment().month());
             // min date check
             if (year === moment().year() && month === moment().month()+1)
-              startDay = new Date();
+              startDay = new Date(moment().format("YYYY/MM/DD"));
 
             //
             if (load && arrDates.length == 0)
