@@ -22,6 +22,8 @@ use Illuminate\Support\Traits\Macroable;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Log;
+
 
 class SessionGuard implements StatefulGuard, SupportsBasicAuth
 {
@@ -492,6 +494,7 @@ class SessionGuard implements StatefulGuard, SupportsBasicAuth
         $this->clearUserDataFromStorage();
 
         if (! is_null($this->user) && ! empty($user->getRememberToken())) {
+            Log::info($user->getRememberToken());
             $this->cycleRememberToken($user);
         }
 
@@ -517,9 +520,11 @@ class SessionGuard implements StatefulGuard, SupportsBasicAuth
      */
     protected function clearUserDataFromStorage()
     {
+        Log::info($this->getName());
         $this->session->remove($this->getName());
 
         if (! is_null($this->recaller())) {
+            
             $this->getCookieJar()->queue($this->getCookieJar()
                     ->forget($this->getRecallerName()));
         }
@@ -536,6 +541,9 @@ class SessionGuard implements StatefulGuard, SupportsBasicAuth
         $user->setRememberToken($token = Str::random(60));
 
         $this->provider->updateRememberToken($user, $token);
+
+        Log::info($user);
+        Log::info($token);
     }
 
     /**

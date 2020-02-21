@@ -44,6 +44,7 @@
         "thunky": "^1.1.0",
         "v-calendar": "^1.0.1",
         "v-tooltip": "^2.0.0-rc.33",
+        "vanilla-autokana": "^1.1.6",
         "vform": "^1.0.1",
         "vue-date-pick": "^1.2.1",
         "vue-datetime": "^1.0.0-beta.11",

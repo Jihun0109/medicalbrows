@@ -188,3 +188,4 @@ if (clickableElements) {
         clickableElements[i].addEventListener("touch", hideSidebar)
     }
 }
+

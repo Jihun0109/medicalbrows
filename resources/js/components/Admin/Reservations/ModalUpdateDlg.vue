@@ -104,13 +104,13 @@
                     <div class="row">
                         <label class="col-sm-3 col-form-label">お客様名:</label>
                         <div class="col-sm-8">
-                            <input v-model="form.first_name" type="text" class="form-control form-control-sm" placeholder="お客様名を入力" :class="{'is-invalid':form.errors.has('first_name')}">
+                            <input v-model="form.first_name" id="customerName" type="text" class="form-control form-control-sm" placeholder="お客様名を入力" :class="{'is-invalid':form.errors.has('first_name')}">
                         </div>
                     </div>
                     <div class="row">
                         <label class="col-sm-3 col-form-label">フリガナ:</label>
                         <div class="col-sm-8">
-                            <input v-model="form.last_name" type="text" class="form-control form-control-sm" id="time" placeholder="フリガナを入力" :class="{'is-invalid':form.errors.has('last_name')}">
+                            <input v-model="form.last_name" id="customerFurigana" type="text" class="form-control form-control-sm" :class="{'is-invalid':form.errors.has('last_name')}">
                         </div>
                     </div>
                     <div class="row">
@@ -156,6 +156,7 @@
 
 <script>
     import CustomNote from './CustomNote.vue';
+    import * as AutoKana from 'vanilla-autokana';
     export default {
         props:['item','sr_list','menus','counselors','childbus'],
         components: {
@@ -183,7 +184,8 @@
             }
         },
         mounted () {            
-            this.childbus.$on('clearFormErrors', this.clearErrors);
+            this.childbus.$on('clearFormErrors', this.clearErrors);            
+            AutoKana.bind('#customerName', '#customerFurigana');
         },
         created() {
             this.loadInfo();            

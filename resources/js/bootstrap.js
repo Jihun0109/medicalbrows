@@ -9,7 +9,7 @@ window._ = require('lodash');
 try {
     window.Popper = require('popper.js').default;
     window.$ = window.jQuery = require('jquery');
-
+    //window.autoKana = require('jquery.autokana');
     require('bootstrap');
     require('admin-lte');
 } catch (e) {}
