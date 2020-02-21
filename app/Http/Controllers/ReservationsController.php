@@ -177,7 +177,8 @@ class ReservationsController extends Controller
                 continue;
 
             $rank_schedule = DB::table('tbl_rank_schedules')
-                    ->where([['tbl_rank_schedules.is_deleted', 0], ['tbl_rank_schedules.rank_id', $staff_rank_names[$i]->rank_id]])  
+                    ->where([['tbl_rank_schedules.is_deleted', 0], ['tbl_rank_schedules.rank_id', $staff_rank_names[$i]->rank_id]])
+                    ->where('part_id',1) // アイブロウ
                     ->select(DB::raw('id,HOUR(tbl_rank_schedules.start_time) as start_hour, HOUR(tbl_rank_schedules.end_time) as end_hour, MINUTE(tbl_rank_schedules.start_time) as start_minute, MINUTE(tbl_rank_schedules.end_time) as end_minute'))       
                     ->get();
             $temp = array(

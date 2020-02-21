@@ -139,8 +139,6 @@
                     <div class="form-group">
                         <label>備考:</label>
                         <div class='row textarea-placeholder'>
-                            <!-- <b-form-textarea id="textarea" v-model="form.note" :rows="8" :max-rows="20" class="form-control col-sm-10" :placeholder="'経験 :\n妊娠・授乳・不妊治療 : \n通院歴・薬 :\n金アレ・アトピー・ケロイド確認 :\n眉ブリーチ・炎症・傷跡確認 :\n美容サービス・美容整形確認 :\n料金・所要時間 :\nHP :\nキャンセル規約 :'">
-                            </b-form-textarea> -->
                             <custom-note v-model="form.note"></custom-note>
                         </div>
                     </div>

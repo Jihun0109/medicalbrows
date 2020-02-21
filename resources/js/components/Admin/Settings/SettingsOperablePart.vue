@@ -59,7 +59,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label>	施術可能部位</label>
-                        <input v-model="form.name" type="text" name="name" class="form-control" :class="{'is-invalid':form.errors.has('name')}" placeholder="ランク名">
+                        <input v-model="form.name" type="text" name="name" class="form-control" :class="{'is-invalid':form.errors.has('name')}" placeholder="部位名">
                         <has-error :form="form" field="name"></has-error>
                     </div>
                 </div>

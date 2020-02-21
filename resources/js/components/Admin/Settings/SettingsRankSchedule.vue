@@ -142,6 +142,7 @@
             return {
                 data: {},
                 ranks:{},
+                operable_parts: [],
                 parts:[{'id':1,'name':'アイブロウ'}],
                 form: new Form({
                     id : '',
@@ -173,6 +174,9 @@
 
                 axios.get('/api/rank').
                     then(({data}) => (this.ranks = data));
+
+                axios.get('/api/operable-part').
+                    then(({data}) => (this.parts = data));
                
             },
             createData(){                

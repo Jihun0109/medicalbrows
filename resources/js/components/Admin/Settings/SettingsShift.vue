@@ -127,13 +127,13 @@ export default {
                   'dates': this.reverseDateArray(this.selectedDate, this.selectedMonth['year'], this.selectedMonth['month'])
                 };
 
-            console.log(payload);
-            console.log("convert from above to below");
             payload.dates = payload.dates.map(d => moment(d).format("YYYY-MM-DD"));
-            console.log(payload);
-
             axios.post('/v1/shift/update', payload).
             then(({ data }) => {
+                        toast.fire({
+                            icon: "success",
+                            title: "データ追加しました"
+                        });
                   this.$refs.vuetable.selectedTo = [];
             });
         },
