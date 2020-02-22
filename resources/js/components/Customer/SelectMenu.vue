@@ -23,6 +23,9 @@
                 </div>
             </div>
         </div>
+        <!-- <h2 class="title is-2">
+            Width: {{ screenwidth }},
+        </h2> -->
         <div class="info">
             <div class="row">
                 <label class="col-3 col-form-label">診療区分：</label>
@@ -33,7 +36,7 @@
             <div class="row" v-show="passdata.date !== null">
                 <label class="col-3 col-form-label">希望日：</label>
                 <div class="col" >
-                    <p>{{passdata.date}}({{passdata.week}})</p>
+                    <p>{{formatDate(passdata.date)}}({{passdata.week}})</p>
                 </div>
             </div>
 
@@ -57,7 +60,7 @@
                 </div>
             </div>
         </div> 
-        <div class="selstaff-card" v-show="passdata.staff_info.id === ''">            
+        <div class="selstaff-card" v-show="passdata.staff_info.id === '' && passdata.mode !== 0">            
             <div class="row justify-content-between">
                 <div class="col-5" style="margin-bottom:0px;">
                     <label >施術者</label>
@@ -133,9 +136,9 @@
                 </grid-layout>
             </div>
         </div>      
-        <div class="seldtime-card" v-show="sel_time_clinic !== null">
+        <div class="seldtime-card" v-show="sel_time_schedule !== null">
             <label class="mt-3" style="margin-bottom:0px;">予約可能時間帯・場所</label>            
-            <b-form-radio v-model="sel_time_clinic" v-for="(tc, index) in time_clinics" :key="index" :value="tc" name="radio-seltime" size="lg">{{tc}}</b-form-radio> 
+            <b-form-radio v-model="sel_time_schedule" v-for="(tc, index) in time_schedules" :key="index" :value="tc" name="radio-seltime" size="lg">{{tc.start_time}}~{{tc.end_time}}<span style="padding-left: 15px;">{{passdata.clinic_info.name}}</span></b-form-radio> 
          
         </div>  
         <div class="confirm-btn">
@@ -144,7 +147,7 @@
                     <button @click="onClickPrevBtn" type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
                 </div>
                 <div class="col-auto" style="margin-left: 40px;">
-                    <button v-show="sel_time_clinic !== null && selectedmenu !== null"  @click="onClickNextBtn" type="button" class="btn btn-primary" style="backgroud:#307DB9; ">次へ</button>
+                    <button v-show="sel_time_schedule !== null && selectedmenu !== null"  @click="onClickNextBtn" type="button" class="btn btn-primary" style="backgroud:#307DB9; ">次へ</button>
                 </div>
             </div>
         </div>  
@@ -154,8 +157,13 @@
 <script>
     window.gOrderInfo = {
         data: {
+            staff_choosed:'',
             order_type:'',
             staff_info: {
+                id:'',
+                name:'',
+            },
+            rank_info: {
                 id:'',
                 name:'',
             },
@@ -164,15 +172,17 @@
                 name:'',
             },
             menu_info: {
-                    id:'',
-                    name:'',
-            },            
+                id:'',
+                name:'',
+            },                     
             calendar_info: {
-                    date:'',
-                    week:'',
-                    time:'',
-                    clinic:'',
+                date:'',
+                week:'',
             },
+            time_schedule_info:{
+                start_time:'',
+                end_time:'',
+            },   
         }
     };
     export default {
@@ -193,58 +203,93 @@
                 price_content: '',
                 selectedmenu: null,
                 menus: [],
-                sel_time_clinic: null,
-                time_clinics:null,
+                sel_time_schedule: null,
+                time_schedules:null,
 
                 nextweek_count: 0,
+                screenwidth: 0,
+                screenmode: 7,
             }
         },
         watch: {
-            selectedstaff(val) {
+            selectedstaff(val) {                 
                 if(this.selectedstaff){
+                    this.passdata.staff_info = this.selectedstaff;
+                    this.passdata.rank_info.rank_id = this.selectedstaff.rank_id;
+                    this.passdata.rank_info.name = this.selectedstaff.rank_name;
+                    //console.log(this.selectedstaff);
                     if(this.passdata.mode === 2){
-                        this.getCalendarLayout(this.selectedstaff, this.passdata.screenmode);
+                        this.getCalendarLayout(this.selectedstaff, this.screenmode);
                     }else if(this.passdata.mode === 1){
                         this.getCalendarLayout(this.selectedstaff, 1);
+                        this.clinic_list(); //날자우선방식인 경우에만 필요, 나마지는 사전에 다 구함.
                     }                    
-                    this.menu_List();  
+                    this.menu_list();                    
+                }                    
+            },
+            screenmode(val){
+                console.log(this.selectedstaff, this.screenmode, 'menu');                        
+                if(this.passdata.staff_info.id !== ''){
+                    this.getCalendarLayout(this.passdata.staff_info, this.screenmode);
                 }
-                    
             },
         },
+        created() {
+            window.addEventListener('resize', this.handleResize)
+            this.handleResize(); 
+        },
+        destroyed() {
+            window.removeEventListener('resize', this.handleResize)
+        },
         methods:{
-            menu_List:function(){
+            handleResize() {
+                if(this.passdata.mode !== 1){
+                    this.screenwidth = window.innerWidth;                    
+                    if(this.screenwidth > 1024){
+                        this.screenmode = 14;                        
+                    }                        
+                    else{
+                        this.screenmode = 7;
+                    }
+                }
+            },
+            clinic_list(){
+                axios.post('/v1/client/clinic_list', { 'staff_info': this.selectedstaff}).
+                then(({ data }) => {
+                    var clinic_info = data;
+                    this.passdata.clinic_info = clinic_info[0];                    
+                });   
+            },
+            menu_list:function(){
                 axios.post('/v1/client/menu_list', { 'staff_info': this.selectedstaff}).
                 then(({ data }) => {
                     gOrderTypeInfo.data.menu_array = data;
                 });   
             },
-            onClickCalItem($event, item, index){
+            onClickCalItem($event, item, index){                
                 if(item.selectable){
+                    console.log(item);
                     $(".vue-grid-item").removeClass("selectedcolor");
                     $(event.currentTarget).addClass("selectedcolor"); //defalt color when click..                     
                     gOrderInfo.data.calendar_info.date = item.date_info.date;                    
                     gOrderInfo.data.calendar_info.week = item.date_info.week;         
-                    this.time_clinics = [];
-                    item.order_info.forEach(element => {                                    
-                        //this.time_clinics.push(element.interview_start + '~' + end_time + ' ' + item.data.clinic);                        
-                        if(element.start_time)//T or NA
-                            this.time_clinics.push(element.start_time + '~' + element.end_time);
-                        else
-                            this.time_clinics.push(element.conselor_info.interview_start + '~' + element.end_time);
-                    });
-                    this.sel_time_clinic = this.time_clinics[0];
+                    this.time_schedules = item.order_info;
+                    this.sel_time_schedule = item.order_info[0]; //as default
+                    //console.log(this.time_schedules);
                 }
             },
             onClickPriceBtn(){
                 $('#modalPrice').modal('show');
             },
             onClickNextBtn:function(){
-                gOrderInfo.data.order_type = this.passdata.order_type;
-                gOrderInfo.data.staff_info = this.selectedstaff?this.selectedstaff:this.passdata.staff_info;      
+                gOrderInfo.data.staff_choosed = this.passdata.mode === 0?'あり':'なし';
+                gOrderInfo.data.order_type = this.passdata.order_type;                
+                gOrderInfo.data.staff_info = this.passdata.staff_info;
+                gOrderInfo.data.rank_info = this.passdata.rank_info;      
                 gOrderInfo.data.clinic_info = this.passdata.clinic_info;
                 gOrderInfo.data.menu_info = this.selectedmenu;
-                gOrderInfo.data.calendar_info.time = this.sel_time_clinic;
+                //상담원과  시술자의 rank_schedule_id, 날자, 요일, 시간정보,
+                gOrderInfo.data.time_schedule_info = this.sel_time_schedule;
                 this.$emit('changeStage', 2);
             },
             onClickPrevBtn:function(){
@@ -252,21 +297,21 @@
                 this.$emit('changeStage', 0);
             },
             reset(){
+                $(".vue-grid-item").removeClass("selectedcolor");
                 this.selectedstaff = null;
                 this.selectedmenu = null;
                 this.sel_time_clinic = null;
                 this.time_clinics = null;
-
             },
             nextWeekBtn:function(){
                 this.nextweek_count++;
                 console.log(this.passdata);
-                this.getCalendarLayout(this.passdata.staff_info, this.passdata.screenmode);
+                this.getCalendarLayout(this.passdata.staff_info, this.screenmode);
             },
             prevWeekBtn:function(){
                 if(this.nextweek_count >= 1){
                     this.nextweek_count--;
-                    this.getCalendarLayout(this.passdata.staff_info, this.passdata.screenmode);
+                    this.getCalendarLayout(this.passdata.staff_info, this.screenmode);
                 }                    
             },
             getCalendarLayout:function(staff_info, showdays){
@@ -276,7 +321,16 @@
                     this.passdata.calendar_layout = JSON.parse(JSON.stringify(data.layout));
                     console.log(data);
                 });   
-            }
+            },
+            formatDate(dt) {
+                dt = new Date(dt);
+                var month = ('0' + (dt.getMonth() + 1)).slice(-2);
+                var date = ('0' + dt.getDate()).slice(-2);
+                var year = dt.getFullYear();
+                var formattedDate = year + '年' + month + '月' + date + '日';
+                //var formattedDate = year + '-' + month + '-' + date;
+                return formattedDate;
+            },
         }
     }
 </script>

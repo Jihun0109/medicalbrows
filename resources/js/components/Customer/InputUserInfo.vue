@@ -139,9 +139,9 @@
     export default {
         data () {
             return {   
-                order_id_data:gIDInfo.data,
-                order_info:gOrderTypeInfo.data,
-                menu_info:gOrderInfo.data,              
+                order_id_data:gIDInfo.data,//defined cancel.vue
+                order_info:gOrderTypeInfo.data, //defined selectordertype.vue
+                menu_info:gOrderInfo.data,  //defined selectmenu.vue            
                 form: new Form({
                     first_name:'',
                     last_name:'',
@@ -183,7 +183,7 @@
                 gUserInfo.array.push(this.form.address2);
             },
             onClickPrevBtn:function(){
-                this.form.reset();
+                //this.form.reset();
                 this.$emit('changeStage', 1);
             },
         },

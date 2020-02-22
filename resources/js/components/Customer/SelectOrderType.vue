@@ -23,10 +23,6 @@
                 </div>
             </div>
         </div>
-        <!-- <h2 class="title is-2">
-            Width: {{ screensize.width }},
-            Height: {{ screensize.height }}
-        </h2> -->
         <div class="cardcontent">
             <div class="text-center">       
                 <label style="letter-spacing: -1.2px;">診療区分、予約方法を選択して下さい</label>
@@ -215,10 +211,6 @@ export default {
             ],
             maxDate: new Date(moment().add(3, 'months').endOf('month')),
             minDate: new Date(),
-            screensize: {
-                width: 0,
-                height: 0
-            },
         };
     },
     methods: {
@@ -255,7 +247,12 @@ export default {
                 gOrderTypeInfo.data.staff_info = this.selectedstaff;
                 gOrderTypeInfo.data.rank_info = this.selectedrank;
 
-                axios.post('/v1/client/canledar_info', { 'staff_info': this.selectedstaff, 'weekmethod': 7}).
+                var screenwidth = window.innerWidth;
+                if(screenwidth > 1024)
+                    gOrderTypeInfo.screenmode = 14;
+                else
+                    gOrderTypeInfo.screenmode = 7;
+                axios.post('/v1/client/canledar_info', { 'staff_info': this.selectedstaff, 'weekmethod': gOrderTypeInfo.screenmode}).
                 then(({ data }) => {
                     gOrderTypeInfo.data.colNum = data.layout_width;
                     gOrderTypeInfo.data.calendar_layout = JSON.parse(JSON.stringify(data.layout));
@@ -266,8 +263,7 @@ export default {
                 then(({ data }) => {
                     var clinic_info = data;
                     gOrderTypeInfo.data.clinic_info = clinic_info[0];
-                    this.$emit('changeStage', 1);
-                    console.log(gOrderTypeInfo.data.clinic_info,'=============');
+                    this.$emit('changeStage', 1);                   
                 });   
             }                
             else if(this.selecteddate){
@@ -276,7 +272,7 @@ export default {
                 gOrderTypeInfo.data.week = this.selectedweek;
                 gOrderTypeInfo.data.staff_info.id = "";
                 gOrderTypeInfo.data.clinic_info.id = "";     
-                
+                gOrderTypeInfo.data.calendar_layout = []; //이전에 현시되여있는 표를 삭제
                 axios.post('/v1/client/staff_list_withdate', { 'date': gOrderTypeInfo.data.date}).
                 then(({ data }) => {
                     gOrderTypeInfo.data.staffs = data;
@@ -298,7 +294,6 @@ export default {
                 });                         
             }
             console.log(gOrderTypeInfo.data, 'orderinfo from Selectordertype.vue'); 
-            //this.$emit('changeStage', 1);
         },
         onNewHelp: function(){
             this.order_type = '新規';
@@ -333,28 +328,9 @@ export default {
         reset:function(){
 
         },
-        handleResize() {
-            this.screensize.width = window.innerWidth;
-            console.log(this.screensize.width);
-            if(this.screensize.width > 1024)
-                gOrderTypeInfo.screenmode = 14;
-            else
-                gOrderTypeInfo.screenmode = 7;
-            this.screensize.height = window.innerHeight;
-        },
     },
     created() {
         this.selecteddate = new Date();    
-        window.addEventListener('resize', this.handleResize)
-        this.handleResize(); 
-    },
-    mounted() {
-        this.$nextTick(() => {
-             window.addEventListener('resize', this.onResize);
-        })
-    },
-    destroyed() {
-        window.removeEventListener('resize', this.handleResize)
     },
     watch: {
         selecteddate(val) {
@@ -362,7 +338,8 @@ export default {
         },
         selectedrank(val) {
             this.selectedstaff = null;
-            this.staff_rank_List();  
+            if(this.selectedrank)
+                this.staff_rank_List();  
         },
         selectedstaff(val) {
             if(this.selectedstaff)

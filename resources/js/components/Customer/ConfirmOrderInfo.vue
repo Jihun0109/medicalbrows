@@ -6,7 +6,7 @@
                 <div class="row">
                     <label class="col-4 col-form-label">日付：</label>
                     <div class="col" >
-                        <p>{{menu_info.calendar_info.date}}({{menu_info.calendar_info.week}})</p>
+                        <p>{{formatDate(order_info.calendar_info.date)}}({{order_info.calendar_info.week}})</p>
                     </div>
                 </div>
                 <div class="row">
@@ -18,25 +18,25 @@
                 <div class="row">
                     <label class="col-4 col-form-label">時間：</label>
                     <div class="col" >
-                        <p>{{menu_info.calendar_info.time}}</p>
+                        <p>{{order_info.time_schedule_info.start_time}}~{{order_info.time_schedule_info.end_time}}</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">場所：</label>
                     <div class="col" >
-                        <p>{{menu_info.calendar_info.clinic}}</p>
+                        <p>{{order_info.clinic_info.name}}</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">施術者：</label>
                     <div class="col" >
-                        <p>{{order_info.staff_info.name}}</p>
+                        <p>{{order_info.staff_info.name}}【{{order_info.rank_info.name}}】</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">施術メニュー：</label>
                     <div class="col" >
-                        <p>{{menu_info.menu_info.name}}</p>
+                        <p>{{order_info.menu_info.name}}</p>
                     </div>
                 </div>
             </div>
@@ -69,9 +69,8 @@
     export default {
         data() {
             return {     
-                order_info:gOrderTypeInfo.data,
-                menu_info:gOrderInfo.data,           
-
+                order_info:gOrderInfo.data,  
+                values: gUserInfo.array,
                 types: [
                     '氏名：',
                     'フリガナ：',
@@ -83,8 +82,7 @@
                     '都道府県：',
                     '住所1：',
                     '住所2：'
-                ],
-                values: gUserInfo.array,
+                ],                
             }
         },
         mounted() {
@@ -92,10 +90,20 @@
         },
         methods:{
             onClickNextBtn:function(){
+
                 this.$emit('changeStage', 4);
             },
             onClickPrevBtn:function(){
                 this.$emit('changeStage', 2);
+            },
+            formatDate(dt) {
+                dt = new Date(dt);
+                var month = ('0' + (dt.getMonth() + 1)).slice(-2);
+                var date = ('0' + dt.getDate()).slice(-2);
+                var year = dt.getFullYear();
+                var formattedDate = year + '年' + month + '月' + date + '日';
+                //var formattedDate = year + '-' + month + '-' + date;
+                return formattedDate;
             },
         }
     }

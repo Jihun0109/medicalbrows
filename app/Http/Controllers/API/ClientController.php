@@ -83,6 +83,7 @@ class ClientController extends Controller
     {                       
         $payLoad = json_decode(request()->getContent(), true);  
         $staff_id = $request['staff_info']['id'];
+        Log::Info($payLoad);
         if($staff_id){
             $clinic_info = DB::table('tbl_staffs')
                         ->join('tbl_clinics','tbl_clinics.id','tbl_staffs.clinic_id')
@@ -380,6 +381,7 @@ class ClientController extends Controller
             {
                 if($rank_schedule[$i]->end_hour <= 14){                
                     array_push($morning, (object)[
+                        'rank_schedule_id' => $rank_schedule[$i]->id,
                         'conselor_info' => '',
                         'start_time' => date('H:i', strtotime($rank_schedule[$i]->start_time)),
                         'end_time' => date('H:i', strtotime($rank_schedule[$i]->end_time)),
@@ -387,6 +389,7 @@ class ClientController extends Controller
                 }
                 else if($rank_schedule[$i]->end_hour <= 17){
                     array_push($afternoon, (object)[
+                        'rank_schedule_id' => $rank_schedule[$i]->id,
                         'conselor_info' => '',
                         'start_time' => date('H:i', strtotime($rank_schedule[$i]->start_time)),
                         'end' => date('H:i', strtotime($rank_schedule[$i]->end_time)),
@@ -394,6 +397,7 @@ class ClientController extends Controller
                 }
                 else if($rank_schedule[$i]->end_hour <= 19){
                     array_push($evening, (object)[
+                        'rank_schedule_id' => $rank_schedule[$i]->id,
                         'conselor_info' => '',
                         'start_time' => date('H:i', strtotime($rank_schedule[$i]->start_time)),
                         'end_time' => date('H:i', strtotime($rank_schedule[$i]->end_time)),
@@ -402,26 +406,29 @@ class ClientController extends Controller
             }
             else //얻어온 상담원 목록을 리용한다.
             {
-                $counselor_list = $this->counselor_list($rank_schedule[$i]->clinic_id, $date, $rank_schedule[$i]->id, 0);
+                $counselor_list = $this->counselor_list($rank_schedule[$i]->clinic_id, $date, $rank_schedule[$i]->id, 0);//0은 후에 좀 따지자...
                 if(sizeof($counselor_list) == 0) continue;
                 if($rank_schedule[$i]->end_hour <= 14){       //목록에서 첫 상담원 선택          
                     array_push($morning, (object)[
+                        'rank_schedule_id' => $rank_schedule[$i]->id,
                         'conselor_info' => $counselor_list[0],
-                        'start_time' => '',
+                        'start_time' => $counselor_list[0]['interview_start'],
                         'end_time' => date('H:i', strtotime($rank_schedule[$i]->end_time)),
                         ]);
                 }
                 else if($rank_schedule[$i]->end_hour <= 17){
                     array_push($afternoon, (object)[
+                        'rank_schedule_id' => $rank_schedule[$i]->id,
                         'conselor_info' => $counselor_list[0],
-                        'start_time' => '',
+                        'start_time' => $counselor_list[0]['interview_start'],
                         'end_time' => date('H:i', strtotime($rank_schedule[$i]->end_time)),
                         ]);
                 }
                 else if($rank_schedule[$i]->end_hour <= 19){
                     array_push($evening, (object)[
+                        'rank_schedule_id' => $rank_schedule[$i]->id,
                         'conselor_info' => $counselor_list[0],
-                        'start_time' => '',
+                        'start_time' => $counselor_list[0]['interview_start'],
                         'end_time' => date('H:i', strtotime($rank_schedule[$i]->end_time)),
                         ]);
                 }
