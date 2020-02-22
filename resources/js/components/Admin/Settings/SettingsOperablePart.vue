@@ -28,8 +28,8 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(part, index) in parts" :key="part.id">
-                      <td>{{index + 1}}</td>
+                    <tr v-for="part in parts" :key="part.id">
+                      <td>{{part.id}}</td>
                       <td>{{part.name}}</td>
                       <td>
                           <a href="#" @click="editModal(part)"><i class="fa fa-edit"></i></a> &nbsp;&nbsp;

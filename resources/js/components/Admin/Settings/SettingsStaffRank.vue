@@ -30,8 +30,8 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(d, index) in data" :key="d.id">
-                      <td>{{ index+1 }}</td>
+                    <tr v-for="d in data" :key="d.id">
+                      <td>{{ d.id }}</td>
                       <td>
                           <div v-for="r in ranks" :key="r.id">
                               <div v-if="d.rank_id == r.id">{{r.name}}</div>
