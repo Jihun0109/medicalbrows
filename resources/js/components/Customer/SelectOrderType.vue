@@ -23,6 +23,10 @@
                 </div>
             </div>
         </div>
+        <!-- <h2 class="title is-2">
+            Width: {{ screensize.width }},
+            Height: {{ screensize.height }}
+        </h2> -->
         <div class="cardcontent">
             <div class="text-center">       
                 <label style="letter-spacing: -1.2px;">診療区分、予約方法を選択して下さい</label>
@@ -123,6 +127,8 @@ window.gOrderTypeInfo = initialState();
 function initialState(){
     return{
         data: {
+            mode: 0,
+            screenmode: 7,
             order_type: null,
             rank_info:{
                 rank_id:'',
@@ -140,6 +146,9 @@ function initialState(){
                     name:'',
                 },
             menu_array:[],
+            calendar_layout:[],
+            colNum: 16,
+            staffs:[],
         }
     } 
 }
@@ -206,6 +215,10 @@ export default {
             ],
             maxDate: new Date(moment().add(3, 'months').endOf('month')),
             minDate: new Date(),
+            screensize: {
+                width: 0,
+                height: 0
+            },
         };
     },
     methods: {
@@ -216,7 +229,6 @@ export default {
                     this.selectedclinic = null;
                     return true;
                 }
-                return false;
             }
             if(method =="date"){
                 if(this.selecteddate != null){
@@ -224,7 +236,6 @@ export default {
                     this.selectedclinic = null;
                     return true;
                 }
-                return false;
             }
             if(method =="clinic"){
                 if(this.selectedclinic != null){
@@ -232,17 +243,24 @@ export default {
                     this.selectedstaff = null;
                     return true;
                 }
-                return false;
             }
             return false;
         },
         onClickNextBtn:function(){
             gOrderTypeInfo.data.order_type = this.order_type;
             if(this.selectedstaff){
+                gOrderTypeInfo.data.mode = 0;
                 gOrderTypeInfo.data.date = null;
                 gOrderTypeInfo.data.clinic_info.id = "";
                 gOrderTypeInfo.data.staff_info = this.selectedstaff;
                 gOrderTypeInfo.data.rank_info = this.selectedrank;
+
+                axios.post('/v1/client/canledar_info', { 'staff_info': this.selectedstaff, 'weekmethod': 7}).
+                then(({ data }) => {
+                    gOrderTypeInfo.data.colNum = data.layout_width;
+                    gOrderTypeInfo.data.calendar_layout = JSON.parse(JSON.stringify(data.layout));
+                    console.log(data);
+                });   
 
                 axios.post('/v1/client/clinic_list', { 'staff_info': this.selectedstaff}).
                 then(({ data }) => {
@@ -253,18 +271,32 @@ export default {
                 });   
             }                
             else if(this.selecteddate){
+                gOrderTypeInfo.data.mode = 1;
                 gOrderTypeInfo.data.date = moment(this.selecteddate).format("YYYY-MM-DD");
                 gOrderTypeInfo.data.week = this.selectedweek;
                 gOrderTypeInfo.data.staff_info.id = "";
-                gOrderTypeInfo.data.clinic_info.id = "";                
-                console.log( gOrderTypeInfo.data.date, gOrderTypeInfo.data.week);
+                gOrderTypeInfo.data.clinic_info.id = "";     
+                
+                axios.post('/v1/client/staff_list_withdate', { 'date': gOrderTypeInfo.data.date}).
+                then(({ data }) => {
+                    gOrderTypeInfo.data.staffs = data;
+                    this.$emit('changeStage', 1);
+                    console.log(gOrderTypeInfo.data.staffs,'=====date--->staffs========');
+                });              
             }
             else if(this.selectedclinic){
+                gOrderTypeInfo.data.mode = 2;
                 gOrderTypeInfo.data.staff_info.id = "";
                 gOrderTypeInfo.data.date = null;
-                gOrderTypeInfo.data.clinic_info = this.selectedclinic;            
+                gOrderTypeInfo.data.clinic_info = this.selectedclinic;   
+                
+                axios.post('/v1/client/staff_list', { 'clinic_info': this.selectedclinic}).
+                then(({ data }) => {                    
+                    gOrderTypeInfo.data.staffs = data;
+                    this.$emit('changeStage', 1);   
+                    console.log(gOrderTypeInfo.data.staffs,'=====clinic--->staffs========');
+                });                         
             }
-
             console.log(gOrderTypeInfo.data, 'orderinfo from Selectordertype.vue'); 
             //this.$emit('changeStage', 1);
         },
@@ -300,10 +332,29 @@ export default {
         },
         reset:function(){
 
-        }
+        },
+        handleResize() {
+            this.screensize.width = window.innerWidth;
+            console.log(this.screensize.width);
+            if(this.screensize.width > 1024)
+                gOrderTypeInfo.screenmode = 14;
+            else
+                gOrderTypeInfo.screenmode = 7;
+            this.screensize.height = window.innerHeight;
+        },
     },
     created() {
-        this.selecteddate = new Date();        
+        this.selecteddate = new Date();    
+        window.addEventListener('resize', this.handleResize)
+        this.handleResize(); 
+    },
+    mounted() {
+        this.$nextTick(() => {
+             window.addEventListener('resize', this.onResize);
+        })
+    },
+    destroyed() {
+        window.removeEventListener('resize', this.handleResize)
     },
     watch: {
         selecteddate(val) {

@@ -42,15 +42,43 @@ class ClientController extends Controller
         $payLoad = json_decode(request()->getContent(), true);  
         $rank_id = $request['rank_info']['rank_id'];
         $rank_name =  $request['rank_info']['name'];
-
-        $staff_list = DB::table('tbl_staff_ranks')
+        $clinic_id =  $request['clinic_info']['id'];
+        $staff_list = [];
+        if($rank_id){
+            $staff_list = DB::table('tbl_staff_ranks')
             ->join('tbl_staffs', 'tbl_staffs.id', 'tbl_staff_ranks.staff_id')
             ->join('tbl_operable_parts', 'tbl_operable_parts.id', 'tbl_staff_ranks.part_id')
             ->where([['tbl_staff_ranks.is_deleted', 0],['tbl_staff_ranks.rank_id', $rank_id]])
             ->select('tbl_staffs.id','tbl_staffs.alias as name','tbl_operable_parts.name as area')      
             ->get();
+        }
+        else if($clinic_id){
+            $staff_list = DB::table('tbl_staffs')            
+            ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id', 'tbl_staffs.id')
+            ->join('tbl_ranks', 'tbl_ranks.id', 'tbl_staff_ranks.rank_id')
+            ->join('tbl_operable_parts', 'tbl_operable_parts.id', 'tbl_staff_ranks.part_id')
+            ->where([['tbl_staff_ranks.is_deleted', 0],['tbl_staffs.is_deleted', 0], ['tbl_staffs.clinic_id', $clinic_id]])
+            ->select('tbl_staffs.id','tbl_staffs.alias as name','tbl_operable_parts.name as area','tbl_ranks.id as rank_id' ,'tbl_ranks.name as rank_name')      
+            ->get();
+        }
         return $staff_list;
     }
+
+    public function staff_list_withdate(Request $request)
+    {               
+        $payLoad = json_decode(request()->getContent(), true);  
+        $seleted_date = $request['date'];
+        
+        $staff_list = DB::table('tbl_staffs')            
+            ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id', 'tbl_staffs.id')
+            ->join('tbl_ranks', 'tbl_ranks.id', 'tbl_staff_ranks.rank_id')
+            ->join('tbl_operable_parts', 'tbl_operable_parts.id', 'tbl_staff_ranks.part_id')
+            ->where([['tbl_staff_ranks.is_deleted', 0],['tbl_staffs.is_deleted', 0]])
+            ->select('tbl_staffs.id','tbl_staffs.alias as name','tbl_operable_parts.name as area','tbl_ranks.id as rank_id' ,'tbl_ranks.name as rank_name')      
+            ->get();
+        return $staff_list;
+    }
+
     public function clinic_list(Request $request)
     {                       
         $payLoad = json_decode(request()->getContent(), true);  
@@ -84,41 +112,33 @@ class ClientController extends Controller
             ->get();
         return $menu_list;
     }
+
     public function canledar_info(Request $request)
     {               
         $payLoad = json_decode(request()->getContent(), true);  
         $staff_id = $request['staff_info']['id'];
-        $period_day = 7;
+        $period_day = $request['weekmethod'];
         $next_count = $request['count'];
         $selecteddate = $request['selecteddate'];
-
+        Log::Info($payLoad);
         if($selecteddate){
             //날자우선인경우
             //$today = date("2020-11-27");
             $period_day = 1;
         }
         else{
-            //$today = date("Y-m-d");
-            $today = date("2020-1-27");
+            $today = date("Y-m-d");
+            //$today = date("2020-1-27");
             $timestamp = strtotime($today.' +'.($next_count * $period_day).'days');
             $selecteddate = date("Y-m-d", $timestamp);
-            //Log::Info($selecteddate);
-           
+            Log::Info($selecteddate);           
         }
         $calendarLayout = $this->getLayoutFromDate($staff_id, $selecteddate, $period_day);
-            
-            // {"x":12,"y":4,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-            // {"x":12,"y":5,"w":2,"h":1,"i":"◯", "static": true, "selectable":true, "data":{"date":"2020-02-05", "week":"水", "time":["13:20~16:00"],"clinic":"表参道院"}},
-            // {"x":12,"y":6,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-            
-            // {"x":14,"y":4,"w":2,"h":1,"i":"◯", "static": true, "selectable":true, "data":{"date":"2020-02-05", "week":"木", "time":["09:20~12:00","11:20~14:00"],"clinic":"表参道院"}},
-            // {"x":14,"y":5,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-            // {"x":14,"y":6,"w":2,"h":1,"i":"✕", "static": true, "selectable":false}
-            // ]';
         return $calendarLayout;
     }
     public function getLayoutFromDate($staff_id, $param_date, $period_day)
     {
+        Log::Info($staff_id.$param_date.$period_day);
         $calendarLayout = [];
         $cell_width = 2;
         $cell_height = 1;
@@ -241,7 +261,7 @@ class ClientController extends Controller
         $cur_year = $year;
         $cur_week_num = $week;    
         $date_array = [];
-        for ($j = 0; $j < $period_day; $j++) {
+         for ($j = 0; $j < $period_day; $j++) {
             $cur_date = $cur_year.'-'.$cur_month.'-'.$cur_day;
             $color = 'black';
             $str_week = $daysOfWeek[$cur_week_num % 7];
@@ -269,50 +289,220 @@ class ClientController extends Controller
                 }                    
             }               
             $cur_week_num++;
-            Log::Info(date("Y-m-d",strtotime($cur_date)));
+            //Log::Info(date("Y-m-d",strtotime($cur_date)));
             array_push($date_array, (object)['date' => date("Y-m-d",strtotime($cur_date)),'week' => $str_week]);
         }
-        Log::Info($date_array);
+        //Log::Info($date_array);
         
         //******************************************************************* */
-        //랭크스케줄로부터 시간령역을 구한다
-        $staff_id = 1;
-        $time_schedule = DB::table('tbl_staffs')
-                        ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id', 'tbl_staffs.id')
-                        ->join('tbl_rank_schedules', 'tbl_rank_schedules.rank_id', 'tbl_staff_ranks.rank_id')
-                        ->where([['tbl_staffs.is_deleted', 0],['tbl_staffs.id', $staff_id]])
-                        ->select('tbl_rank_schedules.start_time','tbl_rank_schedules.end_time')      
-                        ->get();
-        Log::Info($time_schedule);
         //cell info
         $first_row = ['午前','日中','夕方'];
         for ($x = 0; $x <= $period_day; $x++)
         {
-            //현재 날자가 shift_history에 있는가를 조사하고 있으면 skip
-            for ($y = 0; $y < 3; $y++)
-            {
-                $i_value = "✕";
-                $static = true;
-                if($x == 0){ //first row --> '午前','日中','夕方'
-                    $i_value = $first_row[$y];
-                    $static = false;
+            //오전 오후 저녁 마당
+            if($x == 0){
+                for ($y = 0; $y < 3; $y++)
+                {
+                    array_push($calendarLayout, (object)[
+                        'x' => $cell_width * $x,
+                        'y' => (4 + $y) * $cell_height,
+                        'w' => $cell_width,
+                        'h' => $cell_height,
+                        'i' => $first_row[$y],
+                        'static' =>  false,
+                        'selectable' => false,
+                    ]);  
                 }
+                continue;
+            }
+            
+            $order_info = $this->getCounselor($staff_id, $date_array[$x - 1]->date);
+
+            for ($y = 0; $y < count($order_info); $y++)
+            {
+                //Log::Info($order_info[$y]);
+                $i_value = "✕";
+                $selectable = false;
+                $data = $order_info[$y];
+                if(!empty($data))
+                {
+                    $i_value = "◯";
+                    $selectable = true;
+                }
+
                 array_push($calendarLayout, (object)[
                     'x' => $cell_width * $x,
                     'y' => (4 + $y) * $cell_height,
                     'w' => $cell_width,
                     'h' => $cell_height,
                     'i' => $i_value,
-                    'static' =>  $static,
-                    'selectable' => false,
-                ]);  
+                    'static' =>  true,
+                    'selectable' => $selectable,
+                    'order_info' => $data,
+                    'date_info' => $date_array[$x - 1],
+                ]); 
             }
         }
         $ret = array('layout_width'=>$layout_width , 'layout'=> $calendarLayout);
         return $ret;
     }
+    function getCounselor($staff_id, $date)
+    {
+        $order_info = '';
+        $morning = [];
+        $afternoon = [];
+        $evening = [];
+        //shift표로 staff검사,
+        if (sizeof(DB::table("tbl_shift_histories")->where(['staff_id'=>$staff_id, 'date'=>$date])->get()) > 0){
+            $order_info = array($morning, $afternoon, $evening);
+            return $order_info;
+        }   
+        //랭크스케줄로부터 시간령역을 구한다
+        //$staff_id = 4;
+        $rank_schedule = DB::table('tbl_staffs')
+                        ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id', 'tbl_staffs.id')
+                        ->join('tbl_ranks', 'tbl_ranks.id', 'tbl_staff_ranks.rank_id')
+                        ->join('tbl_rank_schedules', 'tbl_rank_schedules.rank_id', 'tbl_staff_ranks.rank_id')
+                        ->where([['tbl_staffs.is_deleted', 0],['tbl_staffs.id', $staff_id],['tbl_rank_schedules.is_deleted', 0]])
+                        ->select('tbl_staffs.clinic_id','tbl_ranks.short_name','tbl_rank_schedules.id','tbl_rank_schedules.start_time','tbl_rank_schedules.end_time',DB::raw('HOUR(tbl_rank_schedules.start_time) as start_hour'),DB::raw('HOUR(tbl_rank_schedules.end_time) as end_hour'))      
+                        ->get();
+        Log::Info($rank_schedule);
 
+        //스타프의 랭크정보로부터 가능한 모든 상담원들의 목록을 얻어낸다.      
+        for($i = 0; $i < sizeof($rank_schedule); $i++)
+        {
+            //이때 스타프의 order_history 에 있는 랭크스케줄 제거한다.  
+            if(sizeof(DB::table("tbl_order_histories")->where(['staff_id'=>$staff_id, 'order_date'=>$date, 'rank_schedule_id'=>$rank_schedule[$i]->id])->get()) > 0)
+                continue;            
+            //랭크스케쥴로부터 오전 오후 점심을 갈라서 보관한다            
+            //이 경우는 상담원이 필요없다.
+            if($rank_schedule[$i]->short_name == 'T' || $rank_schedule[$i]->short_name == 'NA')
+            {
+                if($rank_schedule[$i]->end_hour <= 14){                
+                    array_push($morning, (object)[
+                        'conselor_info' => '',
+                        'start_time' => date('H:i', strtotime($rank_schedule[$i]->start_time)),
+                        'end_time' => date('H:i', strtotime($rank_schedule[$i]->end_time)),
+                        ]);
+                }
+                else if($rank_schedule[$i]->end_hour <= 17){
+                    array_push($afternoon, (object)[
+                        'conselor_info' => '',
+                        'start_time' => date('H:i', strtotime($rank_schedule[$i]->start_time)),
+                        'end' => date('H:i', strtotime($rank_schedule[$i]->end_time)),
+                        ]);
+                }
+                else if($rank_schedule[$i]->end_hour <= 19){
+                    array_push($evening, (object)[
+                        'conselor_info' => '',
+                        'start_time' => date('H:i', strtotime($rank_schedule[$i]->start_time)),
+                        'end_time' => date('H:i', strtotime($rank_schedule[$i]->end_time)),
+                        ]);
+                }
+            }
+            else //얻어온 상담원 목록을 리용한다.
+            {
+                $counselor_list = $this->counselor_list($rank_schedule[$i]->clinic_id, $date, $rank_schedule[$i]->id, 0);
+                if(sizeof($counselor_list) == 0) continue;
+                if($rank_schedule[$i]->end_hour <= 14){       //목록에서 첫 상담원 선택          
+                    array_push($morning, (object)[
+                        'conselor_info' => $counselor_list[0],
+                        'start_time' => '',
+                        'end_time' => date('H:i', strtotime($rank_schedule[$i]->end_time)),
+                        ]);
+                }
+                else if($rank_schedule[$i]->end_hour <= 17){
+                    array_push($afternoon, (object)[
+                        'conselor_info' => $counselor_list[0],
+                        'start_time' => '',
+                        'end_time' => date('H:i', strtotime($rank_schedule[$i]->end_time)),
+                        ]);
+                }
+                else if($rank_schedule[$i]->end_hour <= 19){
+                    array_push($evening, (object)[
+                        'conselor_info' => $counselor_list[0],
+                        'start_time' => '',
+                        'end_time' => date('H:i', strtotime($rank_schedule[$i]->end_time)),
+                        ]);
+                }
+            }
 
+        }
+        // Log::Info($morning);
+        // Log::Info($afternoon);
+        // Log::Info($evening);
+        $order_info = array($morning, $afternoon, $evening);
+        return $order_info;
+    }
 
+    // 스타프에 해당한 상담원 목록 리턴
+    public function counselor_list($clinic_id, $selected_date, $rank_schedule_id,$order_history_id)
+    {        
+        $res = [];
+        //get start time from rank_schedule_id
+        $start_time = DB::table('tbl_rank_schedules')
+            ->where([['tbl_rank_schedules.is_deleted', 0], ['tbl_rank_schedules.id', $rank_schedule_id]])
+            ->select(DB::raw('HOUR(tbl_rank_schedules.start_time) as start_hour'))      
+            ->get();
+        //Log::Info($rank_schedule_id);
+
+        $possible_endtime_addr = [ 10, 12, 15, 17 ];
+        //nearest value
+        $interviewer_rank_schedule_id = 13;//이미 정해진 4개 수자이다.10,11,12,13
+        $min = $possible_endtime_addr[3];
+        for($i = 0; $i < sizeof($possible_endtime_addr); $i++)
+        {
+            if($possible_endtime_addr[$i] > $start_time[0]->start_hour )
+            {
+                $interviewer_rank_schedule_id = 10 + ($i - 1);
+                $min = $possible_endtime_addr[$i - 1];
+                break;
+            }
+        }
+        //possible all counselor_id, counselor_name, interview_start,interview_end, from start time
+        //query 해당 클리닉의 상담원 목록을 리턴
+        $counselor_list = DB::table('tbl_staffs')
+                ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id','tbl_staffs.id') 
+                ->select('tbl_staffs.id as interviewer_id','tbl_staffs.full_name as counselor_name')       
+                ->where([['tbl_staffs.is_deleted', 0], ['tbl_staffs.clinic_id', $clinic_id], ['tbl_staff_ranks.rank_id', 9]])  
+                ->get();
+        
+        //order_history에 예약된 상담원의 시간대를 구하고 제거한다.
+        for ( $i = 0; $i < sizeof($counselor_list); $i++ ){
+            //shift table
+            if (sizeof(DB::table("tbl_shift_histories")->where(['staff_id'=>$counselor_list[$i]->interviewer_id, 'date'=>$selected_date])->get()) > 0){
+                continue;
+            }    
+            $temp = [];
+            // 상담원이 인터뷰어로 예약되여 있으면 그 시간을 리턴.
+            $remove_time_with_order = DB::table('tbl_order_histories')
+                            ->where([['is_deleted', 0],['interviewer_id',$counselor_list[$i]->interviewer_id],['order_date', $selected_date]])
+                            ->select('id', DB::raw('HOUR(tbl_order_histories.interview_end) as end_hour'))
+                            ->get();
+            $bflag = false;
+            for( $j = 0; $j < sizeof($remove_time_with_order); $j++ ){
+                if($remove_time_with_order[$j]->end_hour === $min && $order_history_id != $remove_time_with_order[$j]->id){
+                    Log::info($remove_time_with_order[$j]->id);
+                    $bflag = true;
+                    break;
+                }
+            }
+            if(!$bflag){
+                $interview_start = ($min - 1).':20';
+                $interview_end = $min.':00';
+                $temp = array(
+                        'interviewer_id' => $counselor_list[$i]->interviewer_id,
+                        'counselor_name' => $counselor_list[$i]->counselor_name, 
+                        'timename' => ($interview_start.'~'.$interview_end.'('.$counselor_list[$i]->counselor_name.')'), 
+                        'interview_start' => $interview_start, 
+                        'interview_end' => $interview_end, 
+                        'interviewer_rank_schedule_id' => $interviewer_rank_schedule_id);
+                array_push($res, $temp);
+            }
+        }
+        
+        //Log::info($res);
+        return $res;
+    }
 
 }

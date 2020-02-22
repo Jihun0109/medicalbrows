@@ -116,7 +116,7 @@
             return {
                 componentname:'select-order-type',
                 arrowbtns:['区分・方法・決定','メニュー・枠決定','情報入力','情報碓認','PDF出力','予約完了'],
-                stage: 1,
+                stage: 0,
                 existId: 0,
                 cancelmode:0,
                 ranks:[],

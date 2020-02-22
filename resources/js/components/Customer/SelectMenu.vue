@@ -67,7 +67,7 @@
                 <div class="card-body">
                     <select v-model="selectedstaff" class="form-control" >
                         <option value="null" disabled>施術者を選択または入力</option>
-                        <option v-for="s in staffs" :key="s.id" v-bind:value="s">{{s.name}}</option>
+                        <option v-for="s in passdata.staffs" :key="s.id" v-bind:value="s">{{s.name}}</option>
                     </select>
                     <div v-show="selectedstaff !== null">
                         <label class="col-6 col-form-label">施術可能部位：</label>
@@ -98,18 +98,18 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="seldate-card" v-show="passdata.staff_info.id !=='' || selectedstaff != null">  -->
-        <div class="seldate-card" > 
+        <div class="seldate-card" v-show="passdata.staff_info.id !=='' || selectedstaff != null"> 
+        <!-- <div class="seldate-card" >  -->
             <label class="mt-3" style="margin-bottom:0px;">希望枠</label>
-            <div class="smnext row justify-content-between">
+            <div class="smnext row justify-content-between" v-show="passdata.mode !== 1">
                 <span @click="prevWeekBtn" class="col-4"><i v-show="nextweek_count" class='fas fa-caret-left ' style='font-size:24px;'></i></span>
                 <span @click="nextWeekBtn" class="col-auto"><i class='fas fa-caret-right' style='font-size:24px;'></i></span>
             </div>
 
-            <div class="calendar" style="margin: auto;">
+            <div class="calendar" style="margin: auto;" :class="[{oneday:passdata.mode === 1}]">
                 <grid-layout
-                    :layout.sync="callayout"
-                    :col-num="this.colNum"
+                    :layout.sync="passdata.calendar_layout"
+                    :col-num="passdata.colNum"
                     :row-height="30"
                     :is-draggable="false"
                     :is-resizable="false"
@@ -117,7 +117,7 @@
                     :margin="[ -2 , -1]"
                     :use-css-transforms="true"
                 >
-                    <grid-item @click.native="onClickCalItem($event, item, index)" v-for="(item, index) in callayout"
+                    <grid-item @click.native="onClickCalItem($event, item, index)" v-for="(item, index) in passdata.calendar_layout"
                             :x="item.x"
                             :y="item.y"
                             :w="item.w"
@@ -175,32 +175,14 @@
             },
         }
     };
-    var onedayLayout = [
-        {"x":0,"y":0,"w":2,"h":4,"i":"", "static": false, "selectable":false},
-
-        {"x":2,"y":0,"w":2,"h":1,"i":"2020", "static": false, "selectable":false},
-        
-        {"x":2,"y":1,"w":2,"h":1,"i":"2月", "static": false, "selectable":false},
-        
-        {"x":2,"y":2,"w":2,"h":2,"i":"6<br>(木)", "static": false, "selectable":false},
-
-        {"x":0,"y":4,"w":2,"h":1,"i":"午前", "static": false, "selectable":false},
-        {"x":0,"y":5,"w":2,"h":1,"i":"日中", "static": false, "selectable":false},
-        {"x":0,"y":6,"w":2,"h":1,"i":"夕方", "static": false, "selectable":false},
-        
-        {"x":2,"y":4,"w":2,"h":1,"i":"◯", "static": true, "selectable":true, "data":{"date":"2020-02-05", "week":"木", "time":["09:20~12:00","11:20~14:00"],"clinic":"表参道院"}},
-        {"x":2,"y":5,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},
-        {"x":2,"y":6,"w":2,"h":1,"i":"✕", "static": true, "selectable":false},  
-    ];
-
     export default {
         data() {
             return {
                 selectedstaff: null,
                 staffs: [
-                    { id: "1", name:"池田　グランドマスタートレイナー", area:"眉・アイライン上・アイライン下・リップ"}, 
-                    { id: "2", name:"吉田(も)　マスター" , area:"眉・アイライン上・アイ"}, 
-                    { id: "3", name:"松原 ロイヤルアーティスト" , area:"アイライン下・リップ"}
+                    // { id: "1", name:"池田　グランドマスタートレイナー", area:"眉・アイライン上・アイライン下・リップ"}, 
+                    // { id: "2", name:"吉田(も)　マスター" , area:"眉・アイライン上・アイ"}, 
+                    // { id: "3", name:"松原 ロイヤルアーティスト" , area:"アイライン下・リップ"}
                 ],
                 colNum: 4,//16
                 activeColor: '',
@@ -217,31 +199,39 @@
                 nextweek_count: 0,
             }
         },
-        components: {        
-            
-        },
-        mounted() {
-
-        },
-        created(){
-            axios.post('/v1/client/canledar_info', { 'staff_info': this.selectedstaff, 'count': this.nextweek_count}).
-            then(({ data }) => {
-                this.colNum = data.layout_width;
-                this.callayout = JSON.parse(JSON.stringify(data.layout));
-                console.log(data);
-            });   
+        watch: {
+            selectedstaff(val) {
+                if(this.selectedstaff){
+                    if(this.passdata.mode === 2){
+                        this.getCalendarLayout(this.selectedstaff, this.passdata.screenmode);
+                    }else if(this.passdata.mode === 1){
+                        this.getCalendarLayout(this.selectedstaff, 1);
+                    }                    
+                    this.menu_List();  
+                }
+                    
+            },
         },
         methods:{
+            menu_List:function(){
+                axios.post('/v1/client/menu_list', { 'staff_info': this.selectedstaff}).
+                then(({ data }) => {
+                    gOrderTypeInfo.data.menu_array = data;
+                });   
+            },
             onClickCalItem($event, item, index){
                 if(item.selectable){
                     $(".vue-grid-item").removeClass("selectedcolor");
                     $(event.currentTarget).addClass("selectedcolor"); //defalt color when click..                     
-                    gOrderInfo.data.calendar_info.date = item.data.date;                    
-                    gOrderInfo.data.calendar_info.week = item.data.week;
-                    gOrderInfo.data.calendar_info.clinic = item.data.clinic;
+                    gOrderInfo.data.calendar_info.date = item.date_info.date;                    
+                    gOrderInfo.data.calendar_info.week = item.date_info.week;         
                     this.time_clinics = [];
-                    item.data.time.forEach(element => {                                    
-                        this.time_clinics.push(element + ' ' + item.data.clinic);
+                    item.order_info.forEach(element => {                                    
+                        //this.time_clinics.push(element.interview_start + '~' + end_time + ' ' + item.data.clinic);                        
+                        if(element.start_time)//T or NA
+                            this.time_clinics.push(element.start_time + '~' + element.end_time);
+                        else
+                            this.time_clinics.push(element.conselor_info.interview_start + '~' + element.end_time);
                     });
                     this.sel_time_clinic = this.time_clinics[0];
                 }
@@ -267,30 +257,26 @@
                 this.sel_time_clinic = null;
                 this.time_clinics = null;
 
-                // gOrderTypeInfo.data.staff_info.id = "";
-                // gOrderTypeInfo.data.date = null;
-                // gOrderTypeInfo.data.clinic_info.id = "";
             },
             nextWeekBtn:function(){
                 this.nextweek_count++;
-                axios.post('/v1/client/canledar_info', { 'staff_info': this.selectedstaff, 'count': this.nextweek_count}).
-                then(({ data }) => {
-                    this.colNum = data.layout_width;
-                    this.callayout = JSON.parse(JSON.stringify(data.layout));
-                    console.log(data);
-                });   
+                console.log(this.passdata);
+                this.getCalendarLayout(this.passdata.staff_info, this.passdata.screenmode);
             },
             prevWeekBtn:function(){
                 if(this.nextweek_count >= 1){
                     this.nextweek_count--;
-                    axios.post('/v1/client/canledar_info', { 'staff_info': this.selectedstaff, 'count': this.nextweek_count}).
-                        then(({ data }) => {
-                            this.colNum = data.layout_width;
-                            this.callayout = JSON.parse(JSON.stringify(data.layout));
-                            console.log(data);
-                    });   
+                    this.getCalendarLayout(this.passdata.staff_info, this.passdata.screenmode);
                 }                    
             },
+            getCalendarLayout:function(staff_info, showdays){
+                axios.post('/v1/client/canledar_info', { 'staff_info': staff_info,'weekmethod':showdays, 'count': this.nextweek_count}).
+                then(({ data }) => {
+                    this.passdata.colNum = data.layout_width;
+                    this.passdata.calendar_layout = JSON.parse(JSON.stringify(data.layout));
+                    console.log(data);
+                });   
+            }
         }
     }
 </script>
@@ -306,6 +292,10 @@
             background:rgb(204, 255, 204);
             color:black;
         } 
+        
+        .calendar.oneday{
+            width: 30%;
+        }
      }
      .confirm-btn{
          margin-top: 20px;

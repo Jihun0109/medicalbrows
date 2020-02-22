@@ -68,7 +68,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
     Route::post('/client/clinic_list', 'API\ClientController@clinic_list');
     Route::post('/client/menu_list', 'API\ClientController@menu_list');
     Route::post('/client/canledar_info', 'API\ClientController@canledar_info');
-
+    Route::post('/client/staff_list_withdate', 'API\ClientController@staff_list_withdate');
 });
 
 

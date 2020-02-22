@@ -60,6 +60,7 @@ class ReservationsController extends Controller
     // 해당한 상담원 목록 리턴
     public function counselor_list(Request $request)
     {        
+        Log::Info($request);
         $clinic_id = $request->clinic_id;
         $selected_date = date('Y-m-d',strtotime($request->date));
         $rank_schedule_id = $request->rank_schedule_id;
@@ -123,7 +124,7 @@ class ReservationsController extends Controller
             }
         }
        
-        //Log::info($res);
+        Log::info($res);
         return $res;
     }
 
