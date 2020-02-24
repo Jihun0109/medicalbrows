@@ -127,7 +127,7 @@ function initialState(){
             screenmode: 7,
             order_type: null,
             rank_info:{
-                rank_id:'',
+                id:'',
                 name:'',             
             },
             staff_info: {
@@ -252,7 +252,7 @@ export default {
                     gOrderTypeInfo.screenmode = 14;
                 else
                     gOrderTypeInfo.screenmode = 7;
-                axios.post('/v1/client/canledar_info', { 'staff_info': this.selectedstaff, 'weekmethod': gOrderTypeInfo.screenmode}).
+                axios.post('/v1/client/canledar_info', { 'order_type': this.order_type, 'staff_info': this.selectedstaff, 'weekmethod': gOrderTypeInfo.screenmode}).
                 then(({ data }) => {
                     gOrderTypeInfo.data.colNum = data.layout_width;
                     gOrderTypeInfo.data.calendar_layout = JSON.parse(JSON.stringify(data.layout));

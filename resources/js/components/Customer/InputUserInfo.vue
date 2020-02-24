@@ -49,14 +49,13 @@
                 <div class="form-group row">
                     <label class="col-4 col-form-label">氏名：</label>
                     <div class="col">
-                        <input v-model="form.first_name" type="text" class="form-control" placeholder="麻布　花子" 
-                        :class="{'is-invalid': form.errors.has('first_name')}">
+                        <input v-model="formdata.first_name" type="text" class="form-control" placeholder="麻布　花子" >
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-4 col-form-label">フリガナ：</label>
                     <div class="col">
-                        <input v-model="form.last_name" type="text" class="form-control" placeholder="アザブ ハナコ">
+                        <input v-model="formdata.last_name" type="text" class="form-control" placeholder="アザブ ハナコ">
                     </div>
                 </div>
                 <div class="form-group row">
@@ -64,7 +63,7 @@
                     <div class="custom-control custom-switch" style="padding-top: 5px;">
                         <span class="switch switch-sm">
                             <label for="switch-sm">女性</label>
-                            <input v-model="form.sex" type="checkbox" class="switch" id="switch-sm" >
+                            <input v-model="formdata.sex" type="checkbox" class="switch" id="switch-sm" >
                             <label for="switch-sm">男性</label>
                         </span>
                     </div>
@@ -72,33 +71,33 @@
                 <div class="form-group row">
                     <label class="col-4 col-form-label">生年月日：</label>
                     <div class="col">
-                        <input v-model="form.birthday" type="date" class="form-control" placeholder="1989/12/01">
+                        <input v-model="formdata.birthday" type="date" class="form-control" placeholder="1989/12/01">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-4 col-form-label">電話番号：</label>
                     <div class="col">
                         <!-- <input v-model="form.phonenumber" type="text" class="form-control" placeholder="080-XXXX-XXXX"> -->
-                        <input v-model="form.phonenumber" type="tel" class="form-control" v-mask="{mask:'9999-999-9999', placeholder:'#'}">
+                        <input v-model="formdata.phonenumber" type="tel" class="form-control" v-mask="{mask:'9999-999-9999', placeholder:'#'}">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-4 col-form-label">email：</label>
                     <div class="col">
-                        <input v-model="form.email" type="email" class="form-control" placeholder="hanako@aa.com" name="email" :class="{'is-invalid':form.errors.has('email')}">
+                        <input v-model="formdata.email" type="email" class="form-control" placeholder="hanako@aa.com" name="email">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-4 col-form-label">郵便番号：</label>
                     <div class="col">
                         <!-- <input v-model="form.zip_code" type="text" class="form-control" placeholder="106-0031"> -->
-                        <input v-model="form.zip_code" type="text" class="form-control" v-mask="{ mask: ['999-9999','9A9 A9A'], placeholder: '#' }">
+                        <input v-model="formdata.zip_code" type="text" class="form-control" v-mask="{ mask: ['999-9999','9A9 A9A'], placeholder: '#' }">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-4 col-form-label">都道府県：</label>
                     <div class="col">
-                        <select v-model="form.city_name"  class="custom-select" required>
+                        <select v-model="formdata.city_name"  class="custom-select" required>
                             <option v-for="(city, index) in cities" :key="index" :value="city" name="selcet-city">{{city}}</option>
                         </select>                    
                     </div>
@@ -106,13 +105,13 @@
                 <div class="form-group row">
                     <label class="col-4 col-form-label">住所1：</label>
                     <div class="col">
-                        <input v-model="form.address1" type="text" name="address" class="form-control" placeholder="港区西麻布">
+                        <input v-model="formdata.address1" type="text" name="address" class="form-control" placeholder="港区西麻布">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-4 col-form-label">住所2：</label>
                     <div class="col">
-                        <input v-model="form.address2" type="text" name="address" class="form-control" placeholder="1-14-17">
+                        <input v-model="formdata.address2" type="text" name="address" class="form-control" placeholder="1-14-17">
                     </div>
                 </div>
             </form>
@@ -123,7 +122,7 @@
                     <button  v-show="order_id_data.order_serial_id === null" @click="onClickPrevBtn" type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
                 </div>
                 <div class="col-auto" style="margin-left: 40px;">
-                    <button  @click="onClickNextBtn" type="button" class="btn btn-primary" style="backgroud:#307DB9; ">次へ</button>
+                    <button  @click="onClickNextBtn" type="button" class="btn btn-primary" style="backgroud:#307DB9; ">次dへ</button>
                 </div>
             </div>
         </div>  
@@ -132,8 +131,10 @@
 
 <script>
     window.gUserInfo = {
-            array:[],
-            user_info:null,
+            data:{
+                userinfo:null,
+                array:[],  
+            }          
         };
     
     export default {
@@ -142,7 +143,8 @@
                 order_id_data:gIDInfo.data,//defined cancel.vue
                 order_info:gOrderTypeInfo.data, //defined selectordertype.vue
                 menu_info:gOrderInfo.data,  //defined selectmenu.vue            
-                form: new Form({
+                //form: new Form({
+                formdata: {
                     first_name:'',
                     last_name:'',
                     sex: 0,
@@ -153,37 +155,39 @@
                     city_name:'東京都',
                     address1:'',
                     address2:'',
-                }),
+                },
                 cities:['東京都','名古屋市','岡崎市'],
             }
 
         },
         methods:{
             onClickNextBtn:function(){
+                console.log( this.formdata);
                 this.arrayUserInfo();
-                gUserInfo.user_info = this.form;
+                gUserInfo.data.userinfo = this.formdata;
+                console.log( gUserInfo.data);
                 this.$emit('changeStage', 3);
                 
             },
             arrayUserInfo:function(){
-                gUserInfo.array.push(this.form.first_name);
-                gUserInfo.array.push(this.form.last_name);
-                if(this.form.sex){
-                    gUserInfo.array.push('男性');
+                gUserInfo.data.array.push(this.formdata.first_name);
+                gUserInfo.data.array.push(this.formdata.last_name);
+                if(this.formdata.sex){
+                    gUserInfo.data.array.push('男性');
                 }
                 else{
-                    gUserInfo.array.push('女性');
+                    gUserInfo.data.array.push('女性');
                 }
-                gUserInfo.array.push(this.form.birthday);
-                gUserInfo.array.push(this.form.phonenumber);
-                gUserInfo.array.push(this.form.email);
-                gUserInfo.array.push(this.form.zip_code);
-                gUserInfo.array.push(this.form.city_name);
-                gUserInfo.array.push(this.form.address1);
-                gUserInfo.array.push(this.form.address2);
+                gUserInfo.data.array.push(this.formdata.birthday);
+                gUserInfo.data.array.push(this.formdata.phonenumber);
+                gUserInfo.data.array.push(this.formdata.email);
+                gUserInfo.data.array.push(this.formdata.zip_code);
+                gUserInfo.data.array.push(this.formdata.city_name);
+                gUserInfo.data.array.push(this.formdata.address1);
+                gUserInfo.data.array.push(this.formdata.address2);
+                
             },
             onClickPrevBtn:function(){
-                //this.form.reset();
                 this.$emit('changeStage', 1);
             },
         },

@@ -53,9 +53,15 @@
         },
         methods:{
             onClickNextBtn:function(){
-                gIDInfo.data.order_serial_id = this.form.order_serial_id;
-                this.$emit('changeStage', 2);
-                
+                this.form.post('/v1/client/get_orderinfo')
+                    .then((result)=>{
+                        console.log(result.data);
+                        //gIDInfo.data.order_serial_id = this.form.order_serial_id;
+                        //this.$emit('changeStage', 2);                        
+                    })
+                    .catch(()=>{
+                        console.log('update error');
+                    });                  
             },
             onClickPrevBtn:function(){
                 this.form.reset();

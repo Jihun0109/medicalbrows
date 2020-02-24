@@ -215,14 +215,14 @@
             selectedstaff(val) {                 
                 if(this.selectedstaff){
                     this.passdata.staff_info = this.selectedstaff;
-                    this.passdata.rank_info.rank_id = this.selectedstaff.rank_id;
+                    this.passdata.rank_info.id = this.selectedstaff.rank_id;
                     this.passdata.rank_info.name = this.selectedstaff.rank_name;
                     //console.log(this.selectedstaff);
                     if(this.passdata.mode === 2){
                         this.getCalendarLayout(this.selectedstaff, this.screenmode);
                     }else if(this.passdata.mode === 1){
-                        this.getCalendarLayout(this.selectedstaff, 1);
-                        this.clinic_list(); //날자우선방식인 경우에만 필요, 나마지는 사전에 다 구함.
+                        this.getCalendarLayout(this.selectedstaff, 1, this.passdata.date);
+                        this.clinic_list(); //날자우선방식인 경우에만 필요, 나머지는 사전에 다 구함.
                     }                    
                     this.menu_list();                    
                 }                    
@@ -300,8 +300,8 @@
                 $(".vue-grid-item").removeClass("selectedcolor");
                 this.selectedstaff = null;
                 this.selectedmenu = null;
-                this.sel_time_clinic = null;
-                this.time_clinics = null;
+                this.sel_time_schedule = null;
+                this.time_schedules = null;
             },
             nextWeekBtn:function(){
                 this.nextweek_count++;
@@ -314,8 +314,8 @@
                     this.getCalendarLayout(this.passdata.staff_info, this.screenmode);
                 }                    
             },
-            getCalendarLayout:function(staff_info, showdays){
-                axios.post('/v1/client/canledar_info', { 'staff_info': staff_info,'weekmethod':showdays, 'count': this.nextweek_count}).
+            getCalendarLayout:function(staff_info, showdays, selecteddate = null){
+                axios.post('/v1/client/canledar_info', { 'order_type':this.passdata.order_type, 'staff_info': staff_info,'weekmethod':showdays, 'selecteddate':selecteddate,'count': this.nextweek_count}).
                 then(({ data }) => {
                     this.passdata.colNum = data.layout_width;
                     this.passdata.calendar_layout = JSON.parse(JSON.stringify(data.layout));

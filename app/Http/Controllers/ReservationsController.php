@@ -179,7 +179,7 @@ class ReservationsController extends Controller
 
             $rank_schedule = DB::table('tbl_rank_schedules')
                     ->where([['tbl_rank_schedules.is_deleted', 0], ['tbl_rank_schedules.rank_id', $staff_rank_names[$i]->rank_id]])
-                    ->where('part_id',1) // アイブロウ
+                    //->where('part_id',1) // アイブロウ
                     ->select(DB::raw('id,HOUR(tbl_rank_schedules.start_time) as start_hour, HOUR(tbl_rank_schedules.end_time) as end_hour, MINUTE(tbl_rank_schedules.start_time) as start_minute, MINUTE(tbl_rank_schedules.end_time) as end_minute'))       
                     ->get();
             $temp = array(
@@ -708,22 +708,6 @@ class ReservationsController extends Controller
             //'order_route' => 'string|max:30',
         ]); 
         $order_serial_id = $payLoad['order_serial_id'];
-
-        // 코드분석하다가 이게 왜 있는지... 02/20 여기서 $order_status 나 $order 변수는 선언되지 않음.
-        // if ($payLoad['order_type'] == "再診")
-        // {
-        //     $order_history_ret = TblOrderHistory::where(['order_id'=>$order->id, 'is_deleted'=>0])
-        //                 ->update([
-        //                     'staff_id' => $payLoad['item']['staff_id'],
-        //                     'rank_id' => $payLoad['item']['rank_id'],
-        //                     'order_id' => $order->id,
-        //                     'status' => $order_status,
-        //                     'staff_choosed' => $payLoad['stuff_choosed'],
-        //                     'rank_schedule_id' => $payLoad['item']['rank_schedule_id'],
-        //                     'order_type' => $payLoad['order_type'],
-        //                     'is_deleted' => 0
-        //                 ]);
-        // }     
 
         //update order table
         $order = TblOrder::where(['order_serial_id'=>$order_serial_id, 'is_deleted'=>0])->orderBy('created_at','desc')->first();

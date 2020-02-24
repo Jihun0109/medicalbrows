@@ -47,7 +47,7 @@
                 <div class="row" v-for="(type, index) in types" :key="index" style="padding-bottom:5px;">
                     <label class="col-4 col-form-label" :for="`type-${index}`">{{ type }}</label>
                     <div class="col" >
-                        <p :id="`type-${index}`">{{ values[index] }}</p>
+                        <p :id="`type-${index}`">{{ user_infos.array[index] }}</p>
                     </div>
                 </div>
             </div>
@@ -66,11 +66,17 @@
 </template>
 
 <script>
+    window.gResultID = {
+            data:{
+                mail:'',
+                order_serial_id:'',
+            }     
+        };
     export default {
         data() {
             return {     
                 order_info:gOrderInfo.data,  
-                values: gUserInfo.array,
+                user_infos: gUserInfo.data,
                 types: [
                     '氏名：',
                     'フリガナ：',
@@ -90,10 +96,31 @@
         },
         methods:{
             onClickNextBtn:function(){
+                axios.post('/v1/client/order_create',{ 'order_info': this.order_info, 'user_info': gUserInfo.data.userinfo})
+                .then((result)=>{
+                    if(result.data == 0){
+                        toast.fire({
+                            icon: "error",
+                            title: "予約IDが存在しません."
+                        });
+                    }else{
+                        toast.fire({
+                            icon: "success",
+                            title: "データ追加しました"
+                        });
+                        console.log(result.data);
+                        gResultID.data.mail = result.data.mail;                        
+                        gResultID.data.order_serial_id = result.data.order_serial_id;                        
+                        this.$emit('changeStage', 4);
+                    }
 
-                this.$emit('changeStage', 4);
+                })
+                .catch(()=>{
+                    console.log('order create error');
+                });                 
             },
             onClickPrevBtn:function(){
+                gUserInfo.data.array = [];
                 this.$emit('changeStage', 2);
             },
             formatDate(dt) {

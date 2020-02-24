@@ -1,5 +1,6 @@
 // Fonts
 @import url('https://fonts.googleapis.com/css?family=Nunito');
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+JP:100,300,400,500,700|Roboto:300,400,500,700&display=swap&subset=japanese');
 // Variables
 @import 'variables';
 // Bootstrap
@@ -15,20 +16,25 @@
     color: #aaa;
 }
 
+body {
+    font-family: 'Roboto', ;
+    font-family: 'Noto Sans JP', ;
+}
+
 .card-title {
     margin-bottom: -0.2rem;
 }
 
 .main-footer {
-    padding : 0px !important;
+    padding: 0px !important;
 }
 
-.padding-fill {    
-    background-image:linear-gradient(to bottom, rgba(240, 255, 40, 1) 0%, rgba(240, 255, 40, 1) 100%), linear-gradient(to bottom, rgba(240, 40, 40, 1) 0%, rgba(240, 40, 40, 1) 100%);
+.padding-fill {
+    background-image: linear-gradient(to bottom, rgba(240, 255, 40, 1) 0%, rgba(240, 255, 40, 1) 100%), linear-gradient(to bottom, rgba(240, 40, 40, 1) 0%, rgba(240, 40, 40, 1) 100%);
     background-clip: content-box, padding-box;
 }
 
-.content-wrapper > .content {
+.content-wrapper>.content {
     padding: 0 0;
 }
 
@@ -41,11 +47,11 @@
     border-radius: 50% !important;
 }
 
-.swal2-success-ring{
+.swal2-success-ring {
     border-radius: 50% !important;
 }
-//  ***//
 
+//  ***//
 .invalid-feedback {
     display: block !important;
 }
