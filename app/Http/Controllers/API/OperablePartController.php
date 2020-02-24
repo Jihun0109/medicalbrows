@@ -18,7 +18,8 @@ class OperablePartController extends Controller
         if ($keyword){
             return TblOperablePart::where('is_deleted', 0)->
                                     where(function($query) use ($keyword){
-                                    $query->where('name','LIKE',"%".$keyword."%");
+                                    $query->where('name','LIKE',"%".$keyword."%")->
+                                            orWhere('id','LIKE',"%".$keyword."%");
                               })->latest()->get();
         }
 

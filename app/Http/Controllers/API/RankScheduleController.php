@@ -26,6 +26,7 @@ class RankScheduleController extends Controller
                             where('tbl_rank_schedules.is_deleted',0)->
                             where(function($query) use ($keyword){
                                 $query->where('tbl_ranks.name','LIKE',"%".$keyword."%")->
+                                        orWhere('tbl_rank_schedules.id','LIKE',"%".$keyword."%")->
                                         orWhere('tbl_operable_parts.name','LIKE',"%".$keyword."%");
                           })->latest()->get();
         }

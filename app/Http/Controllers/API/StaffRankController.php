@@ -30,6 +30,7 @@ class StaffRankController extends Controller
                 where('tbl_staff_ranks.is_deleted', 0)->
                 where(function($query) use ($keyword){
                     $query->where('tbl_staffs.full_name','LIKE',"%".$keyword."%")->
+                            orWhere('tbl_staff_ranks.id','LIKE',"%".$keyword."%")->
                             orWhere('tbl_staffs.alias','LIKE',"%".$keyword."%")->
                             orWhere('tbl_ranks.name','LIKE',"%".$keyword."%");
               })->latest()->get();

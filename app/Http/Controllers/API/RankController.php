@@ -21,6 +21,7 @@ class RankController extends Controller
             return TblRank::where('is_deleted', 0)->
                               where(function($query) use ($keyword){
                                     $query->where('name','LIKE',"%".$keyword."%")->
+                                            orWhere('id','LIKE',"%".$keyword."%")->
                                             orWhere('short_name','LIKE',"%".$keyword."%");
                               })->latest()->get();
         }

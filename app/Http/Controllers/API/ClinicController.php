@@ -35,6 +35,7 @@ class ClinicController extends Controller
             return TblClinic::where('is_deleted', 0)->
                               where(function($query) use ($keyword){
                                     $query->where('name','LIKE',"%".$keyword."%")->
+                                            orWhere('id','LIKE',"%".$keyword."%")->
                                             orWhere('email','LIKE',"%".$keyword."%")->
                                             orWhere('address','LIKE',"%".$keyword."%");
                               })->where('is_vacation', 0)->get();

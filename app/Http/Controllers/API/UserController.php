@@ -25,7 +25,8 @@ class UserController extends Controller
                             select('users.*')->
                             where('users.is_deleted',0)->
                             where(function($query) use ($keyword){
-                                $query->where('users.name','LIKE',"%".$keyword."%")->
+                                $query->where('users.name','LIKE',"%".$keyword."%")->   
+                                        //orWhere('users.id','LIKE',"%".$keyword."%")->
                                         orWhere('users.email','LIKE',"%".$keyword."%")->
                                         orWhere('users.user_id','LIKE',"%".$keyword."%")->
                                         orWhere('roles.display_name','LIKE',"%".$keyword."%");
