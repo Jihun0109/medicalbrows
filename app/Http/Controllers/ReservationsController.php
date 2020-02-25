@@ -284,7 +284,7 @@ class ReservationsController extends Controller
                     join('tbl_orders', 'tbl_orders.id','tbl_order_histories.order_id')->
                     join('tbl_customers','tbl_customers.id','tbl_orders.customer_id')->
                     select('tbl_order_histories.*','tbl_orders.order_serial_id','tbl_orders.order_route',
-                            'tbl_customers.id as customer_id','tbl_customers.first_name', 'tbl_customers.last_name',
+                            'tbl_customers.id as customer_id','tbl_customers.first_name', 'tbl_customers.last_name', 'tbl_customers.email',
                             'tbl_customers.phonenumber','tbl_customers.birthday','tbl_orders.note')->
                     where(['staff_id' => $staff_rank_with_schedules[$i]['staff_id'],'rank_schedule_id'=>$cur_schedule['id'],['tbl_order_histories.order_date', $selected_date]])->
                     first();
@@ -294,7 +294,7 @@ class ReservationsController extends Controller
                     join('tbl_menus', 'tbl_menus.id','tbl_orders.menu_id')->
                     join('tbl_customers','tbl_customers.id','tbl_orders.customer_id')->
                     select('tbl_order_histories.*','tbl_orders.order_serial_id','tbl_orders.order_route','tbl_menus.id as menu_id','tbl_menus.name as menu_name',
-                            'tbl_customers.id as customer_id','tbl_customers.first_name', 'tbl_customers.last_name',
+                            'tbl_customers.id as customer_id','tbl_customers.first_name', 'tbl_customers.last_name', 'tbl_customers.email',
                             'tbl_customers.phonenumber','tbl_customers.birthday','tbl_orders.note')->
                     where(['staff_id' => $staff_rank_with_schedules[$i]['staff_id'],'rank_schedule_id'=>$cur_schedule['id'],['tbl_order_histories.order_date', $selected_date]])->
                     first();
@@ -399,6 +399,7 @@ class ReservationsController extends Controller
 
                     'customer_first_name' => $order_history?$order_history->first_name:'',
                     'customer_last_name' => $order_history?$order_history->last_name:'',
+                    'customer_email' => $order_history?$order_history->email:'',
                     'customer_phonenumber' => $order_history?$order_history->phonenumber:'',
                     'customer_birthday' => $order_history?$order_history->birthday:'',
                     'order_route' => $order_history?$order_history->order_route:'',
@@ -466,6 +467,7 @@ class ReservationsController extends Controller
             $this->validate($request, [
                 'first_name' => 'string|max:30',
                 'last_name' => 'string|max:30',
+                'email' => 'string|max:50|min:6',
                 'birthday' => 'required|date', 
                 'phonenumber' => 'string|max:30',
                 //'order_route' => 'string|max:30',
@@ -476,6 +478,7 @@ class ReservationsController extends Controller
                 //'gender' => '',
                 'first_name' => $payLoad['first_name'],
                 'last_name' => $payLoad['last_name'],
+                'email' => $payLoad['email'],
                 //'address' => '',
                 'phonenumber' => $payLoad['phonenumber'],
                 'birthday' => $payLoad['birthday'],
@@ -640,6 +643,7 @@ class ReservationsController extends Controller
         //모든 item정보는 자료기지로부터 다시 가져오는것이 좋다. 재진인 경우 입력 form의  customer정보를 돌려주기때문이다.
         $ret['customer_first_name'] = $customer->first_name;//$payLoad['first_name'];
         $ret['customer_last_name']= $customer->last_name;//$payLoad['last_name'];
+        $ret['customer_email']= $customer->email;
         $ret['customer_phonenumber']= $customer->phonenumber;//$payLoad['phonenumber'];
         $ret['customer_birthday']= $customer->birthday;//$payLoad['birthday'];
 
@@ -703,6 +707,7 @@ class ReservationsController extends Controller
         $this->validate($request, [
             'first_name' => 'string|max:30',
             'last_name' => 'string|max:30',
+            'last_name' => 'string|max:60|min:6',
             'birthday' => 'required|date', 
             'phonenumber' => 'string|max:30',
             //'order_route' => 'string|max:30',
@@ -721,6 +726,7 @@ class ReservationsController extends Controller
         $customer = TblCustomer::where('id', $order->customer_id)->first();
         $customer->first_name = $payLoad['first_name'];
         $customer->last_name = $payLoad['last_name'];
+        $customer->email = $payLoad['email'];
         $customer->phonenumber = $payLoad['phonenumber'];
         $customer->birthday = $payLoad['birthday'];
         $customer->save();
@@ -766,6 +772,7 @@ class ReservationsController extends Controller
 
         $ret['customer_first_name'] =$payLoad['first_name'];
         $ret['customer_last_name']= $payLoad['last_name'];
+        $ret['customer_email']= $payLoad['email'];
         $ret['customer_phonenumber']= $payLoad['phonenumber'];
         $ret['customer_birthday']= $payLoad['birthday'];
         $ret['order_route'] = $order->order_route;

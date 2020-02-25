@@ -82,7 +82,12 @@
                             <p>{{data.customer_first_name}}</p>
                         </div>
                     </div>
-
+                    <div class="row">
+                        <label class="col-sm-3 col-form-label">メール:</label>
+                        <div class="col-sm-8" >
+                            <p>{{data.customer_email}}</p>
+                        </div>
+                    </div>
                     <div class="row">
                         <label class="col-sm-3 col-form-label">生年月日:</label>
                         <div class="col-sm-8" >

@@ -114,6 +114,12 @@
                         </div>
                     </div>
                     <div class="row">
+                        <label class="col-sm-3 col-form-label">メール:</label>
+                        <div class="col-sm-8">
+                            <input v-model="form.email" type="text" class="form-control form-control-sm" :class="{'is-invalid':form.errors.has('email')}">
+                        </div>
+                    </div>
+                    <div class="row">
                         <label class="col-sm-3 col-form-label">生年月日:</label>
                         <div class="col-sm-8">
                             <input v-model="form.birthday" type="date" class="form-control form-control-sm" placeholder="生年月日" 
@@ -170,6 +176,7 @@
                     counselor : '',
                     first_name : '',
                     last_name : '',
+                    email: '',
                     birthday : '',
                     phonenumber : '',
                     order_route : 'システム',
@@ -247,6 +254,7 @@
                 this.form.last_name = '';
                 this.form.birthday = '';
                 this.form.phonenumber = '';
+                this.form.email = '';
                 this.form.errors.clear();
             },
             loadInfo(){
@@ -255,6 +263,7 @@
                 this.form.menu_id = this.item.menu_id;                
                 this.form.first_name = this.item.customer_first_name;
                 this.form.last_name = this.item.customer_last_name;
+                this.form.email = this.item.customer_email;
                 this.form.birthday = this.item.customer_birthday;
                 this.form.phonenumber = this.item.customer_phonenumber;
                 this.form.order_route = this.item.order_route;
