@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\TblClinic;
 use Auth;
 use Log;
+use DB;
 
 class ClinicController extends Controller
 {
@@ -32,19 +33,26 @@ class ClinicController extends Controller
         $clinic_email = \Request::get('email');
 
         if ($keyword){
-            return TblClinic::where('is_deleted', 0)->
-                              where(function($query) use ($keyword){
-                                    $query->where('name','LIKE',"%".$keyword."%")->
-                                            orWhere('id','LIKE',"%".$keyword."%")->
-                                            orWhere('email','LIKE',"%".$keyword."%")->
-                                            orWhere('address','LIKE',"%".$keyword."%");
-                              })->where('is_vacation', 0)->get();
+            return DB::table('tbl_clinics')->
+                                join('users','users.email','tbl_clinics.email')->
+                                where('tbl_clinics.is_deleted',0)->
+                                where(function($query) use ($keyword){
+                                    $query->where('tbl_clinics.name','LIKE',"%".$keyword."%")->
+                                            orWhere('tbl_clinics.id','LIKE',"%".$keyword."%")->
+                                            orWhere('tbl_clinics.email','LIKE',"%".$keyword."%")->
+                                            orWhere('tbl_clinics.address','LIKE',"%".$keyword."%");
+                              })->where('tbl_clinics.is_vacation', 0)->
+                                select('tbl_clinics.*','users.user_id')->get();
         } else if ($clinic_email){
             return TblClinic::where('is_deleted', 0)->                            
                             where('email',$clinic_email)->get();
         }
 
-        return TblClinic::where('is_deleted', 0)->where('is_vacation', 0)->latest()->get();
+        return DB::table('tbl_clinics')->
+                        join('users','users.email','tbl_clinics.email')->
+                        where(['tbl_clinics.is_deleted'=>0, 'tbl_clinics.is_vacation' => 0])->
+                        select('tbl_clinics.*', 'users.user_id')->get();
+                        
     }
 
     /**

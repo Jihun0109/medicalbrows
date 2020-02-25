@@ -61,7 +61,7 @@
                     <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form @submit.prevent="editMode ? updateRank() : createData()">
+                <form @submit.prevent="editMode ? updateData() : createData()">
                 <div class="modal-body">
                     <div class="form-group">
                         <label>クリニック名</label>
@@ -69,11 +69,11 @@
                         <has-error :form="form" field="name"></has-error>
                     </div>                    
                     <div class="form-group">
-                        <label>メール</label>
-                        <select v-model="form.email" class="custom-select" name="email" :class="{'is-invalid':form.errors.has('email')}">
-                          <option v-for="u in users" :key="u" v-bind:value="u">{{ u }}</option>
+                        <label>ユーザーID</label>
+                        <select v-model="form.user_id" class="custom-select" name="user_id" :class="{'is-invalid':form.errors.has('user_id')}">
+                          <option v-for="u in users" :key="u.user_id" v-bind:value="u.user_id">{{ u.user_id }}</option>
                         </select>
-                        <has-error :form="form" field="email"></has-error>
+                        <has-error :form="form" field="user_id"></has-error>
                     </div>
                     <div class="form-group">
                         <label>住所</label>
@@ -128,7 +128,15 @@
                 axios.get('/api/clinic').
                     then(({data}) => (this.data = data));                
             },
-            createData(){                
+            createData(){  
+                console.log(this.data);
+                console.log(this.form.user_id);
+                this.users.forEach(element => {                                    
+                    if (this.form.user_id === element.user_id){
+                        console.log(">>>"+element.user_id);
+                        this.form.email = element.email;
+                    }
+                });              
                 this.form.post('/api/clinic')
                     .then((result)=>{                        
                         toast.fire({
@@ -142,9 +150,13 @@
 
                     });         
             },
-            updateRank(){
+            updateData(){
                 console.log(this.users);
-                console.log(this.form);
+                this.users.forEach(element => {                                    
+                    if (this.form.user_id == element.user_id){
+                        this.form.email = element.email;
+                    }
+                });
                 this.form.put('/api/clinic/' + this.form.id)
                     .then(()=>{
                         toast.fire({
@@ -202,7 +214,7 @@
                 this.form.errors.clear();     
                 this.form.fill(data);                
                 this.form.password = "";
-                this.getEmailList(data.email);
+                this.getEmailList(data);
                 $('#modalAddUser').modal('show');
             },
             getEmailList(targetEmail){
@@ -210,7 +222,7 @@
                     ({data}) => {
                         this.users = data;
                         if (targetEmail)
-                            this.users.push(targetEmail);
+                            this.users.push({'user_id':targetEmail['user_id'],'email':targetEmail['email']});
                     }
                 );
             }

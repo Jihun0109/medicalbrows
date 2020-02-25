@@ -118,7 +118,6 @@ class UserController extends Controller
                             where('is_deleted',0)->
                             where('role_id', $clinic_role_id)->
                             whereNotIn('email', $registered_emails)->
-                            select('email')->
-                            pluck('email');
+                            select('user_id','email')->get();                            
     }
 }
