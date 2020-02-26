@@ -99,13 +99,15 @@ class ReservationsController extends Controller
             $temp = [];
             // 상담원이 인터뷰어로 예약되여 있으면 그 시간을 리턴.
             $remove_time_with_order = DB::table('tbl_order_histories')
-                            ->where([['is_deleted', 0],['interviewer_id',$counselor_list[$i]->interviewer_id],['order_date', $selected_date]])
-                            ->select('id', DB::raw('HOUR(tbl_order_histories.interview_end) as end_hour'))
+                            ->where([['interviewer_id',$counselor_list[$i]->interviewer_id],['order_date', $selected_date]])
+                            ->select('id','is_deleted', DB::raw('HOUR(tbl_order_histories.interview_end) as end_hour'))
                             ->get();
             $bflag = false;
             for( $j = 0; $j < sizeof($remove_time_with_order); $j++ ){
+                if ($remove_time_with_order[$j]->is_deleted)
+                    break;
                 if($remove_time_with_order[$j]->end_hour === $min && $order_history_id != $remove_time_with_order[$j]->id){
-                    Log::info($remove_time_with_order[$j]->id);
+                    //Log::info($remove_time_with_order[$j]->id);
                     $bflag = true;
                     break;
                 }
@@ -280,23 +282,23 @@ class ReservationsController extends Controller
                 if($staff_rank_with_schedules[$i]['rank_name'] == 'カウゼ')
                 {
                     // order_history 변수에 order_history정보와 customer정보 order_serial_id정보를 
+                    
                     $order_history = DB::table('tbl_order_histories')->
-                    join('tbl_orders', 'tbl_orders.id','tbl_order_histories.order_id')->
-                    join('tbl_customers','tbl_customers.id','tbl_orders.customer_id')->
-                    select('tbl_order_histories.*','tbl_orders.order_serial_id','tbl_orders.order_route',
+                    join('tbl_customers','tbl_customers.id','tbl_order_histories.customer_id')->
+                    select('tbl_order_histories.*',
                             'tbl_customers.id as customer_id','tbl_customers.first_name', 'tbl_customers.last_name', 'tbl_customers.email',
-                            'tbl_customers.phonenumber','tbl_customers.birthday','tbl_orders.note')->
-                    where(['staff_id' => $staff_rank_with_schedules[$i]['staff_id'],'rank_schedule_id'=>$cur_schedule['id'],['tbl_order_histories.order_date', $selected_date]])->
+                            'tbl_customers.phonenumber','tbl_customers.birthday')->
+                    where(['tbl_order_histories.is_deleted'=> 0, 'staff_id' => $staff_rank_with_schedules[$i]['staff_id'],'rank_schedule_id'=>$cur_schedule['id'],['tbl_order_histories.order_date', $selected_date]])->
                     first();
+
                 }else{ // 상담원이 아닌 의사인경우 메뉴정보도 같이 얻는다,
-                    $order_history = DB::table('tbl_order_histories')->
-                    join('tbl_orders', 'tbl_orders.id','tbl_order_histories.order_id')->
-                    join('tbl_menus', 'tbl_menus.id','tbl_orders.menu_id')->
-                    join('tbl_customers','tbl_customers.id','tbl_orders.customer_id')->
-                    select('tbl_order_histories.*','tbl_orders.order_serial_id','tbl_orders.order_route','tbl_menus.id as menu_id','tbl_menus.name as menu_name',
+                    $order_history = DB::table('tbl_order_histories')->                    
+                    join('tbl_menus', 'tbl_menus.id','tbl_order_histories.menu_id')->
+                    join('tbl_customers','tbl_customers.id','tbl_order_histories.customer_id')->
+                    select('tbl_order_histories.*','tbl_menus.id as menu_id','tbl_menus.name as menu_name',
                             'tbl_customers.id as customer_id','tbl_customers.first_name', 'tbl_customers.last_name', 'tbl_customers.email',
-                            'tbl_customers.phonenumber','tbl_customers.birthday','tbl_orders.note')->
-                    where(['staff_id' => $staff_rank_with_schedules[$i]['staff_id'],'rank_schedule_id'=>$cur_schedule['id'],['tbl_order_histories.order_date', $selected_date]])->
+                            'tbl_customers.phonenumber','tbl_customers.birthday')->
+                    where(['tbl_order_histories.is_deleted'=> 0,'staff_id' => $staff_rank_with_schedules[$i]['staff_id'],'rank_schedule_id'=>$cur_schedule['id'],['tbl_order_histories.order_date', $selected_date]])->
                     first();
                 }
                 $start_minute = $cur_schedule['start_minute'];
@@ -457,157 +459,59 @@ class ReservationsController extends Controller
     {
         $start_tick = microtime(true);
         $payLoad = json_decode(request()->getContent(), true);  
-        //Log::error($payLoad);
-        //return;
         $order_serial_id = $payLoad['order_serial_id'];
+
+        //confirm field 
+        $this->validate($request, [
+            'first_name' => 'required|string|max:30',
+            'last_name' => 'required|string|max:30',
+            'birthday' => 'required|date', 
+            'phonenumber' => 'required|string|max:30',
+            'email' => 'required|string|max:50|min:10'
+            //'order_route' => 'string|max:30',
+        ]); 
+
+        $customer = TblCustomer::create([
+            //'email' => '',
+            //'gender' => '',
+            'first_name' => $payLoad['first_name'],
+            'last_name' => $payLoad['last_name'],
+            //'address' => '',
+            'email' => $payLoad['email'],
+            'phonenumber' => $payLoad['phonenumber'],
+            'birthday' => $payLoad['birthday'],
+            'is_deleted' => 0
+        ]);
         // First create Customer if order_type is 新規 or カウンセ
-        if ($payLoad['order_type'] != "再診")
+        if ($payLoad['order_type'] == "新規")
         {
-            //confirm field 
-            $this->validate($request, [
-                'first_name' => 'string|max:30',
-                'last_name' => 'string|max:30',
-                'email' => 'string|max:50|min:6',
-                'birthday' => 'required|date', 
-                'phonenumber' => 'string|max:30',
-                //'order_route' => 'string|max:30',
-            ]); 
-
-            $customer = TblCustomer::create([
-                //'email' => '',
-                //'gender' => '',
-                'first_name' => $payLoad['first_name'],
-                'last_name' => $payLoad['last_name'],
-                'email' => $payLoad['email'],
-                //'address' => '',
-                'phonenumber' => $payLoad['phonenumber'],
-                'birthday' => $payLoad['birthday'],
-                'is_deleted' => 0
-            ]);
             // Second create Order 
-            $order_serial_id = sprintf('%s-%06d', time(), $customer->id);
+            $order_serial_id = sprintf('%s-%06d', time(), $payLoad['item']['staff_id']);
 
-            if ($payLoad['order_type'] == "新規"){
-                $order = TblOrder::create([
-                    'order_serial_id' => $order_serial_id,
-                    'customer_id' => $customer->id,
-                    //'customer_status' => 1,   // 의미모름
-                    'subtotal' => 0,
-                    'discount' => 0,
-                    'tax_id' => 0,
-                    'total' => 0,
-                    'note' => $payLoad['note'],
-                    'order_date' => $payLoad['item']['date'],
-                    //'cancel_date' => '',
-                    'menu_id' => $payLoad['menu_id'],
-                    'order_route' => $payLoad['order_route'],
-                    'is_deleted' => 0,
-                ]);
-
-                // 우에서 금방 창조했으므로 오브젝트 아래 2오브젝트는 존재함. 따라서 쿼리 할필요는 없을거 같음.
-                //$order = TblOrder::where(['order_serial_id'=>$order_serial_id, 'is_deleted'=>0])->orderBy('created_at','desc')->first();
-                //$customer = TblCustomer::where(['id'=>$order->customer_id, 'is_deleted'=>0])->orderBy('created_at','desc')->first();
-                if($payLoad['item']['rank_name']  != 'NA' && $payLoad['item']['rank_name']  != 'T')
-                {
-                    $order_history = TblOrderHistory::create([
-                        'staff_id' => $payLoad['counselor']['interviewer_id'],
-                        'rank_id' => 9,//counselor_rank_id
-                        'order_id' => $order->id,
-                        'status' => 0,//$payLoad['item']['order_status'],//1,//
-                        'staff_choosed' => $payLoad['stuff_choosed'],
-                        'rank_schedule_id' => $payLoad['counselor']['interviewer_rank_schedule_id'],
-                        'order_type' => $payLoad['order_type'],
-                        'order_date' => $payLoad['item']['date'],
-                        'order_route' => $payLoad['order_route'],
-                        'is_deleted' => 0
-                    ]);
-                }
-            }
-            else{ //カウンセ
-                $order = TblOrder::create([
-                    'order_serial_id' => $order_serial_id,
-                    'customer_id' => $customer->id,
-                    //'customer_status' => 1,   // 의미모름
-                    'subtotal' => 0,
-                    'discount' => 0,
-                    'tax_id' => 0,
-                    'total' => 0,
-                    'note' => $payLoad['note'],
-                    'order_date' => $payLoad['item']['date'],
-                    //'cancel_date' => '',
-                    //'menu_id' => '',
-                    'order_route' => $payLoad['order_route'],
-                    'is_deleted' => 0,
-                ]); 
-            }
-        }
-
-        // Third create Order history        
-        $order = TblOrder::where(['order_serial_id'=>$order_serial_id, 'is_deleted'=>0])->orderBy('created_at','desc')->first();
-        //재진인경우 예약ID가 존재하지 않으면 오유통보 현시 
-        if($payLoad['order_type'] == "再診" && is_null($order)){
-            return 0;
-        }
-        $customer = TblCustomer::where(['id'=>$order->customer_id, 'is_deleted'=>0])->orderBy('created_at','desc')->first();
-        
-        if ($payLoad['order_type'] == "新規"){
-            if($payLoad['item']['rank_name']  == 'NA' || $payLoad['item']['rank_name']  == 'T')
+            if($payLoad['item']['rank_name']  != 'NA' && $payLoad['item']['rank_name']  != 'T')
             {
                 $order_history = TblOrderHistory::create([
-                    'staff_id' => $payLoad['item']['staff_id'],
-                    'rank_id' => $payLoad['item']['rank_id'],
-                    'order_id' => $order->id,
+                    'staff_id' => $payLoad['counselor']['interviewer_id'],
+                    'rank_id' => 9,//counselor_rank_id
                     'status' => 0,//$payLoad['item']['order_status'],//1,//
                     'staff_choosed' => $payLoad['stuff_choosed'],
-                    'rank_schedule_id' => $payLoad['item']['rank_schedule_id'],
+                    'rank_schedule_id' => $payLoad['counselor']['interviewer_rank_schedule_id'],
                     'order_type' => $payLoad['order_type'],
                     'order_date' => $payLoad['item']['date'],
-                    'menu_id' => $payLoad['menu_id'],
                     'order_route' => $payLoad['order_route'],
-                    'is_deleted' => 0
-                ]);
-            }else{
-                $order_history = TblOrderHistory::create([
-                    'staff_id' => $payLoad['item']['staff_id'],
-                    'rank_id' => $payLoad['item']['rank_id'],
-                    'order_id' => $order->id,
-                    'interviewer_id' => $payLoad['counselor']['interviewer_id'],
-                    'interview_start' => $payLoad['counselor']['interview_start'],
-                    'interview_end' => $payLoad['counselor']['interview_end'],
-                    'status' => 0,//$payLoad['item']['order_status'],//1,//
-                    'staff_choosed' => $payLoad['stuff_choosed'],
-                    'rank_schedule_id' => $payLoad['item']['rank_schedule_id'],
-                    'order_type' => $payLoad['order_type'],
-                    'order_date' => $payLoad['item']['date'],
+                    'note' => $payLoad['note'],
+                    'order_serial_id' => $order_serial_id,
+                    'customer_id' => $customer->id,
                     'menu_id' => $payLoad['menu_id'],
-                    'order_route' => $payLoad['order_route'],
                     'is_deleted' => 0
                 ]);
             }
-        }
-        else if ($payLoad['order_type'] == "カウンセ"){
-            $schedule_info = DB::table('tbl_rank_schedules')->where('id', $payLoad['item']['rank_schedule_id'])->first();
+        }        
+        
+        if ($payLoad['order_type'] == "新規"){
             $order_history = TblOrderHistory::create([
                 'staff_id' => $payLoad['item']['staff_id'],
                 'rank_id' => $payLoad['item']['rank_id'],
-                'order_id' => $order->id,
-                'interviewer_id' => $payLoad['item']['staff_id'],
-                'interview_start' => $schedule_info->start_time,
-                'interview_end' => $schedule_info->end_time,
-                'status' => 0,//$payLoad['item']['order_status'],//1,//
-                'staff_choosed' => $payLoad['stuff_choosed'],
-                'rank_schedule_id' => $payLoad['item']['rank_schedule_id'],
-                'order_type' => $payLoad['order_type'],
-                'order_date' => $payLoad['item']['date'],
-                'order_route' => $payLoad['order_route'],
-                'is_deleted' => 0
-            ]);
-        }
-        else{//再診
-            $order_history = TblOrderHistory::create([
-                'staff_id' => $payLoad['item']['staff_id'],
-                'rank_id' => $payLoad['item']['rank_id'],
-                'order_id' => $order->id,
                 'status' => 0,//$payLoad['item']['order_status'],//1,//
                 'staff_choosed' => $payLoad['stuff_choosed'],
                 'rank_schedule_id' => $payLoad['item']['rank_schedule_id'],
@@ -615,10 +519,40 @@ class ReservationsController extends Controller
                 'order_date' => $payLoad['item']['date'],
                 'menu_id' => $payLoad['menu_id'],
                 'order_route' => $payLoad['order_route'],
+                'note' => $payLoad['note'],
+                'order_serial_id' => $order_serial_id,
+                'customer_id' => $customer->id,
+                'is_deleted' => 0,
+                'interviewer_id' => $payLoad['counselor']?$payLoad['counselor']['interviewer_id']:null,
+                'interview_start' => $payLoad['counselor']?$payLoad['counselor']['interview_start']:null,
+                'interview_end' => $payLoad['counselor']?$payLoad['counselor']['interview_end']:null,
+            ]);
+        }
+        else{
+            $schedule_info = DB::table('tbl_rank_schedules')->where('id', $payLoad['item']['rank_schedule_id'])->first();
+            
+            $order_serial_id = sprintf('%s-%06d', time(), $payLoad['item']['staff_id']);
+
+            $order_history = TblOrderHistory::create([
+                'staff_id' => $payLoad['item']['staff_id'],
+                'rank_id' => $payLoad['item']['rank_id'],                
+                'interviewer_id' => $payLoad['order_type'] == "カウンセ"?$payLoad['item']['staff_id']:'',
+                'interview_start' => $payLoad['order_type'] == "カウンセ"?$schedule_info->start_time:'',
+                'interview_end' => $payLoad['order_type'] == "カウンセ"?$schedule_info->end_time:'',
+                'status' => 0,//$payLoad['item']['order_status'],//1,//
+                'staff_choosed' => $payLoad['stuff_choosed'],
+                'rank_schedule_id' => $payLoad['item']['rank_schedule_id'],
+                'order_type' => $payLoad['order_type'],
+                'order_date' => $payLoad['item']['date'],
+                'menu_id' => $payLoad['menu_id']?$payLoad['menu_id']:null,
+                'order_route' => $payLoad['order_route'],
+                'note' => $payLoad['note'],
+                'order_serial_id' => $order_serial_id,
+                'customer_id' => $customer->id,
                 'is_deleted' => 0
             ]);
         }
-    
+        
         $menu_info = DB::table('tbl_menus')->where('id', $order_history->menu_id)->first();
         $rank_info = DB::table('tbl_ranks')->where('id', $order_history->rank_id)->first();
         $staff_info = DB::table('tbl_staffs')->where('id',$order_history->staff_id)->first();
@@ -647,7 +581,7 @@ class ReservationsController extends Controller
         $ret['customer_phonenumber']= $customer->phonenumber;//$payLoad['phonenumber'];
         $ret['customer_birthday']= $customer->birthday;//$payLoad['birthday'];
 
-        $ret['note'] = $order->note;        
+        $ret['note'] = $order_history->note;
         $ret['interviewer_id'] = '';
         $ret['interviewer_name'] = '';
         //$ret['i'] = $order_serial_id.$ret['customer_first_name'];
@@ -686,23 +620,59 @@ class ReservationsController extends Controller
     public function orderStatusUpdate(Request $request)
     {
         $payLoad = json_decode(request()->getContent(), true);
+        Log::Info($payLoad);
         $order_history_id = $payLoad['item']['order_history_id'];
+
         $idx = $payLoad['statusIdx'] + 1;
         $status_arr = ['static','neworder','oldorder','grayconselor','cancelorder'];
         $order_history_ret = TblOrderHistory::where(['id'=>$order_history_id, 'is_deleted'=>0])
                             ->update([
                                 'status' =>  $idx,
                             ]);
+        //신규예약인 경우 쌍으로 되여있는 시술자와 상담원의 상태를 모두 바꾼다
+        //상담원인 경우 시술자 상태 변경, staff_id, rs_id 구한다
+        $ret_array = [];
+        if($payLoad['item']['order_type'] == '新規')
+        {
+            if($payLoad['item']['rank_name'] == 'カウゼ')
+            {
+                $main_staff_info = DB::table('tbl_order_histories')
+                                ->where(['tbl_order_histories.is_deleted'=>0, 'tbl_order_histories.interviewer_id'=>$payLoad['item']['staff_id'],'tbl_order_histories.order_serial_id'=>$payLoad['item']['order_serial_id']])
+                                ->select('tbl_order_histories.id','tbl_order_histories.staff_id','tbl_order_histories.rank_schedule_id')
+                                ->first();
+                $order_history_ret = TblOrderHistory::where(['id'=>$main_staff_info->id, 'is_deleted'=>0])
+                                ->update([
+                                    'status' =>  $idx,
+                                ]);
+                $ret_main = array('staff_id'=>$main_staff_info->staff_id, 'rs_id'=>$main_staff_info->rank_schedule_id,'status'=>$status_arr[$idx]);    array_push($ret_array, $ret_main);                
+            }
+            else if($payLoad['item']['rank_name'] != 'T' && $payLoad['item']['rank_name'] != 'NA'){
+                $counselor_info = DB::table('tbl_order_histories')
+                                ->where(['tbl_order_histories.is_deleted'=>0, 'tbl_order_histories.staff_id'=>$payLoad['item']['interviewer_id'],'tbl_order_histories.order_serial_id'=>$payLoad['item']['order_serial_id']])
+                                ->select('tbl_order_histories.id','tbl_order_histories.staff_id','tbl_order_histories.rank_schedule_id')
+                                ->first();
+                $order_history_ret = TblOrderHistory::where(['id'=>$counselor_info->id, 'is_deleted'=>0])
+                                ->update([
+                                    'status' =>  $idx,
+                                ]);
+                $ret_counselor = array('staff_id'=>$counselor_info->staff_id, 'rs_id'=>$counselor_info->rank_schedule_id,'status'=>$status_arr[$idx]);    array_push($ret_array, $ret_counselor);   
+            }
+
+        }
+
         $payLoad['item']['order_status'] = $status_arr[$idx];
-        return $payLoad;
+        $ret = array('staff_id'=>$payLoad['item']['staff_id'], 'rs_id'=>$payLoad['item']['rank_schedule_id'],'status'=>$status_arr[$idx]);
+        //Log::Info($ret);
+        array_push($ret_array, $ret);
+        return $ret_array;
     }
     
     // 예약수정 함수
     public function orderUpdate(Request $request)
     {
         $payLoad = json_decode(request()->getContent(), true);
-        Log::error($payLoad);
-        
+        //Log::error($payLoad);
+        //return;
         //confirm field 
         $this->validate($request, [
             'first_name' => 'string|max:30',
@@ -710,20 +680,23 @@ class ReservationsController extends Controller
             'last_name' => 'string|max:60|min:6',
             'birthday' => 'required|date', 
             'phonenumber' => 'string|max:30',
+            'email' => 'string|max:30',
             //'order_route' => 'string|max:30',
         ]); 
         $order_serial_id = $payLoad['order_serial_id'];
 
         //update order table
-        $order = TblOrder::where(['order_serial_id'=>$order_serial_id, 'is_deleted'=>0])->orderBy('created_at','desc')->first();
-        
-        $order->menu_id = $payLoad['menu_id'];
-        $order->note = $payLoad['note'];
-        $order->order_route = $payLoad['order_route'];        
-        $order->save();
-        
+        //$order_history = TblOrderHistory::where(['order_serial_id'=>$order_serial_id, 'is_deleted'=>0])->orderBy('created_at','desc')->first();
+        $order_history = TblOrderHistory::where('id',$payLoad['item']['order_history_id'])->first();
+
+        if($payLoad['order_type'] != 'カウンセ')
+            $order_history->menu_id = $payLoad['menu_id'];
+
+        TblOrderHistory::where('order_serial_id', $order_serial_id)->
+                        update(['note'=>$payLoad['note'], 'order_route'=>$payLoad['order_route']]);
+                       
         //update customer table
-        $customer = TblCustomer::where('id', $order->customer_id)->first();
+        $customer = TblCustomer::where('id', $order_history->customer_id)->first();
         $customer->first_name = $payLoad['first_name'];
         $customer->last_name = $payLoad['last_name'];
         $customer->email = $payLoad['email'];
@@ -731,13 +704,52 @@ class ReservationsController extends Controller
         $customer->birthday = $payLoad['birthday'];
         $customer->save();
         
-        $order_history = TblOrderHistory::where('id',$payLoad['item']['order_history_id'])->first();
+        //$order_history = TblOrderHistory::where('id',$payLoad['item']['order_history_id'])->first();
+        //Log::info($order_history);
+        $bChangedInterviewer = false;
+
+        // 신규를 재진으로 
+        if( $payLoad['order_type'] == '再診' )
+        {            
+            if ($order_history->interviewer_id){                
+                $interviewer = TblOrderHistory::where(['order_id'=>$order_history->order_id, 
+                        'staff_id'=>$order_history->interviewer_id])->first();
+                $interviewer->is_deleted = 1;
+                $interviewer->save();
+            }
+        }
+
+        if( $payLoad['order_type'] == '新規' )
+        {            
+            if ($order_history->interviewer_id){                
+                $interviewer = TblOrderHistory::where(['order_id'=>$order_history->order_id, 
+                        'staff_id'=>$order_history->interviewer_id])->first();
+                $interviewer->is_deleted = 0;
+                $interviewer->save();
+            }
+        }
+
+        $old_staff_order_history_id = '';
+        
+        if($payLoad['order_type'] == 'カウンセ' )//신규를 상담원으로 예약하는 경우 
+        {        
+            if($payLoad['item']['order_type'] == '新規')//이전에 신규였다면 짝으로 있는 시술자의 order_history_id구한다.
+            {                
+                $staff = TblOrderHistory::where(['id'=>$payLoad['old_staff_info']['order_history_id']])->first();
+                $old_staff_order_history_id = $staff->id;
+                $staff->is_deleted = 1;
+                $staff->save();
+            }
+        }
+
         $bChangedInterviewer = false;
         if ($order_history->interviewer_id && $payLoad['counselor']){
             if ($order_history->interviewer_id !== $payLoad['counselor']['interviewer_id']){
-                $interviewer = TblOrderHistory::where(['order_id'=>$order_history->order_id, 
+                $interviewer = TblOrderHistory::where(['order_serial_id'=>$order_serial_id, 
                         'staff_id'=>$order_history->interviewer_id,
-                        'rank_schedule_id'=>$payLoad['counselor']['interviewer_rank_schedule_id']])->first();
+                        //'rank_schedule_id'=>$payLoad['counselor']['interviewer_rank_schedule_id']
+                        ])->first();
+
                 $interviewer->staff_id = $payLoad['counselor']['interviewer_id'];
                 $interviewer->save();
 
@@ -746,14 +758,13 @@ class ReservationsController extends Controller
             }
         }
         $order_history->staff_id = $payLoad['item']['staff_id'];
-        $order_history->rank_id = $payLoad['item']['rank_id'];
-        $order_history->order_id = $order->id;
+        $order_history->rank_id = $payLoad['item']['rank_id'];        
         $order_history->staff_choosed = $payLoad['stuff_choosed'];
         $order_history->rank_schedule_id = $payLoad['item']['rank_schedule_id'];
         $order_history->order_type = $payLoad['order_type'];
         $order_history->save();
 
-        $menu_info = DB::table('tbl_menus')->where('id', $order->menu_id)->first();
+        $menu_info = DB::table('tbl_menus')->where('id', $order_history->menu_id)->first();
         $rank_info = DB::table('tbl_ranks')->where('id', $order_history->rank_id)->first();
         $staff_info = DB::table('tbl_staffs')->where('id',$order_history->staff_id)->first();
         $ret = $payLoad['item'];
@@ -775,7 +786,7 @@ class ReservationsController extends Controller
         $ret['customer_email']= $payLoad['email'];
         $ret['customer_phonenumber']= $payLoad['phonenumber'];
         $ret['customer_birthday']= $payLoad['birthday'];
-        $ret['order_route'] = $order->order_route;
+        $ret['order_route'] = $order_history->order_route;
         $ret['note'] = $payLoad['note'];
         //$ret['i'] = $order_serial_id.$ret['customer_first_name'];
         $ret['i'] =  '<div>【'.$order_history->order_type.'】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><br><div>カウセ</div><div>'.$ret['time'].'</div><div>'.$ret['staff_choosed'].'</div>' ;
@@ -809,7 +820,44 @@ class ReservationsController extends Controller
                 }
             } 
             else{ // カウンセ
+                if($payLoad['item']['order_type'] == '新規')
+                {//cancel status new order-->only counslor
+                    $ret_old = [];
+                    $ret_old['x'] = $payLoad['old_staff_info']['x'];
+                    $ret_old['y'] = $payLoad['old_staff_info']['y'];
+                    $ret_old['interviewer_id'] = '';
+                    $ret_old['interviewer_name'] = '';
+                    $ret_old['menu_id'] = '';
+                    $ret_old['menu_name'] = '';
+                    $ret_old['note'] = '';
+                    $ret_old['order_route'] = '';
+                    $ret_old['order_serial_id'] = '';
+                    $ret_old['order_history_id'] = 0;
+                    $ret_old['order_status'] = 'static';
+                    $ret_old['order_type'] = '新規';
+                    $ret_old['staff_choosed'] = 'あり';
+                    $ret_old['i'] = '再';
+                    array_push($ret_array, $ret_old);
+                }
                 $ret['i'] =  '<div>【カウンセリ】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div>';
+            }
+        }
+        else{//update-->再診
+            {//cancel order: new order -> old order: remove counselor
+                $ret['i'] =  '<div>【再診】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><div>';
+                if ($order_history->interviewer_id){ 
+                    $ret_old = [];
+                    $ret_old['x'] = $payLoad['old_itvr_x'];
+                    $ret_old['y'] = $payLoad['old_itvr_y'];
+                    $ret_old['order_serial_id'] = $ret_old['order_history_id'] = '';
+                    $ret_old['note'] = '';
+                    $ret_old['order_route'] = '';
+                    $ret_old['order_status'] = 'static';
+                    $ret_old['order_type'] = 'カウンセ';
+                    $ret_old['staff_choosed'] = 'あり';
+                    $ret_old['i'] = '新';
+                    array_push($ret_array, $ret_old);
+                }
             }
         }
 

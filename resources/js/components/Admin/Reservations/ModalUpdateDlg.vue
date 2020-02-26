@@ -129,7 +129,7 @@
                     <div class="row">
                         <label class="col-sm-3 col-form-label">電話番号:</label>
                         <div class="col-sm-8">
-                            <input v-model="form.phonenumber" type="tel" class="form-control form-control-sm" v-mask="{mask:'999-999-9999', placeholder:'#'}" :class="{'is-invalid':form.errors.has('phonenumber')}">
+                            <input v-model="form.phonenumber" type="tel" class="form-control form-control-sm" v-mask="{mask:'999-9999-9999', placeholder:'#'}" :class="{'is-invalid':form.errors.has('phonenumber')}">
                             <!-- <input v-model="form.phonenumber" type="text" class="form-control form-control-sm" placeholder="080-xxx-xxxx" :class="{'is-invalid':form.errors.has('phonenumber')}"> -->
                         </div>
                     </div>
@@ -268,8 +268,13 @@
                 this.form.phonenumber = this.item.customer_phonenumber;
                 this.form.order_route = this.item.order_route;
                 this.form.order_serial_id = this.item.order_serial_id;
-                this.form.note = this.item.note != "" ? this.item.note : '経験 : \n妊娠・授乳・不妊治療 : \n通院歴・薬 : \n金アレ・アトピー・ケロイド確認 : \n眉ブリーチ・炎症・傷跡確認 : \n美容サービス・美容整形確認 : \n料金・所要時間 : \nHP : \nキャンセル規約 : ';                
-                
+                this.form.note = this.item.note != "" ? this.item.note : '経験 : \n妊娠・授乳・不妊治療 : \n通院歴・薬 : \n金アレ・アトピー・ケロイド確認 : \n眉ブリーチ・炎症・傷跡確認 : \n美容サービス・美容整形確認 : \n料金・所要時間 : \nHP : \nキャンセル規約 : ';   
+                //상담원인 경우 그에 해당한 시술자를 넘겨준다(cancel상태인경우 재 예약에 리용된다.이것은 상담원으로 예약되는경우 이전에 할당된 시술자 정보를 지우기 위해서이다.)
+                this.form.old_staff_info = '';
+                if(this.item.order_type == '新規' && this.item.rank_name == 'カウゼ')
+                {
+                    this.form.old_staff_info = this.item.old_staff_info;
+                }             
                 for (var i=0; i<this.counselors.length; i++){
                     
                     if (this.counselors[i]['interviewer_id'] === this.item.interviewer_id){
@@ -297,6 +302,7 @@
         padding-top:10px;
     }
     .update{
+        font-size:14px;
         p{
             margin:7px;
         }

@@ -40,13 +40,13 @@
                 </div>
             </div>
 
-            <div class="row" v-show="passdata.staff_info.id !== ''">
+            <div class="row" v-show="passdata.staff_info.id !== '' && passdata.mode === 0">
                 <label class="col-3 col-form-label">施術者：</label>
                 <div class="col" >
                     <p style="letter-spacing: -2px;" v-if="passdata.staff_info">{{passdata.staff_info.name}}【{{passdata.rank_info.name}}】</p>
                 </div>
             </div>
-            <div class="row" v-show="passdata.staff_info.id !== ''">
+            <div class="row" v-show="passdata.staff_info.id !== '' && passdata.mode === 0">
                 <label class="col-sm-4 col-form-label">施術可能部位：</label>
                 <div class="col-sm-6" >
                     <p style="letter-spacing: -2.5px;">{{passdata.staff_info.area}}</p>
@@ -60,7 +60,7 @@
                 </div>
             </div>
         </div> 
-        <div class="selstaff-card" v-show="passdata.staff_info.id === '' && passdata.mode !== 0">            
+        <div class="selstaff-card" v-show="passdata.mode !== 0">            
             <div class="row justify-content-between">
                 <div class="col-5" style="margin-bottom:0px;">
                     <label >施術者</label>
@@ -220,11 +220,12 @@
                     //console.log(this.selectedstaff);
                     if(this.passdata.mode === 2){
                         this.getCalendarLayout(this.selectedstaff, this.screenmode);
-                    }else if(this.passdata.mode === 1){
+                    }else if(this.passdata.mode === 1){                        
                         this.getCalendarLayout(this.selectedstaff, 1, this.passdata.date);
                         this.clinic_list(); //날자우선방식인 경우에만 필요, 나머지는 사전에 다 구함.
+                        this.menu_list(this.selectedstaff, this.passdata.date);   
                     }                    
-                    this.menu_list();                    
+                    //this.menu_list();                    
                 }                    
             },
             screenmode(val){
@@ -260,8 +261,8 @@
                     this.passdata.clinic_info = clinic_info[0];                    
                 });   
             },
-            menu_list:function(){
-                axios.post('/v1/client/menu_list', { 'staff_info': this.selectedstaff}).
+            menu_list:function(staff_info, date){
+                axios.post('/v1/client/menu_list', { 'staff_info': staff_info ,'date': moment(date).format("YYYY-MM-DD")}).
                 then(({ data }) => {
                     gOrderTypeInfo.data.menu_array = data;
                 });   
@@ -275,6 +276,9 @@
                     gOrderInfo.data.calendar_info.week = item.date_info.week;         
                     this.time_schedules = item.order_info;
                     this.sel_time_schedule = item.order_info[0]; //as default
+                    if(this.passdata.mode !== 1){
+                        this.menu_list( this.passdata.staff_info, item.date_info.date);   
+                    }
                     //console.log(this.time_schedules);
                 }
             },
@@ -299,7 +303,9 @@
             reset(){
                 $(".vue-grid-item").removeClass("selectedcolor");
                 this.selectedstaff = null;
+                this.staffs = [];
                 this.selectedmenu = null;
+                this.menus = [];
                 this.sel_time_schedule = null;
                 this.time_schedules = null;
             },
@@ -337,12 +343,15 @@
 <style lang="scss">
     .seldate-card{
         .vue-grid-item.static {
+            cursor: default;
             background: #ccc;           
         }
         .vue-grid-item.selectedcolor{
+            cursor: pointer;
             background:#D87319 !important;
         }
         .vue-grid-item.selectable{
+            cursor: pointer;
             background:rgb(204, 255, 204);
             color:black;
         } 

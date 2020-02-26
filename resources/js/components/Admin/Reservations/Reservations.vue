@@ -2,14 +2,14 @@
     <div class="container">
         <!-- Info Modal -->
         <div class="modal fade" id="modalInfoDlg">
-            <ModalInfoDlg v-bind:data="this.item" @statusUpdated="onOrderCreated" v-on:changedStatus="onStatusChanged" :clinic="selected_clinic"></ModalInfoDlg>
+            <ModalInfoDlg v-bind:data="this.item" @updateCellStatus="onUpdateCellStatus" v-on:changedStatus="onStatusChanged" :clinic="selected_clinic"></ModalInfoDlg>
         </div>
         <!-- Update Modal -->
         <div class="modal fade" id="modalUpdateDlg" data-backdrop="static">
             <ModalUpdateDlg v-bind:sr_list="this.staff_rank_list" :item="this.item" 
                 v-bind:menus="this.menus" v-bind:counselors="this.counselors" @orderCreated="onOrderCreated" :childbus="bus" ref="modalUpdateDlg"></ModalUpdateDlg>
         </div>
-        <!-- Info Modal -->
+        <!-- status change Modal -->
         <div id="modalMessageBox" class="modal fade">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -21,6 +21,23 @@
                     <div class="modal-footer justify-content-center"> 
                         <a href="#" data-dismiss="modal" class="btn" style="width:100px; background:#707070; color:black; margin-right: 60px;">キャンセル</a>
                         <a href="#" v-on:click="confirmBtn" class="btn btn-primary" style="width:100px; background:#1BB9AF; color:black">OK</a>                      
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- cancel update confirm Modal -->
+        <div id="modalUpdateMessageBox" class="modal fade">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <!-- dialog body -->
+                    <div class="modal-body justify-content-center" style="padding: 70px; font-width:blod;">
+                        もう一度新しい予約を作成しますか？
+                    </div>
+                    <!-- dialog buttons -->
+                    <div class="modal-footer justify-content-center"> 
+                        <a href="#" v-on:click="cancelUpdateBtn" class="btn" style="width:100px; background:#707070; color:black; margin-right: 60px;">キャンセル</a>
+                        <a href="#" v-on:click="confirmUpdateBtn" class="btn btn-primary" style="width:100px; background:#1BB9AF; color:black">OK</a>                      
                     </div>
                 </div>
             </div>
@@ -168,25 +185,31 @@
 
     .contentdiv{
         .vue-grid-item.static {
+            cursor: pointer;
             background: #ccc;           
         }
         .vue-grid-item.selectedcolor{
+            cursor: pointer;
             background:#649ABA !important;
         }
         .vue-grid-item.neworder{
+            cursor: pointer;
             background:#E891DC;
             color:white;
         }
         .vue-grid-item.oldorder{
             background:#D511BA;
             color:white;
+            cursor: pointer;
         }
         .vue-grid-item.cancelorder{
             background:#3C3A3C;
             color:white;
+            cursor: pointer;
         }
         .vue-grid-item.grayconselor{
             background:rgb(160,149,201);
+            cursor: pointer;
         }        
     }
 
@@ -213,6 +236,7 @@
     }
 
     .vue-grid-item {
+        cursor: default;
         display: table;
         background: white;
     }

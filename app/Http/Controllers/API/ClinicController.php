@@ -66,8 +66,8 @@ class ClinicController extends Controller
         $this->validate($request, [
             'address' => 'required|string|max:50',
             'name' => 'required|string|max:50',
-            'email' => 'required|string|email|max:120',
-            'is_vacation' => 'required|numeric|max:10',
+            'user_id' => 'required|string|email|max:120',
+            'is_vacation' => 'required|numeric|max:10',            
         ]);
         return TblClinic::create([
                             'name' => $request->name,

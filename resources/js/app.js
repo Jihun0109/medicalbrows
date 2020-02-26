@@ -144,7 +144,7 @@ Vue.filter("upText", function(data) {
 });
 
 Vue.filter("isVacation", function(data) {
-    return data === 1 ? "閉鎖" : " ";
+    return data === 1 ? "退職" : " ";
 });
 
 Vue.filter("isActive", function(data) {

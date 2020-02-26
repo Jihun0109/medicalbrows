@@ -27,12 +27,14 @@ class MenuController extends Controller
                             select('tbl_menus.*')->
                             where('tbl_menus.is_deleted',0)->
                             where(function($query) use ($keyword){
-                                $query->where('tbl_menus.name','LIKE',"%".$keyword."%")->
+                                $query->where('tbl_menus.name','LIKE BINARY',"%".$keyword."%")->
                                         orWhere('tbl_menus.id','LIKE',"%".$keyword."%")->
                                         orWhere('tbl_menus.code','LIKE',"%".$keyword."%")->
                                         orWhere('tbl_menus.amount','LIKE',"%".$keyword."%")->
-                                        orWhere('tbl_ranks.name','LIKE',"%".$keyword."%")->
-                                        orWhere('tbl_tax_rates.name','LIKE',"%".$keyword."%");
+                                        orWhere('tbl_menus.start_time','LIKE BINARY',"%".$keyword."%")->
+                                        orWhere('tbl_menus.end_time','LIKE BINARY',"%".$keyword."%")->
+                                        orWhere('tbl_ranks.name','LIKE BINARY',"%".$keyword."%")->
+                                        orWhere('tbl_tax_rates.name','LIKE BINARY',"%".$keyword."%");
                           })->latest()->paginate(100);
         }
         return TblMenu::where('is_deleted', 0)
@@ -53,7 +55,7 @@ class MenuController extends Controller
             'code' => 'required|string|max:20|unique:tbl_menus',
             'rank_id' => 'required',
             'tax_id' => 'required',
-            'amount' => 'required|numeric|min:0|not_in:0',
+            'amount' => 'required|numeric',
             'start_time' => 'required|date',
             'end_time' => 'nullable|date|after:start_time',
         ]);
@@ -93,18 +95,20 @@ class MenuController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string|max:50',
-            'code' => 'required|string|max:20|unique:tbl_menus'.$id,
+            'code' => 'required|string|max:20|unique:tbl_menus,id,'.$id,
             'rank_id' => 'numeric',
             'tax_id' => 'numeric',
-            'amount' => 'required|numeric|min:0|not_in:0',
+            'amount' => 'required|numeric',//|min:0|not_in:0',
             'start_time' => 'required|date',
             'end_time' => 'nullable|date|after:start_time', 
         ]);
+        Log::info( $request);
         $values = $request;
-        $values['start_time'] = Carbon::parse($request->start_time);
-        $values['end_time'] = is_null($request->end_time)?null:Carbon::parse($request->end_time);
-        
+        $values['start_time'] = $request->start_time;
+        $values['end_time'] = is_null($request->end_time)?null:$request->end_time;
+        Log::info($values);
         $item = TblMenu::findOrFail($id);
+        Log::info($item);
         $item->update($values->all());
         return $id;
     }

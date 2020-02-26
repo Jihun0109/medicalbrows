@@ -70,7 +70,7 @@ class ClientController extends Controller
     public function staff_list_withdate(Request $request)
     {               
         $payLoad = json_decode(request()->getContent(), true);  
-        $seleted_date = $request['date'];
+        $selected_date = $request['date'];
         
         $staff_list = DB::table('tbl_staffs')            
             ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id', 'tbl_staffs.id')
@@ -79,14 +79,44 @@ class ClientController extends Controller
             ->where([['tbl_staff_ranks.is_deleted', 0],['tbl_staffs.is_deleted', 0]])
             ->select('tbl_staffs.id','tbl_staffs.alias as name','tbl_operable_parts.name as area','tbl_ranks.id as rank_id' ,'tbl_ranks.name as rank_name')      
             ->get();
-        return $staff_list;
+        //$counselor_list = 
+        $ret_staff = [];
+        for ( $i = 0; $i < sizeof($staff_list); $i++ ){
+            //shift table
+            if (sizeof(DB::table("tbl_shift_histories")->where(['staff_id'=>$staff_list[$i]->id, 'date'=>$selected_date])->get()) > 0){
+                continue;
+            }  
+            //이 시술자에게 예약할수 있는가 판단(order_history->rank_schedule_id 검사)
+            $rank_schedule_id = DB::table('tbl_rank_schedules')
+                                ->join('tbl_ranks','tbl_ranks.id','tbl_rank_schedules.rank_id')
+                                ->join('tbl_staff_ranks','tbl_staff_ranks.rank_id','tbl_ranks.id')
+                                ->where(['tbl_rank_schedules.is_deleted'=>0,'tbl_staff_ranks.staff_id'=>$staff_list[$i]->id])
+                                ->select('tbl_rank_schedules.id','tbl_rank_schedules.start_time','tbl_rank_schedules.end_time')
+                                ->get();
+            $b_possible_staff = false;
+            for ( $j = 0; $j < sizeof($rank_schedule_id); $j++ ){
+                //스케쥴들중에 그날 예약표에 존재하지 않는것이 하나라도 있으면...쓸만한 시술자!
+                if (sizeof(DB::table("tbl_order_histories")
+                            ->where(['rank_schedule_id'=>$rank_schedule_id[$j]->id, 'order_date'=>$selected_date])->get()) == 0)
+                {
+                    //이 스케쥴에 맞는 상담원이 없으면 쓸모없음.(클리닉에 있는 상담원목록은 우에서 미리 얻자..물론 shift 참조~)
+                    $b_possible_staff = true;
+                    break;
+                }  
+            }
+            if(!$b_possible_staff)
+                continue;
+            array_push($ret_staff, $staff_list[$i]);
+        }
+        //Log::info($ret_staff);
+        return $ret_staff;
     }
 
     public function clinic_list(Request $request)
     {                       
         $payLoad = json_decode(request()->getContent(), true);  
         $staff_id = $request['staff_info']['id'];
-        Log::Info($payLoad);
+        //Log::Info($payLoad);
         if($staff_id){
             $clinic_info = DB::table('tbl_staffs')
                         ->join('tbl_clinics','tbl_clinics.id','tbl_staffs.clinic_id')
@@ -107,13 +137,35 @@ class ClientController extends Controller
         $payLoad = json_decode(request()->getContent(), true);  
         $staff_id = $request['staff_info']['id'];
         $staff_name =  $request['staff_info']['name'];
+        $selected_date = $request->date;//date("Y-m-d");
+        Log::info($payLoad);
+        $rank_info = DB::table('tbl_staffs')
+        ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id', 'tbl_staffs.id')     
+        ->where(['tbl_staffs.is_deleted'=>0, 'tbl_staffs.id'=>$staff_id])
+        ->select('tbl_staff_ranks.rank_id','tbl_staff_ranks.staff_id')      
+        ->first();
+        
+        $menu_list = DB::table('tbl_menus')->        
+        where(function($query) use ($selected_date) {
+            $query->where(function($query) use ($selected_date){
+                $query->where('start_time', '<=', $selected_date)->where('end_time','>=', $selected_date);
+            })->
+            orWhere(function($query) use ($selected_date) {
+                $query->where('start_time', '<=', $selected_date)->whereNull('end_time');
+            });
+        })->
+        where(['tbl_menus.is_deleted'=>0, 'tbl_menus.rank_id'=>$rank_info->rank_id])->
+        select('tbl_menus.id','tbl_menus.name')->
+        get();
 
-        $menu_list = DB::table('tbl_staffs')
-            ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id', 'tbl_staffs.id')
-            ->join('tbl_menus', 'tbl_menus.rank_id', 'tbl_staff_ranks.rank_id')
-            ->where([['tbl_staffs.is_deleted', 0],['tbl_staffs.id', $staff_id]])
-            ->select('tbl_menus.id','tbl_menus.name')      
-            ->get();
+        // $menu_list = DB::table('tbl_staffs')
+        //     ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id', 'tbl_staffs.id')
+        //     ->join('tbl_menus', 'tbl_menus.rank_id', 'tbl_staff_ranks.rank_id')
+        //     ->where([['tbl_staffs.is_deleted', 0],['tbl_staffs.id', $staff_id]])
+        //     ->select('tbl_menus.id','tbl_menus.name')      
+        //     ->get();
+
+        //Log::info($menu_list);
         return $menu_list;
     }
 
@@ -125,7 +177,7 @@ class ClientController extends Controller
         $period_day = $request['weekmethod'];
         $next_count = $request['count'];
         $selecteddate = $request['selecteddate'];
-        Log::Info($payLoad);
+        //Log::Info($payLoad);
         if($selecteddate){
             //날자우선인경우
             //$today = date("2020-11-27");
@@ -436,9 +488,9 @@ class ClientController extends Controller
             }
 
         }
-         Log::Info($morning);
-         Log::Info($afternoon);
-         Log::Info($evening);
+        // Log::Info($morning);
+        // Log::Info($afternoon);
+        // Log::Info($evening);
         $order_info = array($morning, $afternoon, $evening);
         return $order_info;
     }
@@ -490,7 +542,7 @@ class ClientController extends Controller
             $bflag = false;
             for( $j = 0; $j < sizeof($remove_time_with_order); $j++ ){
                 if($remove_time_with_order[$j]->end_hour === $min && $order_history_id != $remove_time_with_order[$j]->id){
-                    Log::info($remove_time_with_order[$j]->id);
+                    //Log::info($remove_time_with_order[$j]->id);
                     $bflag = true;
                     break;
                 }
@@ -518,9 +570,9 @@ class ClientController extends Controller
         $payLoad = json_decode(request()->getContent(), true);
         $order_info = $payLoad['order_info'];
         $customer_info = $payLoad['user_info'];
-        //Log::Info($order_info);
-        //Log::Info($customer_info);
-
+        Log::Info($order_info);
+        Log::Info($customer_info);
+        return;
         $order_serial_id;// = $payLoad['order_serial_id'];
 
         if ($order_info['order_type'] != "再診")//재진이 아닌경우에만 customer, order 창조

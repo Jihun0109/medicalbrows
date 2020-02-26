@@ -40,7 +40,7 @@ class TaxController extends Controller
     {
           $this->validate($request, [
             'name' => 'required|string|max:50',
-            'amount' => 'required|numeric|min:0|not_in:0',
+            'amount' => 'required|numeric',
             'start_time' => 'required|date',
             'end_time' => 'nullable|date|after:start_time', 
         ]);
@@ -77,7 +77,7 @@ class TaxController extends Controller
         $this->validate($request, [
 
             'name' => 'required|string|max:50',
-            'amount' => 'required|numeric|min:0|not_in:0',
+            'amount' => 'required|numeric',
             'start_time' => 'required|date',
             'end_time' => 'nullable|date|after:start_time', 
         ]);

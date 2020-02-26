@@ -245,6 +245,10 @@
                     })
                     .catch(()=>{
 
+                    })
+                    .finally(()=>{
+                        this.form.start_time = new Date(this.form.start_time);
+                        this.form.end_time = this.form.end_time?new Date(this.form.end_time):null;
                     });
             },
             deleteData(id){

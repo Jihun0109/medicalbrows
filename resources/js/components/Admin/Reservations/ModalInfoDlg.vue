@@ -83,6 +83,12 @@
                         </div>
                     </div>
                     <div class="row">
+                        <label class="col-sm-3 col-form-label">フリガナ:</label>
+                        <div class="col-sm-8" >
+                            <p>{{data.customer_last_name}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
                         <label class="col-sm-3 col-form-label">メール:</label>
                         <div class="col-sm-8" >
                             <p>{{data.customer_email}}</p>
@@ -188,7 +194,7 @@
         data () {
             return {
                 tabbtns:['来院','会計','終了','キャンセル'],
-                select_color:['neworder','oldorder','grayconselor','cancelorder','static'],
+                select_color:['neworder','oldorder','grayconselor','cancelorder'],
                 tabindex: '',
                 customer:{},
                 dialog: false,
@@ -225,8 +231,9 @@
                         icon: "success",
                         title: "状態の変更に成功"
                     });
-                    this.data.order_status = this.select_color[this.tabindex];
-                    this.$emit('statusUpdated', result.data);
+                    //this.data.order_status = this.select_color[this.tabindex];//아래서 직접 변경하므로 막는다 (상태변경 중복됨.)
+                    //console.log(result.data);
+                    this.$emit('updateCellStatus', result.data);
                 })
                 .catch(()=>{
                     console.log('update error');
@@ -256,6 +263,7 @@
         padding-right: 8px;
     }
     .info {
+        font-size:14px;
         .experience{
             .row{
                 margin-bottom: -5px;

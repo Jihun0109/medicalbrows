@@ -103,7 +103,7 @@
                         <label>休退職</label>
                         <select v-model="form.is_vacation" class="custom-select" name="is_vacation" :class="{'is-invalid':form.errors.has('is_vacation')}">
                           <option v-bind:value=0>アクティブ</option>
-                          <option v-bind:value=1>閉鎖</option>
+                          <option v-bind:value=1>退職</option>
                         </select>
                         <has-error :form="form" field="is_vacation"></has-error>
                     </div>

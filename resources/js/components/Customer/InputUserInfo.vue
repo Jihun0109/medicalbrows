@@ -320,7 +320,7 @@
         }
 
         &:checked + label::before {
-        background-color: $switch-checked-bg;
+            //background-color: $switch-checked-bg;
         }
 
         &:checked + label::after {

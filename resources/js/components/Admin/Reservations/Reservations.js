@@ -48,7 +48,7 @@ export default {
                 input: ['YYYY年MM月DD日 (W)'],
                 dayPopover: 'L',
                 data: ['L', 'YYYY-MM-DD', 'YYYY/MM/DD']
-              }
+            }
         }
     },
     mounted() {
@@ -75,7 +75,16 @@ export default {
         onStatusChanged: function(status) {
             this.order_status = status;
         },
+        cancelUpdateBtn: function() {
+            $('#modalUpdateMessageBox').modal('hide');
+            $('#modalInfoDlg').modal('show');
+        },
+        confirmUpdateBtn: function() {
+            $('#modalUpdateMessageBox').modal('hide');
+            this.changeMode = false;
+            $('#modalUpdateDlg').modal('show');
 
+        },
         confirmBtn: function() {
             Bus.$emit('confirmClicked');
             $('#modalMessageBox').modal('hide');
@@ -88,7 +97,21 @@ export default {
         decrement: function() {
             this.selectedDate = new Date(moment(this.selectedDate).subtract(1, "days"));
         },
+        onUpdateCellStatus: function(items) {
+            for (var i = 0; i < items.length; i++) {
+                var rs_id = items[i].rs_id;
+                var staff_id = items[i].staff_id;
+                var status = items[i].status;
+                var filteredObj = this.conlayout.find(function(cell, i) {
+                    if (cell.rank_schedule_id == rs_id && cell.staff_id == staff_id) {
+                        cell.order_status = status;
+                        return i;
+                    }
+                });
+            }
+        },
         onOrderCreated: function(item) {
+            console.log(item, 'log info from cell')
             this.conlayout.forEach(function(cell) {
                 if (cell.x == item.x && cell.y == item.y) {
                     cell.i = item.i;
@@ -108,7 +131,7 @@ export default {
                     cell.note = item.note;
                     cell.old_itvr_x = item.old_itvr_x;
                     cell.old_itvr_y = item.old_itvr_y;
-                    if (item.interviewer_id){
+                    if (item.interviewer_id) {
                         cell.interviewer_id = item.interviewer_id;
                         cell.interviewer_name = item.interviewer_name;
                     }
@@ -172,8 +195,8 @@ export default {
         },
 
         onCellClicked: function(event, item, index) {
-            console.log(item, "cellClicked.");
             if (item.selectable) {
+                console.log(item, '==============');
                 this.bus.$emit('clearFormErrors');
                 $(".vue-grid-item").removeClass("selectedcolor");
                 $(event.currentTarget).addClass("selectedcolor"); //defalt color when click..                
@@ -182,10 +205,20 @@ export default {
                 then(({ data }) => {
                     this.menus = data;
                 });
-                
+                //이때는 상담원 목록을 얻을 필요 없어 따로 처리한다.
                 if (item.rank_id == 9 || item.rank_id == 8 || item.rank_id == 7) { //NA, T, counseler
                     this.item = item;
                     this.item['date'] = this.formatDate(this.selectedDate);
+                    //신규예약 상담원인경우 시술자 구하기
+                    if (item.rank_id == 9 && item.order_type == '新規') {
+                        var filteredObj = this.conlayout.find(function(cell, i) {
+                            if (cell.order_serial_id == item.order_serial_id && cell.interviewer_id == item.staff_id) {
+                                return cell;
+                            }
+                        });
+                        this.item['old_staff_info'] = filteredObj;
+                    }
+
                     this.$refs.modalUpdateDlg.loadInfo();
                     if (item.order_history_id == 0) {
                         // New order creating
@@ -193,19 +226,24 @@ export default {
                         $('#modalUpdateDlg').modal('show');
                     } else {
                         // order info and editing
-                        $('#modalInfoDlg').modal('show');
+                        if (item.order_status == "cancelorder") {
+                            //open messagebox
+                            $('#modalUpdateMessageBox').modal('show');
+                        } else {
+                            $('#modalInfoDlg').modal('show');
+                        }
                     }
                     return;
                 }
-                axios.post('/v1/reservation/counselor_list', 
-                        { 
-                            'clinic_id': this.selected_clinic.id,
-                            'date': moment(this.selectedDate).format("YYYY-MM-DD"), 
-                            'rank_schedule_id': item.rank_schedule_id,
-                            'order_history_id':item.order_history_id
-                        }).
+                axios.post('/v1/reservation/counselor_list', {
+                    'clinic_id': this.selected_clinic.id,
+                    'date': moment(this.selectedDate).format("YYYY-MM-DD"),
+                    'rank_schedule_id': item.rank_schedule_id,
+                    'order_history_id': item.order_history_id
+                }).
                 then(({ data }) => {
                     this.counselors = data;
+                    console.log(data);
                     //선택된 시술자에 해당한 상담원목록을 얻고 그들의 현재 x,y좌표를 구한다. 이값은 신규인경우 상담원칸에 정보를 자동으로 채우는데 리용된다.
                     for (var i = 0; i < this.counselors.length; i++) {
                         var rs_id = this.counselors[i].interviewer_rank_schedule_id;
@@ -227,7 +265,12 @@ export default {
                         $('#modalUpdateDlg').modal('show');
                     } else {
                         // order info and editing
-                        $('#modalInfoDlg').modal('show');
+                        if (item.order_status == "cancelorder") {
+                            //open messagebox
+                            $('#modalUpdateMessageBox').modal('show');
+                        } else {
+                            $('#modalInfoDlg').modal('show');
+                        }
                     }
                 });
 

@@ -25,7 +25,7 @@
         </div>
         <div class="cardcontent">
             <div class="text-center">       
-                <label style="letter-spacing: -1.2px;">診療区分、予約方法を選択して下さい</label>
+                <label style="letter-spacing: -1.2px;">xx診療区分、予約方法を選択して下さい</label>
             </div>
             <label class="mt-3" style="margin-bottom:0px;">診療区分:</label>
             <div class="division">
@@ -320,7 +320,7 @@ export default {
             });   
         },
         menu_List:function(){
-            axios.post('/v1/client/menu_list', { 'staff_info': this.selectedstaff}).
+            axios.post('/v1/client/menu_list', { 'staff_info': this.selectedstaff ,'date': moment(gOrderInfo.data.calendar_info.date).format("YYYY-MM-DD")}).
             then(({ data }) => {
                 gOrderTypeInfo.data.menu_array = data;
             });   
@@ -341,10 +341,10 @@ export default {
             if(this.selectedrank)
                 this.staff_rank_List();  
         },
-        selectedstaff(val) {
-            if(this.selectedstaff)
-                this.menu_List();  
-        },
+        // selectedstaff(val) {
+        //     if(this.selectedstaff)
+        //         this.menu_List();  
+        // },
     },
 };
 </script>

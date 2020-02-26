@@ -25,5 +25,8 @@ class TblOrderHistory extends Model
         'rank_schedule_id',
         'order_type',
         'order_date',
+        'customer_id',
+        'note',
+        'order_serial_id',
     ];    
 }
