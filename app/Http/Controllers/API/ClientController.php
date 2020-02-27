@@ -99,9 +99,15 @@ class ClientController extends Controller
                 if (sizeof(DB::table("tbl_order_histories")
                             ->where(['rank_schedule_id'=>$rank_schedule_id[$j]->id, 'order_date'=>$selected_date])->get()) == 0)
                 {
+                    $staff_info = DB::table('tbl_staffs')
+                                ->where(['id'=>$staff_list[$i]->id,'is_deleted'=>0])
+                                ->first();
                     //이 스케쥴에 맞는 상담원이 없으면 쓸모없음.(클리닉에 있는 상담원목록은 우에서 미리 얻자..물론 shift 참조~)
-                    $b_possible_staff = true;
-                    break;
+                    $counselor_list = $this->counselor_list($staff_info->clinic_id, $selected_date, $rank_schedule_id[$j]->id, 0);
+                    if(sizeof($counselor_list) > 0){
+                        $b_possible_staff = true;
+                        break;
+                    }
                 }  
             }
             if(!$b_possible_staff)
@@ -505,8 +511,8 @@ class ClientController extends Controller
             ->select(DB::raw('HOUR(tbl_rank_schedules.start_time) as start_hour'))      
             ->get();
         //Log::Info($rank_schedule_id);
-
-        $possible_endtime_addr = [ 10, 12, 15, 17 ];
+        $cinfo = $this->generalCounInfo();
+        $possible_endtime_addr = $cinfo['end_hour_array'];//[ 10, 12, 15, 17 ];
         //nearest value
         $interviewer_rank_schedule_id = 13;//이미 정해진 4개 수자이다.10,11,12,13
         $min = $possible_endtime_addr[3];
@@ -536,8 +542,9 @@ class ClientController extends Controller
             $temp = [];
             // 상담원이 인터뷰어로 예약되여 있으면 그 시간을 리턴.
             $remove_time_with_order = DB::table('tbl_order_histories')
-                            ->where([['is_deleted', 0],['interviewer_id',$counselor_list[$i]->interviewer_id],['order_date', $selected_date]])
-                            ->select('id', DB::raw('HOUR(tbl_order_histories.interview_end) as end_hour'))
+                            ->join('tbl_rank_schedules','tbl_rank_schedules.id','tbl_order_histories.rank_schedule_id')
+                            ->where([['tbl_order_histories.staff_id',$counselor_list[$i]->interviewer_id],['tbl_order_histories.order_date', $selected_date],['tbl_order_histories.is_deleted', 0]])
+                            ->select('tbl_order_histories.id', DB::raw('HOUR(tbl_rank_schedules.end_time) as end_hour'))
                             ->get();
             $bflag = false;
             for( $j = 0; $j < sizeof($remove_time_with_order); $j++ ){
@@ -570,111 +577,64 @@ class ClientController extends Controller
         $payLoad = json_decode(request()->getContent(), true);
         $order_info = $payLoad['order_info'];
         $customer_info = $payLoad['user_info'];
-        Log::Info($order_info);
-        Log::Info($customer_info);
-        return;
-        $order_serial_id;// = $payLoad['order_serial_id'];
+        // Log::Info($payLoad);
+        // return;
+        $order_serial_id = $request->order_serial_id;
 
-        if ($order_info['order_type'] != "再診")//재진이 아닌경우에만 customer, order 창조
+        //create customer: zipcode, city_name, address2 non-used
+        $customer = TblCustomer::create([
+            'email' => $customer_info['email'],
+            'gender' => $customer_info['sex'],
+            'first_name' => $customer_info['first_name'],
+            'last_name' => $customer_info['last_name'],
+            'address' => $customer_info['address1'],
+            'phonenumber' => $customer_info['phonenumber'],
+            'birthday' => $customer_info['birthday'],
+            'is_deleted' => 0
+        ]);
+        //신규인 경우 
+        if ($order_info['order_type'] == "新規")
         {
-            //create customer: zipcode, city_name, address2 non-used
-            $customer = TblCustomer::create([
-                'email' => $customer_info['email'],
-                'gender' => $customer_info['sex'],
-                'first_name' => $customer_info['first_name'],
-                'last_name' => $customer_info['last_name'],
-                'address' => $customer_info['address1'],
-                'phonenumber' => $customer_info['phonenumber'],
-                'birthday' => $customer_info['birthday'],
-                'is_deleted' => 0
-            ]);
-
-            //order_sn_id, order_table
-            $order_serial_id = sprintf('%s-%06d', time(), $customer->id);
-
-            $order = TblOrder::create([            
-                'customer_id' => $customer->id,
-                'subtotal' => 0,
-                'discount' => 0,
-                'tax_id' => 0,
-                'total' => 0,
-                'note' => '',
-                'order_date' => $order_info['calendar_info']['date'],
-                'order_serial_id' => $order_serial_id,
-                'menu_id' => $order_info['menu_info']['id'],
-                'order_route' => '電話',
-                'is_deleted' => 0,
-            ]);
+            // Second create Order 
+            $order_serial_id = sprintf('%s-%06d', time(), $order_info['staff_info']['id']);
 
             //new order --> staff:order_history and counselor: order_history(NA, T :exeption)
             if($order_info['rank_info']['name']  != 'ノービスアーティスト' && $order_info['rank_info']['name']  != 'トレイニー')
             {
                 //counselor: order_history
                 $order_history = TblOrderHistory::create([
+                    'clinic_id' => $order_info['clinic_info']['id'],
                     'staff_id' => $order_info['time_schedule_info']['counselor_info']['interviewer_id'],
                     'rank_id' => 9,//counselor_rank_id
-                    'order_id' => $order->id,
                     'status' => 0,//always zero when created
                     'staff_choosed' => $order_info['staff_choosed'],
                     'rank_schedule_id' => $order_info['time_schedule_info']['counselor_info']['interviewer_rank_schedule_id'],
                     'order_type' => $order_info['order_type'],
                     'order_date' => $order_info['calendar_info']['date'],
                     'order_route' => '電話',//$order_info['order_route'],
+                    //'note' => $payLoad['note'],
+                    'order_serial_id' => $order_serial_id,
+                    'customer_id' => $customer->id,
+                    'menu_id' => $order_info['menu_info']['id'],
                     'is_deleted' => 0
                 ]);
             }
-        }    
+        }   
 
-        // staff: Order_history        
-        $order = TblOrder::where(['order_serial_id'=>$order_serial_id, 'is_deleted'=>0])->orderBy('created_at','desc')->first();
-        //재진인경우 예약ID가 존재하지 않으면 오유통보 현시 
-        if($order_info['order_type'] == "再診" && is_null($order)){
-            return 0;
-        }
+        // //재진인경우 예약ID가 존재하지 않으면 오유통보 현시 
+        // if($order_info['order_type'] == "再診" && is_null($order)){
+        //     return 0;
+        // }
+
         if ($order_info['order_type'] == "新規")
         {
-            if($order_info['rank_info']['name']  == 'ノービスアーティスト' || $order_info['rank_info']['name']  == 'トレイニー')
-            {
-                $order_history = TblOrderHistory::create([
-                    'clinic_id' => $order_info['clinic_info']['id'],
-                    'staff_id' => $order_info['staff_info']['id'],
-                    'rank_id' => $order_info['rank_info']['id'],
-                    'order_id' => $order->id,
-                    'status' => 0,//default
-                    'staff_choosed' => $order_info['staff_choosed'],
-                    'rank_schedule_id' => $order_info['time_schedule_info']['rank_schedule_id'],
-                    'order_type' => $order_info['order_type'],
-                    'order_date' => $order_info['calendar_info']['date'],
-                    'menu_id' => $order_info['menu_info']['id'],
-                    'order_route' => '電話',//$order_info['order_route'],
-                    'is_deleted' => 0
-                ]);
-            }else{
-                $order_history = TblOrderHistory::create([
-                    'clinic_id' => $order_info['clinic_info']['id'],
-                    'staff_id' => $order_info['staff_info']['id'],
-                    'rank_id' => $order_info['rank_info']['id'],
-                    'order_id' => $order->id,
-                    'interviewer_id' => $order_info['time_schedule_info']['counselor_info']['interviewer_id'],
-                    'interview_start' => $order_info['time_schedule_info']['counselor_info']['interview_start'],
-                    'interview_end' => $order_info['time_schedule_info']['counselor_info']['interview_end'],
-                    'status' => 0,//default
-                    'staff_choosed' => $order_info['staff_choosed'],
-                    'rank_schedule_id' => $order_info['time_schedule_info']['rank_schedule_id'],
-                    'order_type' => $order_info['order_type'],
-                    'order_date' => $order_info['calendar_info']['date'],
-                    'menu_id' => $order_info['menu_info']['id'],
-                    'order_route' => '電話',//$order_info['order_route'],
-                    'is_deleted' => 0
-                ]);
-            }
-        }
-        else{//再診 == neworder : NA, T
             $order_history = TblOrderHistory::create([
                 'clinic_id' => $order_info['clinic_info']['id'],
                 'staff_id' => $order_info['staff_info']['id'],
                 'rank_id' => $order_info['rank_info']['id'],
-                'order_id' => $order->id,
+                'interviewer_id' => $order_info['time_schedule_info']['counselor_info']?$order_info['time_schedule_info']['counselor_info']['interviewer_id']:null,
+                'interview_start' =>  $order_info['time_schedule_info']['counselor_info']?$order_info['time_schedule_info']['counselor_info']['interview_start']:null,
+                'interview_end' =>  $order_info['time_schedule_info']['counselor_info']?$order_info['time_schedule_info']['counselor_info']['interview_end']:null,
                 'status' => 0,//default
                 'staff_choosed' => $order_info['staff_choosed'],
                 'rank_schedule_id' => $order_info['time_schedule_info']['rank_schedule_id'],
@@ -682,6 +642,30 @@ class ClientController extends Controller
                 'order_date' => $order_info['calendar_info']['date'],
                 'menu_id' => $order_info['menu_info']['id'],
                 'order_route' => '電話',//$order_info['order_route'],
+                'order_serial_id' => $order_serial_id,
+                'customer_id' => $customer->id,
+                'is_deleted' => 0
+            ]);
+        }
+        else{//再診 == neworder : NA, T
+            $schedule_info = DB::table('tbl_rank_schedules')->where('id', $order_info['time_schedule_info']['rank_schedule_id'])->first();
+            $order_serial_id = sprintf('%s-%06d', time(), $order_info['staff_info']['id']);
+            $order_history = TblOrderHistory::create([
+                'clinic_id' => $order_info['clinic_info']['id'],
+                'staff_id' => $order_info['staff_info']['id'],
+                'rank_id' => $order_info['rank_info']['id'],
+                'interviewer_id' => $order_info['order_type'] == "カウンセ"?$order_info['staff_info']['id']:null,
+                'interview_start' => $order_info['order_type'] == "カウンセ"?$schedule_info->start_time:null,
+                'interview_end' => $order_info['order_type'] == "カウンセ"?$schedule_info->end_time:null,
+                'status' => 0,//default
+                'staff_choosed' => $order_info['staff_choosed'],
+                'rank_schedule_id' => $order_info['time_schedule_info']['rank_schedule_id'],
+                'order_type' => $order_info['order_type'],
+                'order_date' => $order_info['calendar_info']['date'],
+                'menu_id' => $order_info['menu_info']['id'],
+                'order_route' => '電話',//$order_info['order_route'],
+                'order_serial_id' => $order_serial_id,
+                'customer_id' => $customer->id,
                 'is_deleted' => 0
             ]);
         }
@@ -689,28 +673,154 @@ class ClientController extends Controller
         return $ret;
     }
 
+    public function order_update(Request $request)
+    {
+        $payLoad = json_decode(request()->getContent(), true);
+        $order_info = $payLoad['order_info'];
+        $user_info = $payLoad['user_info'];
+        
+        //update customer table
+        $customer = TblCustomer::where('id', $order_info['customer_info']['id'])->first();
+
+        $customer->first_name = $user_info['first_name'];
+        $customer->last_name = $user_info['last_name'];
+        $customer->email = $user_info['email'];
+        $customer->phonenumber = $user_info['phonenumber'];
+        $customer->address = $user_info['address1'];
+        $customer->birthday = $user_info['birthday'];
+        $customer->save();
+        $ret = array('mail'=> $user_info['email'], 'order_serial_id' => $order_info['old_order_info']['order_serial_id']);
+        return $ret;
+    }
+    public function order_cancel(Request $request)
+    {
+        $payLoad = json_decode(request()->getContent(), true);
+        $order_serial_id = $payLoad['order_serial_id'];
+        //get order info
+
+        TblOrderHistory::where(['order_serial_id'=>$order_serial_id, 'is_deleted'=>0])
+                    ->update([
+                        'status' =>  4,
+                    ]);
+        
+        $order_history = DB::table('tbl_order_histories')
+        ->where([['is_deleted', 0],['order_serial_id', $order_serial_id]])
+        ->get();
+        Log::info($order_history);
+        $customer = DB::table('tbl_customers')
+                    ->where([['is_deleted', 0],['id', $order_history[0]->customer_id]])
+                    ->select('id','email','gender','first_name','last_name','address','phonenumber','birthday')
+                    ->first();
+        
+        return $customer->email;
+    }
     public function get_orderinfo(Request $request)
     {
         $payLoad = json_decode(request()->getContent(), true);
         $order_serial_id = $payLoad['order_serial_id'];
         $phonenumber = $payLoad['phonenumber'];
-        Log::Info($order_serial_id);
-        Log::Info($phonenumber);
         //get order info
-        $order = DB::table('tbl_orders')
-                    ->where([['is_deleted', 0],['order_serial_id', $order_serial_id]])
-                    ->select('id','customer_id')
-                    ->first();
-                    //Log::Info($order);
-        $customer = DB::table('tbl_customers')
-                    ->where([['is_deleted', 0], ['phonenumber', $phonenumber]])
-                    ->select('id','email','gender','first_name','last_name','address','phonenumber','birthday')
-                    ->get();
-                    Log::Info($customer);
         $order_history = DB::table('tbl_order_histories')
-                    ->where([['is_deleted', 0], ['order_id', $order->id]])
-                    // ->select('id','clinic_id','staff_id','rank_id','menu_id','interview_id','interviewer_start','interviewer_start','order_route','rank_schedule_id','order_type','order_date')
+                    ->where([['is_deleted', 0],['order_serial_id', $order_serial_id]])
                     ->get();
-                    Log::Info($order_history);
+        //Log::info($order_history);
+        if($order_history->isEmpty())
+            return 'wrongID';
+        $customer = DB::table('tbl_customers')
+                    ->where([['is_deleted', 0], ['phonenumber', $phonenumber],['id', $order_history[0]->customer_id]])
+                    ->select('id','email','gender','first_name','last_name','address','phonenumber','birthday')
+                    ->first();
+
+        if(is_null($customer))
+            return 'wrongPhone';
+        $order_info = [];
+        $temp_history = [];
+        $order_type = $order_history[0]->order_type;
+        $daysOfWeek = ['日','月', '火', '水', '木', '金', '土'];
+        $week = date('w', strtotime($order_history[0]->order_date));
+        $str_week = $daysOfWeek[$week];
+
+        $counselor_info = [];
+        $cinfo = $this->generalCounInfo();
+        if($order_type == '新規')
+        {
+            for($i = 0; $i < sizeof($order_history); $i++){
+
+                if($order_history[$i]->rank_id == $cinfo['rank_id'])
+                {
+                    $counselor_info['interviewer_id'] = $order_history[$i]->staff_id;
+                    $counselor_info['interviewer_rank_schedule_id'] = $order_history[$i]->rank_schedule_id;
+                }
+                else{
+                    $counselor_info['interview_start'] = date('H:i', strtotime($order_history[$i]->interview_start));
+                    $counselor_info['interview_end'] = date('H:i', strtotime($order_history[$i]->interview_end));
+                    $temp_history = $order_history[$i];
+                }
+            }
+        }
+        else{
+            $temp_history = $order_history[0];
+        }
+
+        $order_info['order_type'] = $order_type;
+        $order_info['customer_id'] = $customer->id;
+        $order_info['order_serial_id'] = $temp_history->order_serial_id;
+        $order_info['order_date'] = $temp_history->order_date;
+        $order_info['week'] = $str_week;
+        $order_info['staff_choosed'] = $temp_history->staff_choosed;
+        $order_info['order_route'] = $temp_history->order_route;
+
+        $menu_info = DB::table('tbl_menus')->where(['is_deleted'=>0,'id'=>$temp_history->menu_id])
+                        ->select('id','name')->first();
+        $staff_info = DB::table('tbl_staffs')->where(['is_deleted'=>0,'id'=>$temp_history->staff_id])
+                        ->select('id','alias')->first();
+        $clinic_info = DB::table('tbl_clinics')->where(['is_deleted'=>0,'id'=>$temp_history->clinic_id])
+                        ->select('id','name')->first();      
+        $rank_info = DB::table('tbl_ranks')->where(['is_deleted'=>0,'id'=>$temp_history->rank_id])
+                        ->select('id','name')->first();      
+        $rs_info =  DB::table('tbl_rank_schedules')->where(['is_deleted'=>0,'id'=>$temp_history->rank_schedule_id])
+                        ->select('id',DB::raw('DATE_FORMAT(start_time,"%H:%i") as s_time'),DB::raw('DATE_FORMAT(end_time,"%H:%i") as e_time'))->first();  
+        $part_info = DB::table('tbl_operable_parts')                        
+                        ->join('tbl_staff_ranks','tbl_staff_ranks.part_id','tbl_operable_parts.id')
+                        ->where(['tbl_operable_parts.is_deleted'=>0,'tbl_staff_ranks.staff_id'=>$staff_info->id])
+                        ->select('tbl_operable_parts.id','tbl_operable_parts.name')   
+                        ->first();   
+
+        $order_info['menu_info'] = $menu_info;        
+        $order_info['staff_info'] = $staff_info;        
+        $order_info['clinic_info'] = $clinic_info;        
+        $order_info['rank_info'] = $rank_info;        
+        $order_info['rs_info'] = $rs_info; 
+        $order_info['part_info'] = $part_info; 
+        $order_info['counselor_info'] = $counselor_info;   
+        $order_info['time_schedule'] = $order_type == '新規'?
+                    $counselor_info['interview_start'].'~'.$rs_info->e_time:$rs_info->s_time.'~'.$rs_info->e_time;   
+
+        $ret = array('order_info'=>$order_info, 'customer_info'=>$customer);
+     
+        //Log::info($ret);
+        return $ret;
+    }
+    public function generalCounInfo()
+    {
+        $rank_info = DB::table('tbl_ranks')
+                ->where(['tbl_ranks.is_deleted'=>0,'tbl_ranks.short_name'=>'カウゼ'])
+                ->select('tbl_ranks.id','tbl_ranks.name','tbl_ranks.short_name')
+                ->first();
+        
+        $rank_schedule_info = DB::table('tbl_rank_schedules')
+                ->where(['is_deleted'=>0, 'rank_id'=>$rank_info->id])
+                ->select('tbl_rank_schedules.id','tbl_rank_schedules.start_time','tbl_rank_schedules.end_time',
+                    DB::raw('HOUR(tbl_rank_schedules.start_time) as start_hour'),DB::raw('HOUR(tbl_rank_schedules.end_time) as end_hour'))    
+                ->get();
+        $end_hour_array = [];
+        for($i = 0; $i < sizeof($rank_schedule_info); $i++)
+        {
+            array_push($end_hour_array, $rank_schedule_info[$i]->end_hour);
+        }
+        $ret = array('rank_id'=>$rank_info->id,'rank_name'=>$rank_info->name,'rank_sname'=>$rank_info->short_name,
+                    'end_hour_array'=>$end_hour_array);
+
+        return $ret;
     }
 }

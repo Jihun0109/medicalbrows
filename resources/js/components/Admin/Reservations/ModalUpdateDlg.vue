@@ -50,7 +50,8 @@
                                     <label class="form-check-label">再診</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="order_type" value="カウンセ" v-model="form.order_type">
+                                    <input class="form-check-input" type="radio" name="order_type" value="カウンセ" v-model="form.order_type"
+                                    :disabled="item.rank_name !== 'カウゼ'">
                                     <label class="form-check-label">カウンセリング</label>
                                 </div>
                             </div>
@@ -85,7 +86,7 @@
                     <div class="row">
                         <label class="col-sm-3 col-form-label">メニュー:</label>
                         <div class="col-sm-8"  style="padding-top: 7px;" v-show="item.rank_name !== 'カウゼ'">
-                            <select v-model="form.menu_id" class="custom-select custom-select-sm form-control-sm" >
+                            <select v-model="form.menu_id" name="menu_id" class="custom-select custom-select-sm form-control-sm" :class="{'is-invalid':form.errors.has('menu_id')}">
                                 <option disabled value="">項目を選択してください</option>
                                 <option v-for="m in menus" :key="m.id" v-bind:value="m.menu_id">{{m.name}}</option>
                             </select>
@@ -94,7 +95,7 @@
                     <div class="row" v-show="item.rank_name !== 'カウゼ'">
                         <label class="col-sm-3 col-form-label" style="letter-spacing: -1.8px;">カウンセラー:</label>
                         <div class="col-sm-8" style="padding-top: 7px;"  v-show="isShow(form.order_type)">
-                            <select v-model="form.counselor" class="custom-select custom-select-sm form-control-sm">
+                            <select v-model="form.counselor" name="counselor" class="custom-select custom-select-sm form-control-sm" :class="{'is-invalid':form.errors.has('counselor')}">
                                 <option disabled value="">項目を選択してください</option>
                                 <option v-for="c in counselors" :key="c.id" v-bind:value="c">{{c.timename}}</option>            
                             </select>
@@ -223,6 +224,9 @@
                                 result.data.forEach(element => {                                    
                                     this.$emit('orderCreated', element);
                                 });
+                                //선택된 상담원 초기화
+                                this.menu_id = this.menus[0];
+                                this.form.counselor = '';
                                 $('#modalUpdateDlg').modal('hide');
                             }
                         })

@@ -80,31 +80,31 @@
                     <div class="form-group">
                         <label>メニュー名</label>
                         <input v-model="form.name" type="text" name="name" class="form-control" :class="{'is-invalid':form.errors.has('name')}" placeholder="メニュー名">
-                        <has-error :form="form" field="name"></has-error>
+                        <div v-if="form.errors.has('name')" class="invalid-feedback">{{errormsg(form.errors.get('name'),"name","メニュー名")}}</div>
                     </div>
                     <div class="form-group">
                         <label>コード</label>
                         <input v-model="form.code" type="text" name="code" class="form-control" :class="{'is-invalid':form.errors.has('code')}" placeholder="コード">
-                        <has-error :form="form" field="code"></has-error>
+                        <div v-if="form.errors.has('code')" class="invalid-feedback">{{errormsg(form.errors.get('code'),"code","コード")}}</div>
                     </div>
                     <div class="form-group">
                         <label>ランク名</label>
                         <select v-model="form.rank_id" class="custom-select" name="rank_id" :class="{'is-invalid':form.errors.has('rank_id')}">
                           <option v-for="r in ranks" :key="r.id" v-bind:value="r.id">{{ r.name }}</option>
                         </select>
-                        <has-error :form="form" field="rank_id"></has-error>
+                        <div v-if="form.errors.has('rank_id')" class="invalid-feedback">{{errormsg(form.errors.get('rank_id'),"rank id","ランク名")}}</div>
                     </div>
                     <div class="form-group">
                         <label>料金</label>
                         <input v-model="form.amount" type="number" name="amount" class="form-control" :class="{'is-invalid':form.errors.has('amount')}" placeholder="料金">
-                        <has-error :form="form" field="amount"></has-error>
+                        <div v-if="form.errors.has('amount')" class="invalid-feedback">{{errormsg(form.errors.get('amount'),"amount","料金")}}</div>
                     </div>
                     <div class="form-group">
                         <label>税率</label>
                         <select v-model="form.tax_id" class="custom-select" :class="{'is-invalid':form.errors.has('tax_id')}">                           
                           <option v-for="t in taxs" :key="t.id" v-bind:value="t.id">{{ t.name }}</option>
                         </select>
-                        <has-error :form="form" field="tax_id"></has-error>
+                        <div v-if="form.errors.has('tax_id')" class="invalid-feedback">{{errormsg(form.errors.get('tax_id'),"tax id","税率")}}</div>
                     </div>
                     <div class="form-group">
                         <h6>運用開始日</h6>
@@ -119,10 +119,7 @@
                         >
                             <input type="text" slot-scope='props' :value='props.inputValue' class="form-control" :class="{'is-invalid':form.errors.has('start_time')}">
                         </v-date-picker>
-                        <has-error
-                            :form="form"
-                            field="start_time"
-                        ></has-error>
+                        <div v-if="form.errors.has('start_time')" class="invalid-feedback">{{errormsg(form.errors.get('start_time'),"start time","運用開始日")}}</div>
                     </div>
                     <div class="form-group">
                         <h6>運用終了日</h6>
@@ -138,10 +135,7 @@
                         >
                             <input type="text" slot-scope='props' :value='props.inputValue' class="form-control" :class="{'is-invalid':form.errors.has('end_time')}">
                         </v-date-picker>
-                        <has-error
-                            :form="form"
-                            field="end_time"
-                        ></has-error>
+                        <div v-if="form.errors.has('end_time')" class="invalid-feedback">{{errormsg(form.errors.get('end_time'),"end time","運用終了日")}}</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -190,6 +184,9 @@
             }
         },
         methods: {
+            errormsg(msg,attribute,jpstr){
+                return msg.replace(attribute,jpstr);
+            },
             searchit(){
                 axios.get('/api/menu?keyword=' + this.keyword).
                     then(({data}) => {

@@ -60,7 +60,7 @@
                     <div class="form-group">
                         <label>	施術可能部位</label>
                         <input v-model="form.name" type="text" name="name" class="form-control" :class="{'is-invalid':form.errors.has('name')}" placeholder="部位名">
-                        <has-error :form="form" field="name"></has-error>
+                        <div v-if="form.errors.has('name')" class="invalid-feedback">{{errormsg(form.errors.get('name'),"name","部位名")}}</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -89,6 +89,9 @@
             }
         },
         methods: {
+            errormsg(msg,attribute,jpstr){
+                return msg.replace(attribute,jpstr);
+            },
             searchit(){
                 this.loadParts();
             },

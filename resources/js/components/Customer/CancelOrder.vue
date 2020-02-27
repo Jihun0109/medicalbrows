@@ -8,7 +8,7 @@
                 予約キャンセルを致しました
                 <br>
                 <br>
-                hanako.a@gmail.com宛に
+                {{email}}宛に
                 <br>
                 予約キャンセルご案内メールも送信しております
             </div>
@@ -31,7 +31,7 @@
                     </div>            
                 </form>
             </div>
-            <div class="orderinfo-card" v-show="changepage === 1 ">
+            <div class="orderinfo-card" v-show="changepage === 1 " v-if="order_info != null">
                 <label class="col-8">＜予約情報＞</label>
                 <div class="info">
                     <div class="row">
@@ -43,31 +43,31 @@
                     <div class="row">
                         <label class="col-4 col-form-label">指名スタッフ：</label>
                         <div class="col" >
-                            <p>{{staff_rank_name}}</p>
+                            <p>{{order_info.staff_info.alias}}【{{order_info.rank_info.name}}】</p>
                         </div>
                     </div>                    
                     <div class="row">
                         <label class="col-4 col-form-label">日付：</label>
                         <div class="col" >
-                            <p>{{date}}</p>
+                            <p>{{formatDate(order_info.order_date)}}({{order_info.week}})</p>
                         </div>
                     </div>
                     <div class="row">
                         <label class="col-4 col-form-label">区分：</label>
                         <div class="col" >
-                            <p>{{order_type}}</p>
+                            <p>{{order_info.order_type}}</p>
                         </div>
                     </div>
                     <div class="row">
                         <label class="col-4 col-form-label">時間：</label>
                         <div class="col" >
-                            <p>{{time}}</p>
+                            <p>{{order_info.time_schedule}}</p>
                         </div>
                     </div>
                     <div class="row">
                         <label class="col-4 col-form-label">施術部位：</label>
                         <div class="col" >
-                            <p>{{part}}</p>
+                            <p>{{order_info.part_info.name}}</p>
                         </div>
                     </div>
                 </div>  
@@ -103,13 +103,7 @@
     }
 </script>
 <script>
-    window.gIDInfo = {
-            data:{
-                order_serial_id:null,
-                phonenumber:''
-            }
-        };
-    
+  
     export default {
         data () {
             return {                
@@ -124,14 +118,53 @@
                 part:'',
                 changepage: 0,
                 complete: 0,
+
+                email:'',
+                order_info:null,
             }
         },
         methods:{
             onClickNextBtn:function(){
                 if(!this.changepage)
-                    this.changepage = 1;
-                else
-                    this.complete = 1;                
+                {
+                    this.form.post('/v1/client/get_orderinfo')
+                        .then((result)=>{
+                            console.log(result.data);
+                            if(result.data === 'wrongID')
+                            {
+                                toast.fire({
+                                    icon: "error",
+                                    title: "予約IDが存在しません。"
+                                });
+                            }
+                            else if(result.data === 'wrongPhone')
+                            {
+                                toast.fire({
+                                    icon: "error",
+                                    title: "電話番号が存在しません。"
+                                });
+                            }
+                            else{
+                                this.order_info = result.data.order_info;
+                                this.changepage = 1;   
+                            }
+                    
+                        })
+                        .catch(()=>{
+                            console.log('get_orderinfo error');
+                        });                     
+                }
+                else{
+                    axios.post('/v1/client/order_cancel',{ 'order_serial_id': this.form.order_serial_id})
+                    .then((result)=>{
+                        console.log(result.data);
+                        this.email = result.data.email;
+                        this.complete = 1; 
+                    })
+                    .catch(()=>{
+                        console.log('order_cancel error');
+                    });  
+                }                                
             },
             onClickPrevBtn:function(){
                 if(this.changepage)
@@ -139,6 +172,15 @@
                 else{
                     this.$emit('toOrderMode');
                 }
+            },
+            formatDate(dt) {
+                dt = new Date(dt);
+                var month = ('0' + (dt.getMonth() + 1)).slice(-2);
+                var date = ('0' + dt.getDate()).slice(-2);
+                var year = dt.getFullYear();
+                var formattedDate = year + '年' + month + '月' + date + '日';
+                //var formattedDate = year + '-' + month + '-' + date;
+                return formattedDate;
             },
         },
         mounted() {

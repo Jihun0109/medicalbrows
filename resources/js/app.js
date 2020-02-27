@@ -13,6 +13,8 @@ Vue.use(BootstrapVue);
 Vue.use(FormCheckboxPlugin);
 import VueInputMask from "vue-inputmask"
 Vue.use(VueInputMask.default);
+import Vuelidate from 'vuelidate';
+Vue.use(Vuelidate);
 import moment from "moment";
 import VueRouter from "vue-router";
 import swal from "sweetalert2";
@@ -188,4 +190,3 @@ if (clickableElements) {
         clickableElements[i].addEventListener("touch", hideSidebar)
     }
 }
-

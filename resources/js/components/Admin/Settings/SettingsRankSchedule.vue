@@ -75,14 +75,14 @@
                         <select v-model="form.rank_id" class="custom-select" name="rank_id" :class="{'is-invalid': form.errors.has('rank_id')}">
                           <option v-for="r in ranks" :key="r.id" v-bind:value="r.id">{{ r.name }}</option>
                         </select>
-                        <has-error :form="form" field="rank_id"></has-error>
+                        <div v-if="form.errors.has('rank_id')" class="invalid-feedback">{{errormsg(form.errors.get('rank_id'),"rank id","ランク名")}}</div>
                     </div>
                     <div class="form-group">
                         <label>部位</label>
                         <select v-model="form.part_id" class="custom-select" name="part_id" :class="{'is-invalid': form.errors.has('part_id')}">                         
                           <option v-for="t in parts" :key="t.id" v-bind:value="t.id">{{ t.name }}</option>
                         </select>
-                        <has-error :form="form" field="part_id"></has-error>
+                        <div v-if="form.errors.has('part_id')" class="invalid-feedback">{{errormsg(form.errors.get('part_id'),"part id","部位")}}</div>
                     </div>
                     <div class="form-group">
                         <h6>開始時間</h6>
@@ -97,10 +97,7 @@
                                 )
                             }"
                         ></datetime>
-                        <has-error
-                            :form="form"
-                            field="start_time"
-                        ></has-error>
+                        <div v-if="form.errors.has('start_time')" class="invalid-feedback">{{errormsg(form.errors.get('start_time'),"start time","開始時間")}}</div>
                     </div>
                     <div class="form-group">
                         <h6>終了時間</h6>
@@ -116,10 +113,7 @@
                                 )
                             }"
                         ></datetime>
-                        <has-error
-                            :form="form"
-                            field="end_time"
-                        ></has-error>
+                        <div v-if="form.errors.has('end_time')" class="invalid-feedback">{{errormsg(form.errors.get('end_time'),"end time","終了時間")}}</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -157,6 +151,9 @@
             }
         },
         methods: {
+            errormsg(msg,attribute,jpstr){
+                return msg.replace(attribute,jpstr);
+            },
             formatTime(time){
                 return  time.substring(0,5);
             },

@@ -62,12 +62,12 @@
                     <div class="form-group">
                         <label>	ランク名</label>
                         <input v-model="form.name" type="text" name="name" class="form-control" :class="{'is-invalid':form.errors.has('name')}" placeholder="ランク名">
-                        <has-error :form="form" field="name"></has-error>
+                        <div v-if="form.errors.has('name')" class="invalid-feedback">{{errormsg(form.errors.get('name'),"name","ランク名")}}</div>
                     </div>
                     <div class="form-group">
                         <label>略称</label>
                         <input v-model="form.short_name" type="text" name="short_name" class="form-control" :class="{'is-invalid':form.errors.has('short_name')}" placeholder="略称">
-                        <has-error :form="form" field="short_name"></has-error>
+                        <div v-if="form.errors.has('short_name')" class="invalid-feedback">{{errormsg(form.errors.get('short_name'),"short name","略称")}}</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -97,6 +97,9 @@
             }
         },
         methods: {
+            errormsg(msg,attribute,jpstr){
+                return msg.replace(attribute,jpstr);
+            },            
             searchit(){
                 this.loadRanks();
             },

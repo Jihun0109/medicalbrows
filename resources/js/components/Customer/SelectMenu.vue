@@ -214,6 +214,12 @@
         watch: {
             selectedstaff(val) {                 
                 if(this.selectedstaff){
+                    //시술자가 바뀔때 마다 선택된 모든 항목을 초기화
+                    $(".vue-grid-item").removeClass("selectedcolor");
+                    this.sel_time_schedule = null;
+                    this.time_schedules = null;
+                    this.selectedmenu = null;
+                    
                     this.passdata.staff_info = this.selectedstaff;
                     this.passdata.rank_info.id = this.selectedstaff.rank_id;
                     this.passdata.rank_info.name = this.selectedstaff.rank_name;

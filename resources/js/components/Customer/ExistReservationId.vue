@@ -24,7 +24,7 @@
         <div class="confirm-btn">
             <div class="row justify-content-around">
                 <div class="col-4">
-                    <button  v-show="false" @click="onClickPrevBtn" type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
+                    <button  v-show="true" @click="onClickPrevBtn" type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
                 </div>
                 <div class="col-auto" style="margin-left: 40px;">
                     <button  @click="onClickNextBtn" type="button" class="btn btn-primary" style="backgroud:#307DB9; ">次へ</button>
@@ -37,8 +37,8 @@
 <script>
     window.gIDInfo = {
             data:{
-                order_serial_id:null,
-                phonenumber:''
+                old_order_info:null,
+                customer_info:null,
             }
         };
     
@@ -56,8 +56,26 @@
                 this.form.post('/v1/client/get_orderinfo')
                     .then((result)=>{
                         console.log(result.data);
-                        //gIDInfo.data.order_serial_id = this.form.order_serial_id;
-                        //this.$emit('changeStage', 2);                        
+                        if(result.data === 'wrongID')
+                        {
+                            toast.fire({
+                                icon: "error",
+                                title: "予約IDが存在しません。"
+                            });
+                        }
+                        else if(result.data === 'wrongPhone')
+                        {
+                            toast.fire({
+                                icon: "error",
+                                title: "電話番号が存在しません。"
+                            });
+                        }
+                        else{
+                            gIDInfo.data.old_order_info = result.data.order_info;
+                            gIDInfo.data.customer_info = result.data.customer_info;
+                            this.$emit('changeStage', 2);      
+                        }
+                 
                     })
                     .catch(()=>{
                         console.log('update error');
@@ -65,7 +83,7 @@
             },
             onClickPrevBtn:function(){
                 this.form.reset();
-                //this.$emit('changeStage', 1);
+                this.$emit('toExistIdPage', false);
             },
         },
         mounted() {

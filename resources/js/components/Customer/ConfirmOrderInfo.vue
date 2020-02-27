@@ -1,7 +1,48 @@
 <template>
     <div class="">
-        <div class="order-info">
-            <label class="col-8">＜予約者情報＞</label>
+        <div class="orderid-info" v-show="existId" v-if="order_id_info.old_order_info != null">
+            <label class="col-8">＜予約情報＞</label>
+            <div class="info">
+                <div class="row">
+                    <label class="col-4 col-form-label">日付：</label>
+                    <div class="col" >
+                        <p>{{formatDate(order_id_info.old_order_info.order_date)}}({{order_id_info.old_order_info.week}})</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-4 col-form-label">区分：</label>
+                    <div class="col" >
+                        <p>{{order_id_info.old_order_info.order_type}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-4 col-form-label">時間：</label>
+                    <div class="col" >
+                        <p>{{order_id_info.old_order_info.time_schedule}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-4 col-form-label">場所：</label>
+                    <div class="col" >
+                        <p>{{order_id_info.old_order_info.clinic_info.name}}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-4 col-form-label">施術者：</label>
+                    <div class="col" >
+                        <p>{{order_id_info.old_order_info.staff_info.alias}}【{{order_id_info.old_order_info.rank_info.name}}】</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-4 col-form-label">施術メニュー：</label>
+                    <div class="col" >
+                        <p>{{order_id_info.old_order_info.menu_info.name}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="order-info" v-show="!existId">
+            <label class="col-8">＜予約情報＞</label>
             <div class="info">
                 <div class="row">
                     <label class="col-4 col-form-label">日付：</label>
@@ -73,8 +114,10 @@
             }     
         };
     export default {
+        props:['existId'],
         data() {
             return {     
+                order_id_info:gIDInfo.data,//defined ExistReservation.vue
                 order_info:gOrderInfo.data,  
                 user_infos: gUserInfo.data,
                 types: [
@@ -96,28 +139,55 @@
         },
         methods:{
             onClickNextBtn:function(){
-                axios.post('/v1/client/order_create',{ 'order_info': this.order_info, 'user_info': gUserInfo.data.userinfo})
-                .then((result)=>{
-                    if(result.data == 0){
-                        toast.fire({
-                            icon: "error",
-                            title: "予約IDが存在しません."
-                        });
-                    }else{
-                        toast.fire({
-                            icon: "success",
-                            title: "データ追加しました"
-                        });
-                        console.log(result.data);
-                        gResultID.data.mail = result.data.mail;                        
-                        gResultID.data.order_serial_id = result.data.order_serial_id;                        
-                        this.$emit('changeStage', 4);
-                    }
+                if(this.existId){
+                    axios.post('/v1/client/order_update',{ 'order_info': this.order_id_info, 'user_info': gUserInfo.data.userinfo})
+                    .then((result)=>{
+                        if(result.data == 0){
+                            toast.fire({
+                                icon: "error",
+                                title: "予約IDが存在しません。"
+                            });
+                        }else{
+                            toast.fire({
+                                icon: "success",
+                                title: "データが更新されました。"
+                            });
+                            console.log(result.data);
+                            gResultID.data.mail = result.data.mail;                        
+                            gResultID.data.order_serial_id = result.data.order_serial_id;                        
+                            this.$emit('changeStage', 4);
+                        }
 
-                })
-                .catch(()=>{
-                    console.log('order create error');
-                });                 
+                    })
+                    .catch(()=>{
+                        console.log('order update error');
+                    });   
+                }
+                else{
+                    axios.post('/v1/client/order_create',{ 'order_info': this.order_info, 'user_info': gUserInfo.data.userinfo})
+                    .then((result)=>{
+                        if(result.data == 0){
+                            toast.fire({
+                                icon: "error",
+                                title: "予約IDが存在しません."
+                            });
+                        }else{
+                            toast.fire({
+                                icon: "success",
+                                title: "データ追加しました"
+                            });
+                            console.log(result.data);
+                            gResultID.data.mail = result.data.mail;                        
+                            gResultID.data.order_serial_id = result.data.order_serial_id;                        
+                            this.$emit('changeStage', 4);
+                        }
+
+                    })
+                    .catch(()=>{
+                        console.log('order create error');
+                    });   
+                }
+             
             },
             onClickPrevBtn:function(){
                 gUserInfo.data.array = [];

@@ -61,19 +61,19 @@
             <div class="row justify-content-center">
                 <div class="col-md-8">
                     <div v-show="stage === 0 && !existId" class="tab-content-div">
-                        <select-order-type  v-bind:ranks="this.ranks" v-bind:clinics="this.clinics" @changeStage="changeStageTab" @toExistIdPage="changeExistIdPage">></select-order-type>
+                        <select-order-type  v-bind:ranks="this.ranks" v-bind:clinics="this.clinics" @changeStage="changeStageTab" @toExistIdPage="changeExistIdPage" @toCancelPage="openCancelPage"></select-order-type>
                     </div>
                     <div v-show="stage === 0 && existId" class="tab-content-div">
-                        <exist-reservation-id  @changeStage="changeStageTab"></exist-reservation-id>
+                        <exist-reservation-id  @changeStage="changeStageTab" @toExistIdPage="changeExistIdPage"></exist-reservation-id>
                     </div>                    
                     <div v-show="stage === 1" class="tab-content-div">
                         <select-menu @changeStage="changeStageTab"></select-menu>
                     </div>
                     <div v-show="stage === 2" class="tab-content-div">
-                        <input-user-info @changeStage="changeStageTab"></input-user-info>
+                        <input-user-info v-bind:existId="this.existId" @changeStage="changeStageTab"></input-user-info>
                     </div> 
                     <div v-show="stage === 3" class="tab-content-div">
-                        <confirm-order-info @changeStage="changeStageTab"></confirm-order-info>
+                        <confirm-order-info v-bind:existId="this.existId" @changeStage="changeStageTab"></confirm-order-info>
                     </div>
                     <div v-show="stage === 4" class="tab-content-div">
                         <output-pdf @changeStage="changeStageTab"></output-pdf>
@@ -117,8 +117,8 @@
                 componentname:'select-order-type',
                 arrowbtns:['区分・方法・決定','メニュー・枠決定','情報入力','情報碓認','PDF出力','予約完了'],
                 stage: 0,
-                existId: 0,
-                cancelmode:0,
+                existId: false,
+                cancelmode: 0,
                 ranks:[],
                 clinics:[],
             }
@@ -129,10 +129,13 @@
                 // $(event.currentTarget).addClass("setbtn"); 
                 // this.stage = index;
             },
+            openCancelPage:function(cmode){
+                this.cancelmode = cmode;
+            },
             changeStageTab: function(index) {
                 this.stage = index;
             },
-            changeExistIdPage: function(index){
+            changeExistIdPage: function(index){              
                 this.existId = index;
             },
             changeMode(){

@@ -80,14 +80,14 @@
                         <select v-model="form.rank_id" class="custom-select" name="rank_id" :class="{'is-invalid':form.errors.has('rank_id')}">
                           <option v-for="rank in ranks" :key="rank.id" v-bind:value="rank.id">{{ rank.name }}</option>
                         </select>
-                        <has-error :form="form" field="rank_id"></has-error>
+                        <div v-if="form.errors.has('rank_id')" class="invalid-feedback">{{errormsg(form.errors.get('rank_id'),"rank id","ランク名")}}</div>
                     </div>
                     <div class="form-group">
                         <label>スタッフ表記名</label>
                         <select v-model="form.staff_id" class="custom-select" name="staff_id" :class="{'is-invalid':form.errors.has('staff_id')}">
                           <option v-for="staff in staffs" :key="staff.id" v-bind:value="staff.id">{{ staff.alias }}</option>
                         </select>
-                        <has-error :form="form" field="staff_id"></has-error>
+                        <div v-if="form.errors.has('staff_id')" class="invalid-feedback">{{errormsg(form.errors.get('staff_id'),"staff id","スタッフ表記名")}}</div>
                     </div>
                     <div class="form-group">
                         <label>昇格日</label>
@@ -103,7 +103,7 @@
                             <input type="text" slot-scope='props' :value='props.inputValue' class="form-control">
                         </v-date-picker>                      
                         <!-- <datetime format="YYYY-MM-DD" v-model="form.promo_date" placeholder="昇格日" name="promo_date" :class="{'is-invalid': form.errors.has('promo_date')}"></datetime> -->
-                        <has-error :form="form" field="promo_date"></has-error>
+                        <div v-if="form.errors.has('promo_date')" class="invalid-feedback">{{errormsg(form.errors.get('promo_date'),"promo date","昇格日")}}</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -148,6 +148,9 @@
             }
         },
         methods: {
+            errormsg(msg,attribute,jpstr){
+                return msg.replace(attribute,jpstr);
+            },            
             searchit(){
                 axios.get('/api/staff-rank?keyword=' + this.keyword).
                     then(({data}) => (this.data = data));

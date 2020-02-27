@@ -76,12 +76,12 @@
                     <div class="form-group">
                         <label>スタツフ名</label>
                         <input v-model="form.full_name" type="text" name="full_name" class="form-control" :class="{'is-invalid':form.errors.has('full_name')}" placeholder="スタツフ名">
-                        <has-error :form="form" field="full_name"></has-error>
+                        <div v-if="form.errors.has('full_name')" class="invalid-feedback">{{errormsg(form.errors.get('full_name'),"full name","スタツフ名")}}</div>
                     </div>
                     <div class="form-group">
                         <label>表記名</label>
                         <input v-model="form.alias" type="text" name="alias" class="form-control" :class="{'is-invalid':form.errors.has('alias')}" placeholder="表記名">
-                        <has-error :form="form" field="alias"></has-error>
+                        <div v-if="form.errors.has('alias')" class="invalid-feedback">{{errormsg(form.errors.get('alias'),"alias","表記名")}}</div>
                     </div>
                     
                     <div class="form-group">
@@ -89,15 +89,15 @@
                         <select v-model="form.staff_type_id" class="custom-select" name="staff_type_id" :class="{'is-invalid':form.errors.has('staff_type_id')}">
                           <option v-for="type in staff_types" :key="type.id" v-bind:value="type.id">{{ type.name }}</option>
                         </select>
-                        <has-error :form="form" field="staff_type_id"></has-error>
+                        <div v-if="form.errors.has('staff_type_id')" class="invalid-feedback">{{errormsg(form.errors.get('staff_type_id'),"staff type id","スタツフ区分")}}</div>
                     </div>
                     
                     <div class="form-group">
                         <label>クリニック名</label>
                         <select v-model="form.clinic_id" class="custom-select" name="clinic_id" :class="{'is-invalid':form.errors.has('clinic_id')}">
-                          <option v-for="clinic in clinics" :key="clinic.id" v-bind:value="clinic.id">{{ clinic.name }}</option>
+                          <option v-for="(clinic,index) in clinics" :key="index" :value="clinic.id" >{{ clinic.name }}</option>
                         </select>
-                        <has-error :form="form" field="clinic_id"></has-error>
+                        <div v-if="form.errors.has('clinic_id')" class="invalid-feedback">{{errormsg(form.errors.get('clinic_id'),"clinic id","クリニック名")}}</div>
                     </div>
                     <div class="form-group">
                         <label>休退職</label>
@@ -105,7 +105,7 @@
                           <option v-bind:value=0>アクティブ</option>
                           <option v-bind:value=1>退職</option>
                         </select>
-                        <has-error :form="form" field="is_vacation"></has-error>
+                        <div v-if="form.errors.has('is_vacation')" class="invalid-feedback">{{errormsg(form.errors.get('is_vacation'),"is vacation","休退職")}}</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -132,14 +132,17 @@
                     full_name : '',
                     alias : '',
                     staff_type_id : '',
-                    clinic_id : '',
-                    is_vacation : '',
+                    clinic_id : 0,
+                    is_vacation : 0,
                 }),
                 editMode: false,
                 keyword : ""
             }
         },
         methods: {
+            errormsg(msg,attribute,jpstr){
+                return msg.replace(attribute,jpstr);
+            },
             searchit(){
                 axios.get('/api/staff?keyword=' + this.keyword).
                     then(({data}) => (this.data = data));
@@ -148,9 +151,13 @@
                 axios.get('/api/staff').
                     then(({data}) => (this.data = data));
                 axios.get('/api/clinic').
-                    then(({data}) => (this.clinics = data));
+                    then(({data}) => {
+                        this.clinics = data;
+                        });
                 axios.get('/api/staff-type').
-                    then(({data}) => (this.staff_types = data));
+                    then(({data}) => {
+                        this.staff_types = data;                        
+                    });
             },
             createData(){                
                 this.form.post('/api/staff')
@@ -215,6 +222,8 @@
             newModal(){
                 this.editMode = false;
                 this.form.reset();    
+                this.form.clinic_id = this.clinics[0].id;
+                this.form.staff_type_id = this.staff_types[0].id;
                 this.form.errors.clear();            
                 $('#modalAddStaff').modal('show');
             },
@@ -228,6 +237,7 @@
         },
         created() {
             this.loadList();
+            this.form.clinic_id = 6;
         }
     }
 </script>

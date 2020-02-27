@@ -54,6 +54,7 @@
         "vue-router": "^3.1.5",
         "vue2-timepicker": "^1.0.8",
         "vuejs-datetimepicker": "^1.1.13",
+        "vuelidate": "^0.7.5",
         "vuetify": "^2.2.12",
         "weekstart": "^1.0.1"
     }

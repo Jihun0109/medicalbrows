@@ -66,19 +66,19 @@
                     <div class="form-group">
                         <label>クリニック名</label>
                         <input v-model="form.name" type="text" name="name" class="form-control" :class="{'is-invalid':form.errors.has('name')}" placeholder="クリニック名 ">
-                        <has-error :form="form" field="name"></has-error>
+                        <div v-if="form.errors.has('name')" class="invalid-feedback">{{errormsg(form.errors.get('name'),"name","クリニック名")}}</div>
                     </div>                    
                     <div class="form-group">
                         <label>ユーザーID</label>
                         <select v-model="form.user_id" class="custom-select" name="user_id" :class="{'is-invalid':form.errors.has('user_id')}">
                           <option v-for="u in users" :key="u.user_id" v-bind:value="u.user_id">{{ u.user_id }}</option>
                         </select>
-                        <has-error :form="form" field="user_id"></has-error>
+                        <div v-if="form.errors.has('user_id')" class="invalid-feedback">{{errormsg(form.errors.get('user_id'),"user id","ユーザーID")}}</div>
                     </div>
                     <div class="form-group">
                         <label>住所</label>
                         <input v-model="form.address" type="text" name="address" class="form-control" :class="{'is-invalid':form.errors.has('address')}" placeholder="住所">
-                        <has-error :form="form" field="address"></has-error>
+                        <div v-if="form.errors.has('address')" class="invalid-feedback">{{errormsg(form.errors.get('address'),"address","住所")}}</div>
                     </div>
 
                     <div class="form-group">
@@ -87,7 +87,7 @@
                           <option v-bind:value=0>アクティブ</option>
                           <option v-bind:value=1>閉鎖</option>
                         </select>
-                        <has-error :form="form" field="is_vacation"></has-error>
+                        <div v-if="form.errors.has('is_vacation')" class="invalid-feedback">{{errormsg(form.errors.get('is_vacation'),"is vacation","休閉鎖")}}</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -111,7 +111,7 @@
                 form: new Form({
                     id : '',
                     name : '',
-                    email : '',
+                    email : 0,
                     address : '',
                     is_vacation : 0,
                 }),
@@ -120,6 +120,9 @@
             }
         },
         methods: {
+            errormsg(msg,attribute,jpstr){
+                return msg.replace(attribute,jpstr);
+            },            
             searchit(){
                 axios.get('/api/clinic?keyword='+this.keyword).
                     then(({data}) => (this.data = data));

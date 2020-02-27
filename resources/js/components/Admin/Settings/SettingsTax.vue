@@ -110,10 +110,7 @@
                                     }"
                                     placeholder="税率名"
                                 />
-                                <has-error
-                                    :form="form"
-                                    field="name"
-                                ></has-error>
+                                <div v-if="form.errors.has('name')" class="invalid-feedback">{{errormsg(form.errors.get('name'),"name","税率名")}}</div>
                             </div>
                             <label>税率</label>
                             <div class="input-group">                            
@@ -130,10 +127,7 @@
                                 <div class="input-group-append">
                                     <span class="input-group-text">%</span>
                                 </div>
-                                <has-error
-                                    :form="form"
-                                    field="amount"
-                                ></has-error>
+                                <div v-if="form.errors.has('amount')" class="invalid-feedback">{{errormsg(form.errors.get('amount'),"amount","税率")}}</div>
                             </div>
                             
                             <div class="form-group mt-3">
@@ -151,10 +145,7 @@
                                 >
                                     <input type="text" slot-scope='props' :value='props.inputValue' class="form-control" :class="{'is-invalid':form.errors.has('start_time')}">
                                 </v-date-picker>
-                            <has-error
-                                :form="form"
-                                field="start_time"
-                            ></has-error>
+                                <div v-if="form.errors.has('start_time')" class="invalid-feedback">{{errormsg(form.errors.get('start_time'),"start time","運用開始日")}}</div>
                             </div>
                             <div class="form-group">
                                 <label>
@@ -172,10 +163,7 @@
                                 >
                                     <input type="text" slot-scope='props' :value='props.inputValue' class="form-control" :class="{'is-invalid':form.errors.has('end_time')}">
                                 </v-date-picker>
-                                <has-error
-                                    :form="form"
-                                    field="end_time"
-                                ></has-error>
+                                <div v-if="form.errors.has('end_time')" class="invalid-feedback">{{errormsg(form.errors.get('end_time'),"end time","運用終了日")}}</div>            
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -237,6 +225,9 @@ export default {
         };
     },
     methods: {
+        errormsg(msg,attribute,jpstr){
+                return msg.replace(attribute,jpstr);
+        },
         searchit(){
             axios.get("/api/tax?keyword=" + this.keyword).then(({ data }) => (this.items = data));
         },

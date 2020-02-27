@@ -73,6 +73,7 @@ class ReservationsController extends Controller
             ->get();
 
 
+        //선택된 시술자 시간과 가까이에 있는 상담시간과 스케쥴 id구한다.(앞으로 수정:자료기지로부터 얻기)
         $possible_endtime_addr = [ 10, 12, 15, 17 ];
         //nearest value
         $interviewer_rank_schedule_id = 13;//이미 정해진 4개 수자이다.10,11,12,13
@@ -94,19 +95,22 @@ class ReservationsController extends Controller
                 ->where([['tbl_staffs.is_deleted', 0], ['tbl_staffs.clinic_id', $clinic_id], ['tbl_staff_ranks.rank_id', 9]])  
                 ->get();
         
-        //order_history에 예약된 상담원의 시간대를 구하고 제거한다.
+        //먼저 shift_history검사, 다음 order_history에 예약된 상담원의 시간대를 구하고 제거한다.
         for ( $i = 0; $i < sizeof($counselor_list); $i++ ){
+            if (sizeof(DB::table("tbl_shift_histories")->where(['staff_id'=>$counselor_list[$i]->interviewer_id, 'date'=>$selected_date])->get()) > 0)
+                continue;
             $temp = [];
             // 상담원이 인터뷰어로 예약되여 있으면 그 시간을 리턴.
             $remove_time_with_order = DB::table('tbl_order_histories')
-                            ->where([['interviewer_id',$counselor_list[$i]->interviewer_id],['order_date', $selected_date]])
-                            ->select('id','is_deleted', DB::raw('HOUR(tbl_order_histories.interview_end) as end_hour'))
+                            ->join('tbl_rank_schedules','tbl_rank_schedules.id','tbl_order_histories.rank_schedule_id')
+                            ->where([['tbl_order_histories.staff_id',$counselor_list[$i]->interviewer_id],['tbl_order_histories.order_date', $selected_date],['tbl_order_histories.is_deleted', 0]])
+                            ->select('tbl_order_histories.id', DB::raw('HOUR(tbl_rank_schedules.end_time) as end_hour'))
                             ->get();
             $bflag = false;
+            //Log::info($remove_time_with_order);
             for( $j = 0; $j < sizeof($remove_time_with_order); $j++ ){
-                if ($remove_time_with_order[$j]->is_deleted)
-                    break;
-                if($remove_time_with_order[$j]->end_hour === $min && $order_history_id != $remove_time_with_order[$j]->id){
+                //마지막시간검사: 제거목록에 있으면서 선택된 시술자의 order_hisotry_id가 같지않으면 제거, 같으면 현시한다.
+                if($remove_time_with_order[$j]->end_hour === $min && $order_history_id != $remove_time_with_order[$j]->id){//
                     //Log::info($remove_time_with_order[$j]->id);
                     $bflag = true;
                     break;
@@ -126,7 +130,7 @@ class ReservationsController extends Controller
             }
         }
        
-        Log::info($res);
+        //Log::info($res);
         return $res;
     }
 
@@ -214,7 +218,6 @@ class ReservationsController extends Controller
             'static' =>  true,
             'selectable' => false,
             'time' => '',
-            'is_new' => '',
             'staff_rank' => '',
         ]);
 
@@ -230,7 +233,6 @@ class ReservationsController extends Controller
                 'static' =>  false,
                 'selectable' => false,
                 'time' => '',
-                'is_new' => '',
                 'staff_rank' => '',
             ]);
         }
@@ -247,7 +249,6 @@ class ReservationsController extends Controller
                 'static' =>  true,
                 'selectable' => false,
                 'time' => '',
-                'is_new' => '',
                 'staff_rank' => '',
             ]);
             //addition of rank names
@@ -260,7 +261,6 @@ class ReservationsController extends Controller
                 'static' =>  true,
                 'selectable' => false,
                 'time' => '',
-                'is_new' => '',
                 'staff_rank' => '',
             ]);
             $total_height_arr = [];
@@ -380,8 +380,7 @@ class ReservationsController extends Controller
                     'i' => $content,
                     'static' =>  true,
                     'selectable' => true,
-                    'time' => $time,
-                    'is_new' => "新",
+                    'time' => $time,                   
                     'staff_rank' => "",
                     'order_status' => $order_history?$this->getOrderStatus($order_history->status):"static",
                     'rank_schedule_id' => $cur_schedule['id'],
@@ -460,8 +459,14 @@ class ReservationsController extends Controller
         $start_tick = microtime(true);
         $payLoad = json_decode(request()->getContent(), true);  
         $order_serial_id = $payLoad['order_serial_id'];
-
-        //confirm field 
+        //confirm field
+        if ($payLoad['order_type'] == "新規")
+        {
+            $this->validate($request, [
+                'menu_id' => 'required',
+                'counselor' => 'required',                
+            ]); 
+        } 
         $this->validate($request, [
             'first_name' => 'required|string|max:30',
             'last_name' => 'required|string|max:30',
@@ -532,13 +537,13 @@ class ReservationsController extends Controller
             $schedule_info = DB::table('tbl_rank_schedules')->where('id', $payLoad['item']['rank_schedule_id'])->first();
             
             $order_serial_id = sprintf('%s-%06d', time(), $payLoad['item']['staff_id']);
-
+            Log::info($payLoad);
             $order_history = TblOrderHistory::create([
                 'staff_id' => $payLoad['item']['staff_id'],
                 'rank_id' => $payLoad['item']['rank_id'],                
-                'interviewer_id' => $payLoad['order_type'] == "カウンセ"?$payLoad['item']['staff_id']:'',
-                'interview_start' => $payLoad['order_type'] == "カウンセ"?$schedule_info->start_time:'',
-                'interview_end' => $payLoad['order_type'] == "カウンセ"?$schedule_info->end_time:'',
+                'interviewer_id' => $payLoad['order_type'] == "カウンセ"?$payLoad['item']['staff_id']:null,
+                'interview_start' => $payLoad['order_type'] == "カウンセ"?$schedule_info->start_time:null,
+                'interview_end' => $payLoad['order_type'] == "カウンセ"?$schedule_info->end_time:null,
                 'status' => 0,//$payLoad['item']['order_status'],//1,//
                 'staff_choosed' => $payLoad['stuff_choosed'],
                 'rank_schedule_id' => $payLoad['item']['rank_schedule_id'],
@@ -671,7 +676,7 @@ class ReservationsController extends Controller
     public function orderUpdate(Request $request)
     {
         $payLoad = json_decode(request()->getContent(), true);
-        //Log::error($payLoad);
+        Log::error($payLoad);
         //return;
         //confirm field 
         $this->validate($request, [
@@ -712,7 +717,7 @@ class ReservationsController extends Controller
         if( $payLoad['order_type'] == '再診' )
         {            
             if ($order_history->interviewer_id){                
-                $interviewer = TblOrderHistory::where(['order_id'=>$order_history->order_id, 
+                $interviewer = TblOrderHistory::where(['order_serial_id'=>$order_history->order_serial_id, 
                         'staff_id'=>$order_history->interviewer_id])->first();
                 $interviewer->is_deleted = 1;
                 $interviewer->save();
@@ -722,9 +727,9 @@ class ReservationsController extends Controller
         if( $payLoad['order_type'] == '新規' )
         {            
             if ($order_history->interviewer_id){                
-                $interviewer = TblOrderHistory::where(['order_id'=>$order_history->order_id, 
+                $interviewer = TblOrderHistory::where(['order_serial_id'=>$order_history->order_serial_id, 
                         'staff_id'=>$order_history->interviewer_id])->first();
-                $interviewer->is_deleted = 0;
+                $interviewer->is_deleted = 1;
                 $interviewer->save();
             }
         }
@@ -738,6 +743,7 @@ class ReservationsController extends Controller
                 $staff = TblOrderHistory::where(['id'=>$payLoad['old_staff_info']['order_history_id']])->first();
                 $old_staff_order_history_id = $staff->id;
                 $staff->is_deleted = 1;
+                $staff->interviewer_id = null;
                 $staff->save();
             }
         }

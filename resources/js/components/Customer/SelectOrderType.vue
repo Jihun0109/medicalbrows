@@ -103,7 +103,7 @@
             <div class="confirm-btn">
                 <div class="row justify-content-around">
                     <div class="col-4">
-                        <button v-show='false' type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
+                        <button v-show='true' @click="onClickCancelBtn" type="button" class="btn btn-secondary" style="background:#9F9F9F;">予約取消</button>
                     </div>
                     <div class="col-auto" style="margin-left: 40px;">
                         <button v-show="showNextBtn(order_method)" @click="onClickNextBtn" type="button" class="btn btn-primary" style="backgroud:#307DB9; ">次へ</button>
@@ -295,6 +295,9 @@ export default {
             }
             console.log(gOrderTypeInfo.data, 'orderinfo from Selectordertype.vue'); 
         },
+        onClickCancelBtn(){
+            this.$emit('toCancelPage', 1);
+        },
         onNewHelp: function(){
             this.order_type = '新規';
         },
@@ -310,7 +313,7 @@ export default {
             return daysOfWeek[i];
         },
         existIDPage:function(){
-            this.$emit('toExistIdPage', 'true');
+            this.$emit('toExistIdPage', true);
         },
         staff_rank_List:function(){
             axios.post('/v1/client/staff_list', { 'rank_info': this.selectedrank}).

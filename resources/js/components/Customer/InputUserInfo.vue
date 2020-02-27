@@ -1,61 +1,66 @@
 <template>
     <div class="">
-        <div class="exist-order-info" v-show="order_id_data.order_serial_id !== null">
+        <div class="exist-order-info" v-show="existId" v-if="order_id_info.old_order_info != null">
             <label class="col-8">＜前回予約情報＞</label>
             <div class="info">
                 <div class="row">
                     <label class="col-4 col-form-label">日付：</label>
                     <div class="col" >
-                        <p>{{menu_info.calendar_info.date}}({{menu_info.calendar_info.week}})</p>
+                        <p>{{formatDate(order_id_info.old_order_info.order_date)}}({{order_id_info.old_order_info.week}})</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">区分：</label>
                     <div class="col" >
-                        <p>再診</p>
+                        <p>{{order_id_info.old_order_info.order_type}}</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">時間：</label>
                     <div class="col" >
-                        <p>{{menu_info.calendar_info.time}}</p>
+                        <p>{{order_id_info.old_order_info.time_schedule}}</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">場所：</label>
                     <div class="col" >
-                        <p>{{menu_info.calendar_info.clinic}}</p>
+                        <p>{{order_id_info.old_order_info.clinic_info.name}}</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">施術者：</label>
                     <div class="col" >
-                        <p>{{order_info.staff_info.name}}</p>
+                        <p>{{order_id_info.old_order_info.staff_info.alias}}【{{order_id_info.old_order_info.rank_info.name}}】</p>
                     </div>
                 </div>
                 <div class="row">
                     <label class="col-4 col-form-label">施術メニュー：</label>
                     <div class="col" >
-                        <p>{{menu_info.menu_info.name}}</p>
+                        <p>{{order_id_info.old_order_info.menu_info.name}}</p>
                     </div>
                 </div>
             </div>  
             <p style="font-weight: bold; margin-top:15px;">個人情報保護の観点から、過去入力したお客様情報の内容は表示しません。<br><br>お手数ですが、再度入力をお願いします。</p>          
         </div>
         <div class="customer-infor">
-            <label class="col-8" v-if="order_id_data.order_serial_id !== null">＜お客様情報＞   </label>
+            <label class="col-8" v-if="existId">＜お客様情報＞   </label>
             <label class="col-8" v-else>＜予約者情報＞</label>
             <form id="form" class="user-info">
                 <div class="form-group row">
                     <label class="col-4 col-form-label">氏名：</label>
                     <div class="col">
-                        <input v-model="formdata.first_name" type="text" class="form-control" placeholder="麻布　花子" >
-                    </div>
+                        <input v-model="formdata.first_name" type="text" class="form-control" placeholder="麻布　花子" :class="{ 'is-invalid': submitted && $v.formdata.first_name.$error }" />
+                        <div v-if="submitted && !$v.formdata.first_name.required" class="invalid-feedback">氏名は、必ず指定してください。</div>
+                    </div>                    
                 </div>
                 <div class="form-group row">
                     <label class="col-4 col-form-label">フリガナ：</label>
                     <div class="col">
-                        <input v-model="formdata.last_name" type="text" class="form-control" placeholder="アザブ ハナコ">
+                        <input v-model="formdata.last_name" type="text" class="form-control" placeholder="アザブ ハナコ" :class="{ 'is-invalid': submitted && $v.formdata.last_name.$error }" />
+                        <div v-if="submitted && $v.formdata.last_name.$error" class="invalid-feedback">
+                            <span v-if="!$v.formdata.last_name.required">フリガナは、必ず指定してください。</span>
+                            <span v-if="!$v.formdata.last_name.min">フリガナは最低でも6文字必要です。</span>
+                        </div>                        
                     </div>
                 </div>
                 <div class="form-group row">
@@ -71,27 +76,38 @@
                 <div class="form-group row">
                     <label class="col-4 col-form-label">生年月日：</label>
                     <div class="col">
-                        <input v-model="formdata.birthday" type="date" class="form-control" placeholder="1989/12/01">
+                        <input v-model="formdata.birthday" type="date" class="form-control" placeholder="1989/12/01" :class="{ 'is-invalid': submitted && $v.formdata.birthday.$error }" />
+                        <div v-if="submitted && $v.formdata.birthday.$error" class="invalid-feedback">
+                            <span v-if="!$v.formdata.birthday.required">生年月日は、必ず指定してください。</span>
+                            <!-- <span v-else-if="!$v.formdata.birthday.isDate">Enter a valid birthdate</span>
+                            <span v-else-if="!$v.formdata.birthday.isLegalAge">Must be 18 Years old</span> -->
+                        </div>                         
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-4 col-form-label">電話番号：</label>
                     <div class="col">
                         <!-- <input v-model="form.phonenumber" type="text" class="form-control" placeholder="080-XXXX-XXXX"> -->
-                        <input v-model="formdata.phonenumber" type="tel" class="form-control" v-mask="{mask:'9999-999-9999', placeholder:'#'}">
+                        <input v-model="formdata.phonenumber" type="tel" class="form-control" v-mask="{mask:'9999-999-999', placeholder:'#'}" :class="{ 'is-invalid': submitted && $v.formdata.phonenumber.$error }" />
+                        <div v-if="submitted && !$v.formdata.phonenumber.required" class="invalid-feedback">電話番号は、必ず指定してください。</div>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-4 col-form-label">email：</label>
                     <div class="col">
-                        <input v-model="formdata.email" type="email" class="form-control" placeholder="hanako@aa.com" name="email">
+                        <input v-model="formdata.email" type="email" class="form-control" placeholder="hanako@aa.com" name="email" :class="{ 'is-invalid': submitted && $v.formdata.email.$error }" />
+                        <div v-if="submitted && $v.formdata.email.$error" class="invalid-feedback">
+                            <span v-if="!$v.formdata.email.required">メールは、必ず指定してください。</span>
+                            <span v-if="!$v.formdata.email.email">メールの形式が無効です。</span>
+                        </div> 
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-4 col-form-label">郵便番号：</label>
                     <div class="col">
                         <!-- <input v-model="form.zip_code" type="text" class="form-control" placeholder="106-0031"> -->
-                        <input v-model="formdata.zip_code" type="text" class="form-control" v-mask="{ mask: ['999-9999','9A9 A9A'], placeholder: '#' }">
+                        <input v-model="formdata.zip_code" type="text" class="form-control" v-mask="{ mask: ['999-9999','9A9 A9A'], placeholder: '#' }" :class="{ 'is-invalid': submitted && $v.formdata.zip_code.$error }" />
+                        <div v-if="submitted && !$v.formdata.zip_code.required" class="invalid-feedback">郵便番号は、必ず指定してください。</div>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -105,13 +121,15 @@
                 <div class="form-group row">
                     <label class="col-4 col-form-label">住所1：</label>
                     <div class="col">
-                        <input v-model="formdata.address1" type="text" name="address" class="form-control" placeholder="港区西麻布">
+                        <input v-model="formdata.address1" type="text" name="address" class="form-control" placeholder="港区西麻布" :class="{ 'is-invalid': submitted && $v.formdata.address1.$error }" />
+                        <div v-if="submitted && !$v.formdata.address1.required" class="invalid-feedback">住所1は、必ず指定してください。</div>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-4 col-form-label">住所2：</label>
                     <div class="col">
-                        <input v-model="formdata.address2" type="text" name="address" class="form-control" placeholder="1-14-17">
+                        <input v-model="formdata.address2" type="text" name="address" class="form-control" v-mask="{mask:'9-99-99', placeholder:'#'}" placeholder="1-14-17" :class="{ 'is-invalid': submitted && $v.formdata.address2.$error }" />
+                        <div v-if="submitted && !$v.formdata.address2.required" class="invalid-feedback">住所2は、必ず指定してください。</div>
                     </div>
                 </div>
             </form>
@@ -119,7 +137,7 @@
         <div class="confirm-btn">
             <div class="row justify-content-around">
                 <div class="col-4">
-                    <button  v-show="order_id_data.order_serial_id === null" @click="onClickPrevBtn" type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
+                    <button  v-show="true" @click="onClickPrevBtn" type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
                 </div>
                 <div class="col-auto" style="margin-left: 40px;">
                     <button  @click="onClickNextBtn" type="button" class="btn btn-primary" style="backgroud:#307DB9; ">次dへ</button>
@@ -136,11 +154,48 @@
                 array:[],  
             }          
         };
-    
+    import { required, email, minLength, and } from "vuelidate/lib/validators";
+
+    const isDate = (value) => moment(value, 'YYYY-MM-DD', true).isValid()
+
+    const calcAge = (date) => {
+        const today = moment()
+        return today.diff(moment(date), 'years')
+    }
+
+    const isLegalAge = (date, minAge) => {
+        if (calcAge(date) >= minAge) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     export default {
+        props:['existId'],
+        validations: {
+            formdata: {
+                first_name: { required },
+                last_name: { required, min: minLength(6) },
+                birthday: { required, 
+                            isDate(value){
+                                return isDate(value);
+                            },
+                            isLegalAge(value){
+                                // use 'and' to verify the date is valid before checking age
+                                return and('isDate', value => isLegalAge(value, 18));                                
+                            }
+                         },
+                phonenumber: { required },
+                email: { required, email },
+                zip_code: { required },
+                address1: { required },
+                address2: { required },
+            }
+        },
         data () {
             return {   
-                order_id_data:gIDInfo.data,//defined cancel.vue
+                order_id_info:gIDInfo.data,//defined ExistReservation.vue
                 order_info:gOrderTypeInfo.data, //defined selectordertype.vue
                 menu_info:gOrderInfo.data,  //defined selectmenu.vue            
                 //form: new Form({
@@ -156,12 +211,20 @@
                     address1:'',
                     address2:'',
                 },
+                submitted:false,
                 cities:['東京都','名古屋市','岡崎市'],
             }
 
         },
         methods:{
             onClickNextBtn:function(){
+                this.submitted = true;
+                // stop here if form is invalid
+                this.$v.$touch();
+                if (this.$v.$invalid) {
+                    return;
+                }
+
                 console.log( this.formdata);
                 this.arrayUserInfo();
                 gUserInfo.data.userinfo = this.formdata;
@@ -188,7 +251,21 @@
                 
             },
             onClickPrevBtn:function(){
-                this.$emit('changeStage', 1);
+                this.submitted = false;
+                if(this.existId)
+                    this.$emit('changeStage', 0);
+                else{
+                    this.$emit('changeStage', 1);
+                }
+             },
+            formatDate(dt) {
+                dt = new Date(dt);
+                var month = ('0' + (dt.getMonth() + 1)).slice(-2);
+                var date = ('0' + dt.getDate()).slice(-2);
+                var year = dt.getFullYear();
+                var formattedDate = year + '年' + month + '月' + date + '日';
+                //var formattedDate = year + '-' + month + '-' + date;
+                return formattedDate;
             },
         },
         mounted() {

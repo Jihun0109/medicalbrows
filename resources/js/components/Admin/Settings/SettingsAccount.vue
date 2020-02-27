@@ -72,22 +72,22 @@
                     <div class="form-group">
                         <label>ユーザーID</label>
                         <input v-model="form.user_id" type="text" name="user_id" class="form-control" :class="{'is-invalid':form.errors.has('user_id')}" placeholder="ユーザーID">
-                        <has-error :form="form" field="user_id"></has-error>
+                        <div v-if="form.errors.has('user_id')" class="invalid-feedback">{{errormsg(form.errors.get('user_id'),"user id","ユーザーID")}}</div>
                     </div>
                     <div class="form-group">
                         <label>ユーザー名</label>
                         <input v-model="form.name" type="text" name="name" class="form-control" :class="{'is-invalid':form.errors.has('name')}" placeholder="ユーザー名">
-                        <has-error :form="form" field="name"></has-error>
+                        <div v-if="form.errors.has('name')" class="invalid-feedback">{{errormsg(form.errors.get('name'),"name","ユーザー名")}}</div>
                     </div>
                     <div class="form-group">
                         <label>メール</label>
                         <input v-model="form.email" type="text" name="email" class="form-control" :class="{'is-invalid':form.errors.has('email')}" placeholder="メール">
-                        <has-error :form="form" field="email"></has-error>
+                        <div v-if="form.errors.has('email')" class="invalid-feedback">{{errormsg(form.errors.get('email'),"email","メール")}}</div>
                     </div>
                     <div class="form-group">
                         <label>バスワード</label>
                         <input v-model="form.password" type="password" class="form-control" :class="{'is-invalid':form.errors.has('password')}" placeholder="バスワード">
-                        <has-error :form="form" field="password"></has-error>
+                        <div v-if="form.errors.has('password')" class="invalid-feedback">{{errormsg(form.errors.get('password'),"password","バスワード")}}</div>
                     </div>
                     <div class="form-group">
                         <label>アカウントタイブ</label>
@@ -135,6 +135,9 @@
             }
         },
         methods: {
+            errormsg(msg,attribute,jpstr){
+                return msg.replace(attribute,jpstr);
+            },
             searchit(){
                 axios.get('/api/user?keyword=' + this.keyword).
                     then(({data}) => (this.data = data));
