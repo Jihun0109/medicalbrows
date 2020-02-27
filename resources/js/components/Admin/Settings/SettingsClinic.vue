@@ -71,7 +71,7 @@
                     <div class="form-group">
                         <label>ユーザーID</label>
                         <select v-model="form.user_id" class="custom-select" name="user_id" :class="{'is-invalid':form.errors.has('user_id')}">
-                          <option v-for="u in users" :key="u.user_id" v-bind:value="u.user_id">{{ u.user_id }}</option>
+                          <option v-for="u in users" :key="u.user_id" v-bind:value="u.user_id">{{ u.user_id }} ({{u.email}})</option>
                         </select>
                         <div v-if="form.errors.has('user_id')" class="invalid-feedback">{{errormsg(form.errors.get('user_id'),"user id","ユーザーID")}}</div>
                     </div>
