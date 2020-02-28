@@ -57,11 +57,8 @@ export default {
             fullPage: true,
             contents: [
                 'メディカルブローです。\r\n9 / 12(木)～ 名古屋駅前院でのご予約を承っております。\nご予約の変更・ キャンセルがございましたら、 2 日前17時までに【 0570 - 078 - 889】 までご連絡をお願い致します。 以降のご変更は、 キャンセル料金【 5, 000 円(税別)】 のご負担をいただく可能性がございますのでご了承下さい。 当日は、 ご予約時間の5分前到着でご来院をお願い致します。\n *このSMSは送信専用です。 ',
-
                 'メディカルブローです。予約変更を承りました。\n\n予約ID: \n■ 変更前\n日時：\n■ 変更後\n日時：\n\n本件についてのお問い合わせは【 0570 - 078 - 889】 までご連絡をお願い致します。\n *このSMSは送信専用です。 ',
-
                 'メディカルブローです。予約キャンセルを承りました。\n予約ID: \n予約日時：\nキャンセル料発生： 5, 000 円(税別)\n\n本件についてのお問い合わせは【 0570 - 078 - 889】 までご連絡をお願い致します。 * \nこのSMSは送信専用です。 ',
-
                 'メディカルブローです。\nこの度は弊社クリニックをご利用いただき誠にありがとうございます。\nまたの機会をお待ちしております。\n今後とも宜しくお願い申し上げます。 * \nこのSMSは送信専用です。 ',
             ],
             contentIdex: 0,
@@ -249,6 +246,13 @@ export default {
         onCellClicked: function(event, item, index) {
             if (item.selectable) {
                 console.log(item, '==============');
+                if (item.order_status == 'neworder') {
+                    this.contentIdex = 1;
+                } else if (this.item.order_status == 'cancelorder') {
+                    this.contentIdex = 2;
+                } else if (this.item.order_status == 'grayconselor') {
+                    this.contentIdex = 3;
+                }
                 this.bus.$emit('clearFormErrors');
                 $(".vue-grid-item").removeClass("selectedcolor");
                 $(event.currentTarget).addClass("selectedcolor"); //defalt color when click..                

@@ -12,6 +12,14 @@
                 <br>
                 予約キャンセルご案内メールも送信しております
             </div>
+            <div class="row justify-content-around">
+                <div class="col-auto mr-auto">
+                    <button v-show="false" @click="onClickPrevBtn" type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
+                </div>
+                <div class="col-auto" >
+                    <button  @click="onClickCompleteBtn" type="button" class="btn btn-primary" style="backgroud:#307DB9;">完了</button>
+                </div>
+            </div>
         </div>
         <div style="margin-top: 20px; margin-bottom: 10px; text-align: center;" v-show="complete === 0">       
             <label style="letter-spacing: -1.2px; margin-bottom: 35px;">予約キャンセル手続き</label>
@@ -121,6 +129,8 @@
 
                 email:'',
                 order_info:null,
+                customer_info:null,
+                content:'メディカルブローです。予約キャンセルを承りました。\n予約ID: \n予約日時：\nキャンセル料発生： 5, 000 円(税別)\n\n本件についてのお問い合わせは【 0570 - 078 - 889】 までご連絡をお願い致します。 * \nこのSMSは送信専用です。 ',
             }
         },
         methods:{
@@ -146,6 +156,7 @@
                             }
                             else{
                                 this.order_info = result.data.order_info;
+                                this.customer_info = result.data.customer_info;
                                 this.changepage = 1;   
                             }
                     
@@ -154,12 +165,13 @@
                             console.log('get_orderinfo error');
                         });                     
                 }
-                else{
+                else{                    
                     axios.post('/v1/client/order_cancel',{ 'order_serial_id': this.form.order_serial_id})
                     .then((result)=>{
                         console.log(result.data);
                         this.email = result.data.email;
                         this.complete = 1; 
+                        this.sendmail();
                     })
                     .catch(()=>{
                         console.log('order_cancel error');
@@ -173,6 +185,11 @@
                     this.$emit('toOrderMode');
                 }
             },
+            onClickCompleteBtn(){
+                this.changepage = 0; 
+                this.complete = 0;
+                this.$emit('toOrderMode');
+            },
             formatDate(dt) {
                 dt = new Date(dt);
                 var month = ('0' + (dt.getMonth() + 1)).slice(-2);
@@ -181,6 +198,30 @@
                 var formattedDate = year + '年' + month + '月' + date + '日';
                 //var formattedDate = year + '-' + month + '-' + date;
                 return formattedDate;
+            },
+            sendmail(){
+                var mail_info = {};
+                mail_info['customer_email'] = this.customer_info.email;
+                mail_info['customer_first_name'] = this.customer_info.first_name;
+                mail_info['customer_last_name'] = this.customer_info.last_name;
+                mail_info['content'] = 'メディカルブローです。予約キャンセルを承りました。\n予約ID:'+ this.form.order_serial_id + '\n予約日時：'+ this.formatDate(this.order_info.order_date) + this.order_info.week +'\nキャンセル料発生： 5, 000 円(税別)\n\n本件についてのお問い合わせは【 0570 - 078 - 889】 までご連絡をお願い致します。 * \nこのSMSは送信専用です。 ';//this.content;
+                mail_info['clinic_info'] = this.order_info.clinic_info;                
+                //console.log(mail_info);
+                axios.post('/v1/client/send_mail', { 'mail_info': mail_info })
+                    .then((result) => {
+                        toast.fire({
+                            icon: "success",
+                            title: "メール送信成功"
+                        });
+                        console.log(result.data);
+                    })
+                    .catch(() => {
+                        console.log('send mail error');
+                        // toast.fire({
+                        //     icon: "error",
+                        //     title: "メールの送信に失敗しました"
+                        // });
+                    });
             },
         },
         mounted() {

@@ -76,4 +76,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
     Route::post('/client/get_orderinfo', 'API\ClientController@get_orderinfo');
     Route::post('/client/order_update', 'API\ClientController@order_update');
     Route::post('/client/order_cancel', 'API\ClientController@order_cancel');
+    Route::post('/client/send_mail', 'API\ClientController@sendmail');
+    Route::get('/client/download', 'API\ClientController@download');
 });

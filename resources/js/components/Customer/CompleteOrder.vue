@@ -22,10 +22,10 @@
         <div class="confirm-btn">
             <div class="row justify-content-around">
                 <div class="col-auto mr-auto">
-                    <button @click="onClickPrevBtn" type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
+                    <button v-show="true" @click="onClickPrevBtn" type="button" class="btn btn-secondary" style="background:#9F9F9F;">戻る</button>
                 </div>
                 <div class="col-auto" >
-                    <button  @click="onClickNextBtn" type="button" class="btn btn-primary" style="backgroud:#307DB9;">次へ</button>
+                    <button  @click="onClickNextBtn" type="button" class="btn btn-primary" style="backgroud:#307DB9;">完了</button>
                 </div>
             </div>
         </div> 
