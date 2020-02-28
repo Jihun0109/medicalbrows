@@ -61,11 +61,11 @@
                             <div>
                                 <b-form-radio v-model="order_method" value="staff" name="radio-method" size="lg">施術者を優先して予約</b-form-radio>
                                 <select v-show="order_method === 'staff'" v-model="selectedrank" class="form-control" style="margin-bottom: 8px;">
-                                    <option value="null" disabled>ランクを選択または入力</option>
+                                    <option value="null" disabled>ランクを選択</option>
                                     <option v-for="(r,index) in ranks" :key="index" v-bind:value="r">{{r.name}}</option>
                                 </select>
                                 <select v-show="order_method === 'staff' && selectedrank !== null" v-model="selectedstaff" class="form-control" style="margin-bottom: 8px;">
-                                    <option value="null" disabled>施術者を選択または入力</option>
+                                    <option value="null" disabled>施術者を選択</option>
                                     <option v-for="(s, index) in staffs" :key="index" v-bind:value="s">{{s.name}}</option>
                                 </select>
                                 <div v-show="selectedstaff !== null && order_method === 'staff'">

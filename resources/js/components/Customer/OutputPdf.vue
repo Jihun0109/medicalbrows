@@ -6,7 +6,7 @@
         <div class="card">
             <div class="card-body row">
                 <div class="col-3 my-auto pdf-btn">
-                    <a href="pdf/スタッフ区分.pdf"><i class="fas fa-file-pdf" style="font-size:3em; color:rgb(232, 86, 94);"></i></a>
+                    <a href="pdf/スタッフ区分.pdf"  target="_blank"><i class="fas fa-file-pdf" style="font-size:3em; color:rgb(232, 86, 94);"></i></a>
                 </div>
                 <div class="col">
                     <div class="pdf-btn">
@@ -19,7 +19,7 @@
         <div class="card">
             <div class="card-body row">
                 <div class="col-3 align-self-center pdf-btn">
-                    <a href="pdf/表参道メディカルクリニック問診票.pdf"><i class="fas fa-file-pdf" style="font-size:3em; color:rgb(232, 86, 94);"></i></a>
+                    <a href="pdf/表参道メディカルクリニック問診票.pdf" target="_blank"><i class="fas fa-file-pdf" style="font-size:3em; color:rgb(232, 86, 94);"></i></a>
                 </div>
                 <div class="col">
                     <div class="pdf-btn">
