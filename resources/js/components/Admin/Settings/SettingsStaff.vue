@@ -89,7 +89,7 @@
                         <select v-model="form.staff_type_id" class="custom-select" name="staff_type_id" :class="{'is-invalid':form.errors.has('staff_type_id')}">
                           <option v-for="type in staff_types" :key="type.id" v-bind:value="type.id">{{ type.name }}</option>
                         </select>
-                        <div v-if="form.errors.has('staff_type_id')" class="invalid-feedback">{{errormsg(form.errors.get('staff_type_id'),"staff type id","スタツフ区分")}}</div>
+                        <div v-if="form.errors.has('staff_type_id')" class="invalid-feedback">スタッフの区分を指定してください。</div>
                     </div>
                     
                     <div class="form-group">

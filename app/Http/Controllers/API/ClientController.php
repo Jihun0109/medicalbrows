@@ -577,8 +577,8 @@ class ClientController extends Controller
         $payLoad = json_decode(request()->getContent(), true);
         $order_info = $payLoad['order_info'];
         $customer_info = $payLoad['user_info'];
-        // Log::Info($payLoad);
-        // return;
+         //Log::Info($payLoad);
+         //return;
         $order_serial_id = $request->order_serial_id;
 
         //create customer: zipcode, city_name, address2 non-used
@@ -612,7 +612,7 @@ class ClientController extends Controller
                     'order_type' => $order_info['order_type'],
                     'order_date' => $order_info['calendar_info']['date'],
                     'order_route' => '電話',//$order_info['order_route'],
-                    //'note' => $payLoad['note'],
+                    'note' => $customer_info['note'],
                     'order_serial_id' => $order_serial_id,
                     'customer_id' => $customer->id,
                     'menu_id' => $order_info['menu_info']['id'],
@@ -644,6 +644,7 @@ class ClientController extends Controller
                 'order_route' => '電話',//$order_info['order_route'],
                 'order_serial_id' => $order_serial_id,
                 'customer_id' => $customer->id,
+                'note' => $customer_info['note'],
                 'is_deleted' => 0
             ]);
         }
@@ -666,6 +667,7 @@ class ClientController extends Controller
                 'order_route' => '電話',//$order_info['order_route'],
                 'order_serial_id' => $order_serial_id,
                 'customer_id' => $customer->id,
+                'note' => $customer_info['note'],
                 'is_deleted' => 0
             ]);
         }

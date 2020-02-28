@@ -177,7 +177,7 @@
                 </div>
             </div>
             <div class="modal-footer d-flex justify-content-between">
-                <a v-show="true" type="button" class="btn btn-secondary" style="background:rgb(197, 224, 180); color:black" v-bind:href="'mailto:'+clinic.email">メール送信</a>
+                <a v-show="true" data-toggle="modal" href="#modalMailBox" class="btn btn-secondary" style="background:rgb(197, 224, 180); color:black" >メール送信</a>
                 <button v-show="changeMode" type="button" class="btn btn-secondary" style="background:rgb(197, 224, 180); color:black" data-dismiss="modal">予約取消</button>
                 <a data-toggle="modal" href="#modalUpdateDlg" class="btn btn-primary" style="background:rgb(197, 224, 180); color:black">変更</a>
             </div>

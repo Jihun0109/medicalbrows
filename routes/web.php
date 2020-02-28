@@ -16,6 +16,8 @@ use App\Mail\WelcomeMail;
 //     return view('welcome');
 // });
 
+Route::get('/email', 'TestController@email');
+
 Route::group(['prefix' => 'cadmin'], function () {
     Voyager::routes();
 });
@@ -57,6 +59,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
     Route::post('/shift/get', 'ShiftController@getShift');
 
     Route::get('/clinic/get-email', 'API\UserController@getClinicIdsWithEmail');
+    Route::post('/send_mail', 'ReservationsController@sendMail');
 //     // Clinics
 //     Route::get('/clinic/list', 'ApiController@clinicList');
 //     Route::post('/clinic/add', 'ApiController@clinicAdd');
@@ -74,10 +77,3 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
     Route::post('/client/order_update', 'API\ClientController@order_update');
     Route::post('/client/order_cancel', 'API\ClientController@order_cancel');
 });
-
-
-Route::get('/email', function(){
-    return new WelcomeMail();   
-});
-
-Route::get('/test', 'HomeController@test');

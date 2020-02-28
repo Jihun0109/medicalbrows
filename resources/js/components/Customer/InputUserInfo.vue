@@ -210,6 +210,7 @@
                     city_name:'東京都',
                     address1:'',
                     address2:'',
+                    note:'経験 : \n妊娠・授乳・不妊治療 : \n通院歴・薬 : \n金アレ・アトピー・ケロイド確認 : \n眉ブリーチ・炎症・傷跡確認 : \n美容サービス・美容整形確認 : \n料金・所要時間 : \nHP : \nキャンセル規約 : ',
                 },
                 submitted:false,
                 cities:['東京都','名古屋市','岡崎市'],
@@ -396,9 +397,9 @@
         transition: $switch-transition;
         }
 
-        &:checked + label::before {
+        //&:checked + label::before {
             //background-color: $switch-checked-bg;
-        }
+        //}
 
         &:checked + label::after {
         margin-left: $switch-height;

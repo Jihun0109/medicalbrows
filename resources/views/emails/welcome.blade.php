@@ -1,5 +1,9 @@
 @component('mail::message')
-# Introduction
+@if (! empty($greeting))
+# {{ $greeting }}
+@else
+# Introduction Here
+@endif
 
 The body of your message.
 

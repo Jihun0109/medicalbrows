@@ -48,6 +48,7 @@
             },
             onClickNextBtn(){
                 console.log(this.resultdata);
+                this.$emit('changeStage', 0);
             }
         }
     }

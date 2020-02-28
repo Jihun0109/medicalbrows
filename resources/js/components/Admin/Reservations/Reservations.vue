@@ -9,6 +9,68 @@
             <ModalUpdateDlg v-bind:sr_list="this.staff_rank_list" :item="this.item" 
                 v-bind:menus="this.menus" v-bind:counselors="this.counselors" @orderCreated="onOrderCreated" :childbus="bus" ref="modalUpdateDlg"></ModalUpdateDlg>
         </div>
+
+        <!-- mail box Modal -->
+        <div id="modalMailBox" class="modal fade">
+            <div class="modal-dialog modal-dialog-centered" style="width: 425px;">
+                <div class="modal-content">
+                    <!-- dialog body -->
+                    <div class="modal-body">    
+                        <div class="text-center">       
+                            <label style="letter-spacing: -1.2px;">メール送信</label>
+                        </div>            
+                        <form class="update">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label">送信区分:</label>
+                                <div class="col-sm-8"  style="padding-top: 7px;" v-show="item.rank_name !== 'カウゼ'">
+                                    <select name="send_type" class="custom-select custom-select-sm form-control-sm">
+                                        <option value="">メール</option>   
+                                        <option value="">SMS</option>                                                                                  
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label">送信先:</label>
+                                <div class="col-sm-8">
+                                    <p>{{item.customer_first_name}}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <label for="hours" class="col-sm-3 col-form-label"></label>
+                                <div class="col-sm-8">
+                                    <p>{{item.customer_last_name}}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label"></label>
+                                <div class="col-sm-8">
+                                    <p>{{item.customer_phonenumber}}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <label class="col-sm-2 col-form-label">内容:</label>
+                                <div class='col-9' style="margin-top: 10px; width:100%;">
+                                    <b-form-textarea
+                                        id="textarea"
+                                        v-model="contents[contentIdex]"
+                                        rows="3"
+                                        no-resize
+                                        style="font-size:12px;"
+                                    ></b-form-textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- dialog buttons -->
+                    <div class="modal-footer justify-content-center"> 
+                        <a href="#" data-dismiss="modal" class="btn" style="width:100px; background:rgb(127, 127, 127); color:white; margin-right: 60px;">キャンセル</a>
+                        <a href="#" v-on:click="onClickSendMail" class="btn btn-primary" style="width:100px; background:rgb(68, 114, 196); color:white">送信</a>                      
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- status change Modal -->
         <div id="modalMessageBox" class="modal fade">
             <div class="modal-dialog modal-dialog-centered">

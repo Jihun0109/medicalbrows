@@ -11,6 +11,11 @@ use App\TblOrderHistory;
 use DB;
 use Log;
 
+use App\Mail\OrderReserved;
+use App\Mail\WelcomeMail;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\Mail;
+
 class ReservationsController extends Controller
 {
     /**
@@ -870,4 +875,34 @@ class ReservationsController extends Controller
         array_push($ret_array, $ret);
         return $ret_array;
     }
+    public function sendMail(Request $request)
+    {
+        Log::info($request);
+        $mail_info = $request->mail_info;
+        $customer_email = $mail_info['customer_email'];
+        $clinic_email = $mail_info['clinic_email'];
+        if($this->email($customer_email, $mail_info['customer_first_name'], $mail_info['content']))
+             return 'success';
+        return 'failed';
+    }
+    public function email($target_email, $name, $body)
+    {
+        //$target_email = 'beautisong@hotmail.com';
+        //$target_email = 'dmitriydevop@hotmail.com';
+        $subject = "予約管理システム";
+        $content = [
+            'name' => $name,
+            'subject' => $subject,
+            'body' => $body
+        ];
+        Mail::to($target_email)->send(new OrderReserved($content));
+        if(count(Mail::failures()) > 0){
+            $errors = 'Failed to send password reset email, please try again.';
+            Log::info($errors);
+            return false;
+        }
+        //return (new OrderReserved($content));
+        return true;
+    }
+
 }

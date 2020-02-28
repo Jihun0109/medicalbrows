@@ -56,7 +56,6 @@ class ResetPassword extends Notification
             return call_user_func(static::$toMailCallback, $notifiable, $this->token);
         }
 
-        Log::info($notifiable);
         return (new MailMessage)
             //->subject(Lang::get('Reset Password Notification'))
             ->subject("【Medicalbrows予約システム】パスワードリセット通知")

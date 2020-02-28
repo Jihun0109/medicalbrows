@@ -25,7 +25,7 @@
         </div>
         <div class="cardcontent">
             <div class="text-center">       
-                <label style="letter-spacing: -1.2px;">xx診療区分、予約方法を選択して下さい</label>
+                <label style="letter-spacing: -1.2px;">診療区分、予約方法を選択して下さい</label>
             </div>
             <label class="mt-3" style="margin-bottom:0px;">診療区分:</label>
             <div class="division">
@@ -357,32 +357,6 @@ export default {
         margin-bottom: 8px;
     }
 
-    .bottombtn-home {
-        a {
-            display: inline-block;
-            color: #9e9e9e;
-            width: 33.33%;
-            float: left;
-            text-align: center;
-        }
-        .active {
-            color: rgb(3, 46, 86);
-        }
-        .icon {
-            display: block;
-            margin: 0 auto;
-            margin-bottom: 1px;
-        }
-    }
-    .footer {
-        position: fixed;
-        left: 0;
-        bottom: 0;
-        width: 100%;
-        background-color: rgb(240,240,240);
-        color: black;
-        text-align: center;
-    }
     .help-icon{
         font-size: 20px;
     }    
