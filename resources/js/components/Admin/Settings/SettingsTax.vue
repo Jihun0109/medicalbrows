@@ -163,7 +163,7 @@
                                 >
                                     <input type="text" slot-scope='props' :value='props.inputValue' class="form-control" :class="{'is-invalid':form.errors.has('end_time')}">
                                 </v-date-picker>
-                                <div v-if="form.errors.has('end_time')" class="invalid-feedback">{{errormsg(form.errors.get('end_time'),"end time","運用終了日")}}</div>            
+                                <div v-if="form.errors.has('end_time')" class="invalid-feedback">運用終了日には、運用開始日より後の日付を指定してください。</div>            
                             </div>
                         </div>
                         <div class="modal-footer">

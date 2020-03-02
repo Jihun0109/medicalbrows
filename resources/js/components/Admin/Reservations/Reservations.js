@@ -55,6 +55,7 @@ export default {
                 data: ['L', 'YYYY-MM-DD', 'YYYY/MM/DD']
             },
             fullPage: true,
+            mailtitle: '',
             contents: [
                 'メディカルブローです。\r\n9 / 12(木)～ 名古屋駅前院でのご予約を承っております。\nご予約の変更・ キャンセルがございましたら、 2 日前17時までに【 0570 - 078 - 889】 までご連絡をお願い致します。 以降のご変更は、 キャンセル料金【 5, 000 円(税別)】 のご負担をいただく可能性がございますのでご了承下さい。 当日は、 ご予約時間の5分前到着でご来院をお願い致します。\n *このSMSは送信専用です。 ',
                 'メディカルブローです。予約変更を承りました。\n\n予約ID: \n■ 変更前\n日時：\n■ 変更後\n日時：\n\n本件についてのお問い合わせは【 0570 - 078 - 889】 までご連絡をお願い致します。\n *このSMSは送信専用です。 ',
@@ -92,6 +93,7 @@ export default {
             mail_info['customer_email'] = this.item.customer_email;
             mail_info['customer_first_name'] = this.item.customer_first_name;
             mail_info['customer_last_name'] = this.item.customer_last_name;
+            mail_info['mailtitle'] = this.mailtitle;
             mail_info['content'] = this.contents[this.contentIdex];
             mail_info['clinic_email'] = this.selected_clinic.email;
             mail_info['clinic_name'] = this.item.clinic_name;

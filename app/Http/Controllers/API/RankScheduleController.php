@@ -27,6 +27,8 @@ class RankScheduleController extends Controller
                             where(function($query) use ($keyword){
                                 $query->where('tbl_ranks.name','LIKE',"%".$keyword."%")->
                                         orWhere('tbl_rank_schedules.id','LIKE',"%".$keyword."%")->
+                                        orWhere('tbl_rank_schedules.start_time','LIKE BINARY',"%".$keyword."%")->
+                                        orWhere('tbl_rank_schedules.end_time','LIKE BINARY',"%".$keyword."%")->
                                         orWhere('tbl_operable_parts.name','LIKE',"%".$keyword."%");
                           })->latest()->get();
         }

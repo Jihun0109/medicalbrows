@@ -22,7 +22,7 @@ class StaffRankController extends Controller
     public function index()
     {
         $keyword = \Request::get('keyword');
-        if ($keyword){
+        if ($keyword){ 
             return DB::table('tbl_staff_ranks')->
                 join('tbl_staffs','tbl_staffs.id','tbl_staff_ranks.staff_id')->
                 join('tbl_ranks','tbl_ranks.id','tbl_staff_ranks.rank_id')->
@@ -31,6 +31,7 @@ class StaffRankController extends Controller
                 where(function($query) use ($keyword){
                     $query->where('tbl_staffs.full_name','LIKE',"%".$keyword."%")->
                             orWhere('tbl_staff_ranks.id','LIKE',"%".$keyword."%")->
+                            orWhere('tbl_staff_ranks.promo_date','LIKE BINARY',"%".$keyword."%")->
                             orWhere('tbl_staffs.alias','LIKE',"%".$keyword."%")->
                             orWhere('tbl_ranks.name','LIKE',"%".$keyword."%");
               })->latest()->get();

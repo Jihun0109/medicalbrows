@@ -51,13 +51,44 @@ class ShiftController extends Controller
         $staff_ids = $request->staffs;
         $dates = $request->dates;
         $month = $request->month;
+        $min = $request->mindate;
+        $max = $request->maxdate;
 
+        $order_histories = DB::table('tbl_order_histories')
+                        ->join('tbl_staffs','tbl_staffs.id', 'tbl_order_histories.staff_id')
+                        ->whereIn('tbl_order_histories.staff_id', $staff_ids)
+                        ->whereBetween('tbl_order_histories.order_date', [Carbon::parse($min)->subDays(1), Carbon::parse($max)->addDays(1)])
+                        ->select('tbl_order_histories.staff_id','tbl_staffs.full_name','tbl_order_histories.order_date')
+                        ->get();
+
+        Log::info("Check Orders");
+        Log::info($order_histories);
+        //Log::info($dates);
         //return Carbon::parse($request->dates[0])->tz('UTC');
+
+        $isRest = false;
+        $couldnot = [];
+        for ($i = 0; $i < sizeof($order_histories); $i++){            
+            if (in_array($order_histories[$i]->order_date, $dates))
+                continue;
+            else{
+                array_push($couldnot, array('staff_name'=>$order_histories[$i]->full_name,  'date'=>$order_histories[$i]->order_date));                
+            }
+        }
+        Log::info("couldnot");
+        Log::info($couldnot);
+
+        if ($couldnot){
+            return array("result"=>"fails", "message"=> "TakenOrder", "data"=>$couldnot);
+        }
+        // foreach($order_histories as $order){
+        //     if ($order->order_date === )
+        // }
         foreach($staff_ids as $staff_id){
             //$o = microtime(true);
             $target_day = Carbon::createFromDate($month['year'], $month['month'], 15);
             $dd = TblShiftHistory::where('staff_id',$staff_id)->
-                whereBetween('date',[Carbon::parse($target_day)->startOfMonth(),Carbon::parse($target_day)->endOfMonth()])->
+                whereBetween('date',[Carbon::parse($min),Carbon::parse($max)])->
                 delete();
             
             $data = [];
@@ -77,11 +108,13 @@ class ShiftController extends Controller
         $staff_id = $request->staff_id;
         $year = $request->year;
         $month = $request->month;
+        $min = $request->mindate;
+        $max = $request->maxdate;
 
         $target_day = Carbon::createFromDate($year, $month, 15);
 
         $shift = TblShiftHistory::where('staff_id', $staff_id)->
-                                whereBetween('date',[Carbon::parse($target_day)->startOfMonth(),Carbon::parse($target_day)->endOfMonth()])->
+                                whereBetween('date',[Carbon::parse($min),Carbon::parse($max)])->
                                 select('date')->pluck('date')->toArray();
 
         return $shift;

@@ -113,7 +113,7 @@
                                 )
                             }"
                         ></datetime>
-                        <div v-if="form.errors.has('end_time')" class="invalid-feedback">{{errormsg(form.errors.get('end_time'),"end time","終了時間")}}</div>
+                        <div v-if="form.errors.has('end_time')" class="invalid-feedback">{{errormsg_array(form.errors.get('end_time'),["end time","start time"],["終了時間","開始時間"])}}</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -153,6 +153,12 @@
         methods: {
             errormsg(msg,attribute,jpstr){
                 return msg.replace(attribute,jpstr);
+            },
+            errormsg_array(msg,attribute,jpstr){                
+                for(var i=0; i< attribute.length;i++){
+                    msg = msg.replace(attribute[i], jpstr[i]);                                       
+                }                    
+                return msg;
             },
             formatTime(time){
                 return  time.substring(0,5);

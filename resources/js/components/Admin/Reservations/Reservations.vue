@@ -47,10 +47,16 @@
                                     <p>{{item.customer_phonenumber}}</p>
                                 </div>
                             </div>
-                            
                             <div class="row">
                                 <label class="col-sm-2 col-form-label">内容:</label>
-                                <div class='col-9' style="margin-top: 10px; width:100%;">
+                                <div class="col-9" style="margin-top: 10px; width:100%;">
+                                    <input v-model="mailtitle" id="mailtitle" type="text" class="form-control form-control-sm" :class="{'is-invalid':form.errors.has('mailtitle')}" placeholder="タイトルを入力してください。">
+                                    <div v-if="form.errors.has('mailtitle')" class="invalid-feedback">タイトルを入力してください。</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <label class="col-sm-2 col-form-label"></label>
+                                <div class='col-9' style="margin-top: 20px; width:100%;">
                                     <b-form-textarea
                                         id="textarea"
                                         v-model="contents[contentIdex]"

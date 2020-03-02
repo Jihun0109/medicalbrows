@@ -105,7 +105,7 @@
                     <div class="row">
                         <label class="col-sm-3 col-form-label">お客様名:</label>
                         <div class="col-sm-8">
-                            <input v-model="form.first_name" id="customerName" type="text" class="form-control form-control-sm" placeholder="お客様名を入力" :class="{'is-invalid':form.errors.has('first_name')}">
+                            <input v-model="form.first_name" id="customerName" v-on:input="update_furigana" type="text" class="form-control form-control-sm" placeholder="お客様名を入力" :class="{'is-invalid':form.errors.has('first_name')}">
                         </div>
                     </div>
                     <div class="row">
@@ -130,8 +130,8 @@
                     <div class="row">
                         <label class="col-sm-3 col-form-label">電話番号:</label>
                         <div class="col-sm-8">
-                            <input v-model="form.phonenumber" type="tel" class="form-control form-control-sm" v-mask="{mask:'999-9999-9999', placeholder:'#'}" :class="{'is-invalid':form.errors.has('phonenumber')}">
-                            <!-- <input v-model="form.phonenumber" type="text" class="form-control form-control-sm" placeholder="080-xxx-xxxx" :class="{'is-invalid':form.errors.has('phonenumber')}"> -->
+                            <!-- <input v-model="form.phonenumber" type="tel" class="form-control form-control-sm" v-mask="{mask:'999-9999-9999', placeholder:'#'}" :class="{'is-invalid':form.errors.has('phonenumber')}"> -->
+                            <input v-model="form.phonenumber" type="number" :maxlength="11" class="form-control form-control-sm" placeholder="xxxxxxxxxx" :class="{'is-invalid':form.errors.has('phonenumber')}">
                         </div>
                     </div>
                     <div class="row">
@@ -161,7 +161,8 @@
 
 <script>
     import CustomNote from './CustomNote.vue';
-    import * as AutoKana from 'vanilla-autokana';
+    //import * as AutoKana from 'vanilla-autokana';
+    import historykana from 'historykana'
     export default {
         props:['item','sr_list','menus','counselors','childbus'],
         components: {
@@ -187,16 +188,21 @@
                     old_itvr_y: '',
                 }),
                 routes:['システム','電話','Web','チャットボット'],
+                history:[],
             }
         },
         mounted () {            
             this.childbus.$on('clearFormErrors', this.clearErrors);            
-            AutoKana.bind('#customerName', '#customerFurigana');
+            //AutoKana.bind('#customerName', '#customerFurigana');
         },
         created() {
             this.loadInfo();            
         },
         methods: {
+            update_furigana(input){
+                this.history.push(input.target.value);
+                this.form.last_name = historykana(this.history);
+            },
             isShow: function(order_type){                
                 if(order_type =="再診")
                     return false;

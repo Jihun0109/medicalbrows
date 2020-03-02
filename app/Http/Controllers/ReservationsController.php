@@ -102,7 +102,7 @@ class ReservationsController extends Controller
         
         //먼저 shift_history검사, 다음 order_history에 예약된 상담원의 시간대를 구하고 제거한다.
         for ( $i = 0; $i < sizeof($counselor_list); $i++ ){
-            if (sizeof(DB::table("tbl_shift_histories")->where(['staff_id'=>$counselor_list[$i]->interviewer_id, 'date'=>$selected_date])->get()) > 0)
+            if (!DB::table("tbl_shift_histories")->where(['staff_id'=>$counselor_list[$i]->interviewer_id, 'date'=>$selected_date])->value('id'))
                 continue;
             $temp = [];
             // 상담원이 인터뷰어로 예약되여 있으면 그 시간을 리턴.
@@ -185,7 +185,7 @@ class ReservationsController extends Controller
             $temp = [];
 
             // Shift table 조회
-            if (sizeof(DB::table("tbl_shift_histories")->where(['staff_id'=>$staff_rank_names[$i]->staff_id, 'date'=>$selected_date])->get()) > 0)
+            if (!DB::table("tbl_shift_histories")->where(['staff_id'=>$staff_rank_names[$i]->staff_id, 'date'=>$selected_date])->value('id'))
                 continue;
 
             $rank_schedule = DB::table('tbl_rank_schedules')
@@ -469,15 +469,20 @@ class ReservationsController extends Controller
         {
             $this->validate($request, [
                 'menu_id' => 'required',
-                'counselor' => 'required',                
+                'counselor' => 'required',
+                'first_name' => 'required|string|max:30',
+                'last_name' => 'required|string|max:30',
+                'birthday' => 'required|date', 
+                'phonenumber' => 'required|max:11',
+                'email' => 'required|email'
             ]); 
         } 
         $this->validate($request, [
             'first_name' => 'required|string|max:30',
             'last_name' => 'required|string|max:30',
             'birthday' => 'required|date', 
-            'phonenumber' => 'required|string|max:30',
-            'email' => 'required|string|max:50|min:10'
+            'phonenumber' => 'required|max:11',
+            'email' => 'required|email'
             //'order_route' => 'string|max:30',
         ]); 
 
@@ -879,17 +884,18 @@ class ReservationsController extends Controller
     {
         Log::info($request);
         $mail_info = $request->mail_info;
-        $customer_email = $mail_info['customer_email'];
+        $customer_email = $mail_info['customer_email'];       
         $clinic_email = $mail_info['clinic_email'];
-        if($this->email($customer_email, $mail_info['customer_first_name'], $mail_info['content']))
+        $mailtitle = $mail_info['mailtitle'];
+        if($this->email($customer_email, $mail_info['customer_first_name'],$mailtitle, $mail_info['content']))
              return 'success';
         return 'failed';
     }
-    public function email($target_email, $name, $body)
+    public function email($target_email, $name, $subject, $body)
     {
         //$target_email = 'beautisong@hotmail.com';
         //$target_email = 'dmitriydevop@hotmail.com';
-        $subject = "予約管理システム";
+        //$subject = "予約管理システム";
         $content = [
             'name' => $name,
             'subject' => $subject,

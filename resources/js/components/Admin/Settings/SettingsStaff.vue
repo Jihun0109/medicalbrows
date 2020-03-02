@@ -23,7 +23,7 @@
                   <thead>
                     <tr>
                       <th>スタッフID</th>
-                      <th>スタツフ名</th>
+                      <th>スタッフ名</th>
                       <th>表記名</th>
                       <th>スタッフ区分</th>
                       <th>クリニック名</th>
@@ -74,9 +74,9 @@
                 <form @submit.prevent="editMode ? updateRank() : createData()">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>スタツフ名</label>
-                        <input v-model="form.full_name" type="text" name="full_name" class="form-control" :class="{'is-invalid':form.errors.has('full_name')}" placeholder="スタツフ名">
-                        <div v-if="form.errors.has('full_name')" class="invalid-feedback">{{errormsg(form.errors.get('full_name'),"full name","スタツフ名")}}</div>
+                        <label>スタッフ名</label>
+                        <input v-model="form.full_name" type="text" name="full_name" class="form-control" :class="{'is-invalid':form.errors.has('full_name')}" placeholder="スタッフ名">
+                        <div v-if="form.errors.has('full_name')" class="invalid-feedback">{{errormsg(form.errors.get('full_name'),"full name","スタッフ名")}}</div>
                     </div>
                     <div class="form-group">
                         <label>表記名</label>
@@ -85,7 +85,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>スタツフ区分</label>
+                        <label>スタッフ区分</label>
                         <select v-model="form.staff_type_id" class="custom-select" name="staff_type_id" :class="{'is-invalid':form.errors.has('staff_type_id')}">
                           <option v-for="type in staff_types" :key="type.id" v-bind:value="type.id">{{ type.name }}</option>
                         </select>
@@ -103,7 +103,7 @@
                         <label>休退職</label>
                         <select v-model="form.is_vacation" class="custom-select" name="is_vacation" :class="{'is-invalid':form.errors.has('is_vacation')}">
                           <option v-bind:value=0>アクティブ</option>
-                          <option v-bind:value=1>退職</option>
+                          <option v-bind:value=1>休退職</option>
                         </select>
                         <div v-if="form.errors.has('is_vacation')" class="invalid-feedback">{{errormsg(form.errors.get('is_vacation'),"is vacation","休退職")}}</div>
                     </div>

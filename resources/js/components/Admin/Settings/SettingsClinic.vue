@@ -24,6 +24,7 @@
                     <tr>
                       <th>クリニックID</th>
                       <th>クリニック名 </th>
+                      <th>ユーザーID </th>
                       <th>メール</th>                      
                       <th>住所</th>
                       <th>休閉鎖</th>
@@ -34,6 +35,7 @@
                     <tr v-for="d in data" :key="d.id">
                       <td>{{ d.id }}</td>
                       <td>{{ d.name }}</td>
+                      <td>{{ d.user_id }}</td>
                       <td>{{ d.email }}</td>
                       <td>{{ d.address }}</td>
                       <td>{{ d.is_vacation | isVacation}}</td>
@@ -70,10 +72,14 @@
                     </div>                    
                     <div class="form-group">
                         <label>ユーザーID</label>
-                        <select v-model="form.user_id" class="custom-select" name="user_id" :class="{'is-invalid':form.errors.has('user_id')}">
-                          <option v-for="u in users" :key="u.user_id" v-bind:value="u.user_id">{{ u.user_id }} ({{u.email}})</option>
+                        <select v-model="form.user_id" @change="onUserIdChange($event)" class="custom-select" name="user_id" :class="{'is-invalid':form.errors.has('user_id')}">
+                          <option v-for="u in users" :key="u.user_id" v-bind:value="u.user_id">{{ u.user_id }}</option>
                         </select>
                         <div v-if="form.errors.has('user_id')" class="invalid-feedback">{{errormsg(form.errors.get('user_id'),"user id","ユーザーID")}}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>メール</label>
+                        <input v-model="form.email" type="text" class="form-control" :disabled="true">
                     </div>
                     <div class="form-group">
                         <label>住所</label>
@@ -120,6 +126,15 @@
             }
         },
         methods: {
+            onUserIdChange(event){
+                if(this.users){
+                    this.users.forEach(element => {                                    
+                        if (event.target.value === element.user_id){
+                            this.form.email = element.email;
+                        }
+                    }); 
+                }
+            },
             errormsg(msg,attribute,jpstr){
                 return msg.replace(attribute,jpstr);
             },            
@@ -224,8 +239,13 @@
                 axios.get('/v1/clinic/get-email').then(
                     ({data}) => {
                         this.users = data;
-                        if (targetEmail)
+                        this.form.user_id = this.users[0].user_id;    
+                        this.form.email = this.users[0].email;
+                        if (targetEmail){
                             this.users.push({'user_id':targetEmail['user_id'],'email':targetEmail['email']});
+                            this.form.user_id = targetEmail['user_id'];    
+                            this.form.email = targetEmail['email'];
+                        }                            
                     }
                 );
             }
