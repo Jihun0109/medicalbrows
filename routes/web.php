@@ -17,6 +17,7 @@ use App\Mail\WelcomeMail;
 // });
 
 Route::get('/email', 'TestController@email');
+Route::get('/pdfdown', 'API\ClientController@getDocument');
 
 Route::group(['prefix' => 'cadmin'], function () {
     Voyager::routes();
@@ -60,6 +61,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['cors']], function() {
 
     Route::get('/clinic/get-email', 'API\UserController@getClinicIdsWithEmail');
     Route::post('/send_mail', 'ReservationsController@sendMail');
+
+    Route::get('/logs', 'LogsController@index');
 //     // Clinics
 //     Route::get('/clinic/list', 'ApiController@clinicList');
 //     Route::post('/clinic/add', 'ApiController@clinicAdd');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\TblLog;
 
 class LogsController extends Controller
 {
@@ -23,6 +24,11 @@ class LogsController extends Controller
      */
     public function index()
     {
-        return view('logs.index');
+        $keyword = \Request::get('keyword');
+        return TblLog::where(function($query) use ($keyword){
+                                    $query->where('log','LIKE',"%".$keyword."%")->
+                                            orWhere('created_at','LIKE BINARY',"%".$keyword."%")->
+                                            orWhere('updated_at','LIKE BINARY',"%".$keyword."%");                                            
+                              })->latest()->get();
     }
 }

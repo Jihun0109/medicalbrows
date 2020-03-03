@@ -171,6 +171,7 @@
     .arrow4,
     .arrow5 {
     /* just for this demo. */    
+        pointer-events: none;
         margin-top: 5px;
         height: 45px;
         padding: 0px;

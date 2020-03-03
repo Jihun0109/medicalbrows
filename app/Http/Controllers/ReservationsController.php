@@ -8,6 +8,9 @@ use App\TblStaff;
 use App\TblCustomer;
 use App\TblOrder;
 use App\TblOrderHistory;
+use App\TblLog;
+use App\TblClinic;
+
 use DB;
 use Log;
 
@@ -547,7 +550,7 @@ class ReservationsController extends Controller
             $schedule_info = DB::table('tbl_rank_schedules')->where('id', $payLoad['item']['rank_schedule_id'])->first();
             
             $order_serial_id = sprintf('%s-%06d', time(), $payLoad['item']['staff_id']);
-            Log::info($payLoad);
+            
             $order_history = TblOrderHistory::create([
                 'staff_id' => $payLoad['item']['staff_id'],
                 'rank_id' => $payLoad['item']['rank_id'],                
@@ -568,6 +571,9 @@ class ReservationsController extends Controller
             ]);
         }
         
+        $clinic_name = DB::table('tbl_clinics')->join('tbl_staffs','tbl_staffs.clinic_id','tbl_clinics.id')->where('tbl_clinics.id',$payLoad['item']['staff_id'])->value('tbl_clinics.name');
+        $log = "予約登録: 予約ID 「". $order_serial_id . "」 場所等 「". $clinic_name. "」 日時 「". $payLoad['item']['date']."」";
+        TblLog::create(['log'=>$log]);
         $menu_info = DB::table('tbl_menus')->where('id', $order_history->menu_id)->first();
         $rank_info = DB::table('tbl_ranks')->where('id', $order_history->rank_id)->first();
         $staff_info = DB::table('tbl_staffs')->where('id',$order_history->staff_id)->first();
@@ -603,6 +609,7 @@ class ReservationsController extends Controller
         $ret['i'] =  '<div>【再診】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><div>';
         $ret_array = [];
 
+
         if ($payLoad['order_type'] != "再診"){
             if ($payLoad['order_type'] == "新規"){
                 if($payLoad['item']['rank_name']  == 'NA' || $payLoad['item']['rank_name']  == 'T')
@@ -635,15 +642,30 @@ class ReservationsController extends Controller
     public function orderStatusUpdate(Request $request)
     {
         $payLoad = json_decode(request()->getContent(), true);
-        Log::Info($payLoad);
+        //Log::Info($payLoad);
         $order_history_id = $payLoad['item']['order_history_id'];
 
         $idx = $payLoad['statusIdx'] + 1;
         $status_arr = ['static','neworder','oldorder','grayconselor','cancelorder'];
-        $order_history_ret = TblOrderHistory::where(['id'=>$order_history_id, 'is_deleted'=>0])
-                            ->update([
-                                'status' =>  $idx,
-                            ]);
+        $order_history_ret = TblOrderHistory::where(['id'=>$order_history_id, 'is_deleted'=>0])->first();
+        $order_history_ret->status = $idx;
+        $order_history_ret->save();
+
+        Log::info($order_history_ret);
+
+        //
+        if ($idx == 4){ // Log for order cancelled 
+            $clinic_name = DB::table('tbl_clinics')->join('tbl_staffs','tbl_staffs.clinic_id','tbl_clinics.id')->where('tbl_staffs.id',$order_history_ret->staff_id)->value('tbl_clinics.name');
+            $log = "予約キャンセル: 予約ID 「". $order_history_ret->order_serial_id . "」 場所 「". $clinic_name. "」 日時 「". $order_history_ret->order_date."」";
+            TblLog::create(['log'=>$log]);
+        } else {
+            $status_in_jp = ["来院","会計","終了","キャンセル"];
+            $clinic_name = DB::table('tbl_clinics')->join('tbl_staffs','tbl_staffs.clinic_id','tbl_clinics.id')->where('tbl_staffs.id',$order_history_ret->staff_id)->value('tbl_clinics.name');
+            $log = "ステータス変更: 予約ID 「". $order_history_ret->order_serial_id . "」 場所 「". $clinic_name. "」 日時 「". $order_history_ret->order_date."」 ステータス 「".$status_in_jp[$idx-1]."」";
+            TblLog::create(['log'=>$log]);
+        }
+        
+
         //신규예약인 경우 쌍으로 되여있는 시술자와 상담원의 상태를 모두 바꾼다
         //상담원인 경우 시술자 상태 변경, staff_id, rs_id 구한다
         $ret_array = [];
@@ -677,7 +699,7 @@ class ReservationsController extends Controller
 
         $payLoad['item']['order_status'] = $status_arr[$idx];
         $ret = array('staff_id'=>$payLoad['item']['staff_id'], 'rs_id'=>$payLoad['item']['rank_schedule_id'],'status'=>$status_arr[$idx]);
-        //Log::Info($ret);
+        
         array_push($ret_array, $ret);
         return $ret_array;
     }
@@ -887,8 +909,15 @@ class ReservationsController extends Controller
         $customer_email = $mail_info['customer_email'];       
         $clinic_email = $mail_info['clinic_email'];
         $mailtitle = $mail_info['mailtitle'];
-        if($this->email($customer_email, $mail_info['customer_first_name'],$mailtitle, $mail_info['content']))
-             return 'success';
+        $order_history_id = $mail_info['order_history_id'];
+        // Log
+        $order_history = TblOrderHistory::whereId($order_history_id)->first();
+        
+        if($this->email($customer_email, $mail_info['customer_first_name'],$mailtitle, $mail_info['content'])){
+            $log = "メール送信: 予約ID 「". $order_history->order_serial_id . "」 日時 「". $order_history->order_date."」";
+            TblLog::create(['log'=>$log]);
+            return 'success';
+        }
         return 'failed';
     }
     public function email($target_email, $name, $subject, $body)

@@ -94,23 +94,28 @@
                         // });
                     });
             },
-            download(pdfname) {
-              axios.get('/v1/client/download?filename=='+pdfname)
-                    .then((result) => {
-                        // toast.fire({
-                        //     icon: "success",
-                        //     title: "メール送信成功"
-                        // });
-                        //console.log(result.data);
-                    })
-                    .catch(() => {
-                        //console.log('send mail error');
-                        // toast.fire({
-                        //     icon: "error",
-                        //     title: "メールの送信に失敗しました"
-                        // });
-                    });
-          }
+            download(pdfname) {              
+                axios({
+                url: '/v1/client/download?filename='+pdfname,
+                method: 'GET',
+                responseType: 'blob'}) // important
+                        .then((response) => {
+                            console.log(response);
+                            const url = window.URL.createObjectURL(new Blob([response.data]));
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.setAttribute('download', 'fileaab.pdf'); //or any other extension
+                            document.body.appendChild(link);
+                            link.click();
+                        })
+                        .catch(() => {
+                            //console.log('send mail error');
+                            // toast.fire({
+                            //     icon: "error",
+                            //     title: "メールの送信に失敗しました"
+                            // });
+                        });
+                },
         }
 
     }

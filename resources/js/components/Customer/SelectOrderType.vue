@@ -33,18 +33,14 @@
                     <b-card-text>
                         <div class="radiobtns">
                             <b-row >
-                                <b-col >
-                                    <b-form-radio v-model="order_type" name="radio-ordertype" value="新規">新規</b-form-radio>
-                                </b-col>
-                                <b-col >
+                                <b-col style="display: flex">
+                                    <b-form-radio v-model="order_type" name="radio-ordertype" value="新規" style="padding-right: 20px;">新規</b-form-radio>
                                     <a @click="onNewHelp" data-toggle="modal" href="#modalInput"><i class="help-icon fas fa-question-circle"></i></a>
                                 </b-col>
                             </b-row>
                             <b-row >
-                                <b-col >
-                                    <b-form-radio v-model="order_type" name="radio-ordertype" value="再診">再診</b-form-radio>
-                                </b-col>
-                                <b-col >
+                                <b-col style="display: flex">
+                                    <b-form-radio v-model="order_type" name="radio-ordertype" value="再診" style="padding-right: 20px;">再診</b-form-radio>
                                     <a @click="onOldHelp" data-toggle="modal" href="#modalInput"><i class="help-icon fas fa-question-circle"></i></a>
                                 </b-col>
                             </b-row>
@@ -247,17 +243,21 @@ export default {
                 gOrderTypeInfo.data.staff_info = this.selectedstaff;
                 gOrderTypeInfo.data.rank_info = this.selectedrank;
 
-                var screenwidth = window.innerWidth;
-                if(screenwidth > 1024)
-                    gOrderTypeInfo.screenmode = 14;
-                else
-                    gOrderTypeInfo.screenmode = 7;
-                axios.post('/v1/client/canledar_info', { 'order_type': this.order_type, 'staff_info': this.selectedstaff, 'weekmethod': gOrderTypeInfo.screenmode}).
-                then(({ data }) => {
-                    gOrderTypeInfo.data.colNum = data.layout_width;
-                    gOrderTypeInfo.data.calendar_layout = JSON.parse(JSON.stringify(data.layout));
-                    console.log(data);
-                });   
+                //2020-03-03부터 메뉴를 가지고 날자표를 얻어오므로 이 부분은 막아버리자...대신 메뉴목록을 날자에 관계없이 몽땅 얻어낸다.
+                //그리고 메뉴선택한 후에 날자표에 반영해주면 되니까.
+                // var screenwidth = window.innerWidth;
+                // if(screenwidth > 1024)
+                //     gOrderTypeInfo.screenmode = 14;
+                // else
+                //     gOrderTypeInfo.screenmode = 7;
+                // axios.post('/v1/client/canledar_info', { 'order_type': this.order_type, 'staff_info': this.selectedstaff, 'weekmethod': gOrderTypeInfo.screenmode}).
+                // then(({ data }) => {
+                //     gOrderTypeInfo.data.colNum = data.layout_width;
+                //     gOrderTypeInfo.data.calendar_layout = JSON.parse(JSON.stringify(data.layout));
+                //     console.log(data);
+                // });   
+                var curDate = new Date();
+                this.menu_List(curDate);
 
                 axios.post('/v1/client/clinic_list', { 'staff_info': this.selectedstaff}).
                 then(({ data }) => {
@@ -293,6 +293,7 @@ export default {
                     console.log(gOrderTypeInfo.data.staffs,'=====clinic--->staffs========');
                 });                         
             }
+            this.reset();
             console.log(gOrderTypeInfo.data, 'orderinfo from Selectordertype.vue'); 
         },
         onClickCancelBtn(){
@@ -322,14 +323,22 @@ export default {
                 //console.log(this.staffs);
             });   
         },
-        menu_List:function(){
-            axios.post('/v1/client/menu_list', { 'staff_info': this.selectedstaff ,'date': moment(gOrderInfo.data.calendar_info.date).format("YYYY-MM-DD")}).
+        menu_List:function(curdate){
+            axios.post('/v1/client/menu_list', { 'staff_info': this.selectedstaff ,'date': moment(curdate).format("YYYY-MM-DD")}).
             then(({ data }) => {
                 gOrderTypeInfo.data.menu_array = data;
             });   
         },
         reset:function(){
-
+            //this.order_type = '新規';
+            //this.order_method = 'staff'; 
+            this.selectedrank = null;
+            this.selectedstaff = null;
+            this.staffs = [];
+            this.selectedclinic = null;
+            this.text1 = '';
+            this.selectedweek = null;            
+            this.selecteddate = null;
         },
     },
     created() {

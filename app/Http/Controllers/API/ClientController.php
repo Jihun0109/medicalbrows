@@ -15,6 +15,8 @@ use App\Mail\WelcomeMail;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Mail;
 
+use Illuminate\Support\Facades\Storage;
+
 class ClientController extends Controller
 {
     /**
@@ -84,7 +86,7 @@ class ClientController extends Controller
             ->where([['tbl_staff_ranks.is_deleted', 0],['tbl_staffs.is_deleted', 0]])
             ->select('tbl_staffs.id','tbl_staffs.alias as name','tbl_operable_parts.name as area','tbl_ranks.id as rank_id' ,'tbl_ranks.name as rank_name')      
             ->get();
-        //$counselor_list = 
+        
         $ret_staff = [];
         for ( $i = 0; $i < sizeof($staff_list); $i++ ){
             //shift table
@@ -155,7 +157,7 @@ class ClientController extends Controller
         ->where(['tbl_staffs.is_deleted'=>0, 'tbl_staffs.id'=>$staff_id])
         ->select('tbl_staff_ranks.rank_id','tbl_staff_ranks.staff_id')      
         ->first();
-        
+                
         $menu_list = DB::table('tbl_menus')->        
         where(function($query) use ($selected_date) {
             $query->where(function($query) use ($selected_date){
@@ -176,7 +178,7 @@ class ClientController extends Controller
         //     ->select('tbl_menus.id','tbl_menus.name')      
         //     ->get();
 
-        //Log::info($menu_list);
+        Log::info($menu_list);
         return $menu_list;
     }
 
@@ -188,6 +190,8 @@ class ClientController extends Controller
         $period_day = $request['weekmethod'];
         $next_count = $request['count'];
         $selecteddate = $request['selecteddate'];
+        $menu_id = $request['menu_info']['id'];
+        $rank_id = $request['rank_info']['id'];
         //Log::Info($payLoad);
         if($selecteddate){
             //날자우선인경우
@@ -199,10 +203,10 @@ class ClientController extends Controller
             $timestamp = strtotime($today.' +'.($next_count * $period_day).'days');
             $selecteddate = date("Y-m-d", $timestamp);    
         }
-        $calendarLayout = $this->getLayoutFromDate($order_type, $staff_id, $selecteddate, $period_day);
+        $calendarLayout = $this->getLayoutFromDate($order_type, $staff_id, $selecteddate, $period_day, $menu_id, $rank_id);
         return $calendarLayout;
     }
-    public function getLayoutFromDate($order_type, $staff_id, $param_date, $period_day)
+    public function getLayoutFromDate($order_type, $staff_id, $param_date, $period_day, $menu_id, $rank_id)
     {        
         $calendarLayout = [];
         $cell_width = 2;
@@ -326,7 +330,7 @@ class ClientController extends Controller
         $cur_year = $year;
         $cur_week_num = $week;    
         $date_array = [];
-         for ($j = 0; $j < $period_day; $j++) {
+        for ($j = 0; $j < $period_day; $j++) {
             $cur_date = $cur_year.'-'.$cur_month.'-'.$cur_day;
             $color = 'black';
             $str_week = $daysOfWeek[$cur_week_num % 7];
@@ -380,21 +384,46 @@ class ClientController extends Controller
                 }
                 continue;
             }
+            //상담원 정보를 얻기전에 먼저 스타프(대신 rank_id리용)가 선택된 날자에 선택된 메뉴로 서비스 할수 있는지 menu_table에서 날자 검사진행.
+            $is_menu = true;
+            $order_info = [];
+            $date_x = $date_array[$x - 1]->date;
+            $menu_list = DB::table('tbl_menus')->        
+            where(function($query) use ($date_x) {
+                $query->where(function($query) use ($date_x){
+                    $query->where('start_time', '<=', $date_x)->where('end_time','>=', $date_x);
+                })->
+                orWhere(function($query) use ($date_x) {
+                    $query->where('start_time', '<=', $date_x)->whereNull('end_time');
+                });
+            })->
+            where(['tbl_menus.is_deleted'=>0, 'tbl_menus.id'=>$menu_id, 'tbl_menus.rank_id'=>$rank_id])->
+            select('tbl_menus.id','tbl_menus.name')->
+            get();
+            //Log::info($menu_list);
+            if(count($menu_list) == 0)
+            {
+                $is_menu = false;                
+            }
+            else{
+                $order_info = $this->getCounselor($order_type, $staff_id, $date_x);
+            }
             
-            $order_info = $this->getCounselor($order_type, $staff_id, $date_array[$x - 1]->date);
-
-            for ($y = 0; $y < count($order_info); $y++)
+            //for ($y = 0; $y < count($order_info); $y++)
+            for ($y = 0; $y < count($first_row); $y++) //오전, 오후, 저녁 ->3
             {
                 //Log::Info($order_info[$y]);
                 $i_value = "✕";
                 $selectable = false;
-                $data = $order_info[$y];
-                if(!empty($data))
-                {
-                    $i_value = "◯";
-                    $selectable = true;
+                $data = '';
+                if($is_menu){
+                    $data = $order_info[$y];
+                    if(!empty($data))
+                    {
+                        $i_value = "◯";
+                        $selectable = true;
+                    }
                 }
-
                 array_push($calendarLayout, (object)[
                     'x' => $cell_width * $x,
                     'y' => (4 + $y) * $cell_height,
@@ -404,7 +433,7 @@ class ClientController extends Controller
                     'static' =>  true,
                     'selectable' => $selectable,
                     'order_info' => $data,
-                    'date_info' => $date_array[$x - 1],
+                    'date_info' => $date_x,
                 ]); 
             }
         }
@@ -860,10 +889,58 @@ class ClientController extends Controller
         //return (new OrderReserved($content));
         return true;
     }
+    // public function downloadpdf(Request $request)
+    // {
+    //     $file_name = $request->filename;
+    //     // Log::info($file_name);
+    //     // $pathToFile = storage_path('app/pdf1.pdf');
+    //     // $realpath = str_replace("\\","/", $pathToFile);
+
+    //     // Log::info($realpath);
+
+    //     $headers = [
+    //         'Content-Type'=>'application/pdf',
+    //     ];
+    //     $file = public_path('pdf/' . $file_name);
+    //     //return Response::download($file, 'filename.pdf', $headers);
+    //     //return response()->download($realpath,"pdf1.pdf",$headers);
+    //     return Storage::download('pdf1.pdf','pdf1.pdf',$headers);
+    // }
+
     public function download(Request $request)
     {
-        $file_name = $request->filename;
-        return response()->download(public_path('storage/' . $file_name));
+        // $file_name = $request->filename;
+        // Log::info($file_name);
+        //PDF file is stored under project/public/download/info.pdf
+        $file= public_path(). "/download/info.pdf";
+
+        $headers = array(
+                'Content-Type: application/pdf',
+                );
+
+        return Response::download($file, 'filename.pdf', $headers);
     }
 
+    public function getDocument()
+    {       
+
+        $filePath = public_path(). "/download/info.pdf";
+        $realpath = str_replace("\\","/", $filePath);
+        Log::info($realpath);
+        // file not found
+        if( ! Storage::exists($realpath) ) {
+            abort(404);
+        }
+
+        $pdfContent = Storage::get($realpath);
+
+        // for pdf, it will be 'application/pdf'
+        $type       = Storage::mimeType($realpath);
+        $fileName   = Storage::name($realpath);
+
+        return Response::make($pdfContent, 200, [
+        'Content-Type'        => $type,
+        'Content-Disposition' => 'inline; filename="'.$fileName.'"'
+        ]);
+    }
 }

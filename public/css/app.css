@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Nunito);@charset "UTF-8";
+@import url(https://fonts.googleapis.com/css?family=Nunito);@import url(https://fonts.googleapis.com/css?family=Noto+Sans+JP:100,300,400,500,700|Roboto:300,400,500,700&display=swap&subset=japanese);@charset "UTF-8";
 /*!
  *   AdminLTE v3.0.2
  *   Author: Colorlib
@@ -47279,6 +47279,11 @@ readers do not read off random characters that represent icons */
 .router-link-exact-active {
   background-color: rgba(255, 255, 255, 0.1);
   color: #aaa;
+}
+
+body {
+  font-family: "Roboto";
+  font-family: "Noto Sans JP";
 }
 
 .card-title {

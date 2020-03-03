@@ -94,15 +94,16 @@
             </div>
             <div class="card">
                 <div class="card-body">
-                    <select v-model="selectedmenu" class="form-control" >
+                    <select v-model="selectedmenu" @change="onMenuInfoChanged($event)" class="form-control" >
                         <option value="null" disabled>希望メニューを選択または入力</option>
                         <option v-for="m in passdata.menu_array" :key="m.id" v-bind:value="m">{{m.name}}</option>                        
                     </select>
                 </div>
             </div>
         </div>
-        <div class="seldate-card" v-show="passdata.staff_info.id !=='' || selectedstaff != null"> 
+        <!-- <div class="seldate-card" v-show="passdata.staff_info.id !=='' || selectedstaff != null">  -->
         <!-- <div class="seldate-card" >  -->
+        <div class="seldate-card" v-show="selectedmenu != null"> 
             <label class="mt-3" style="margin-bottom:0px;">希望枠</label>
             <div class="smnext row justify-content-between" v-show="passdata.mode !== 1">
                 <span @click="prevWeekBtn" class="col-4"><i v-show="nextweek_count" class='fas fa-caret-left ' style='font-size:24px;'></i></span>
@@ -225,9 +226,11 @@
                     this.passdata.rank_info.name = this.selectedstaff.rank_name;
                     //console.log(this.selectedstaff);
                     if(this.passdata.mode === 2){
-                        this.getCalendarLayout(this.selectedstaff, this.screenmode);
+                        //this.getCalendarLayout(this.selectedstaff, this.screenmode);
+                        var curDate = new Date();
+                        this.menu_list(this.selectedstaff, curDate);
                     }else if(this.passdata.mode === 1){                        
-                        this.getCalendarLayout(this.selectedstaff, 1, this.passdata.date);
+                        //this.getCalendarLayout(this.selectedstaff, 1, this.passdata.date);
                         this.clinic_list(); //날자우선방식인 경우에만 필요, 나머지는 사전에 다 구함.
                         this.menu_list(this.selectedstaff, this.passdata.date);   
                     }                    
@@ -249,6 +252,20 @@
             window.removeEventListener('resize', this.handleResize)
         },
         methods:{
+            onMenuInfoChanged(event){
+                //메뉴 갱신때마다 next prev 개수 초기화                 
+                if(event.target.value){
+                    this.nextweek_count = 0;
+                    if(this.passdata.mode === 1){
+                        this.getCalendarLayout(this.selectedstaff, 1, this.passdata.date);
+                    }else if(this.passdata.mode === 2){
+                        this.getCalendarLayout(this.selectedstaff, this.screenmode);
+                    }
+                    else{
+                        this.getCalendarLayout(this.passdata.staff_info, this.screenmode);
+                    }
+                }
+            },
             handleResize() {
                 if(this.passdata.mode !== 1){
                     this.screenwidth = window.innerWidth;                    
@@ -275,16 +292,16 @@
             },
             onClickCalItem($event, item, index){                
                 if(item.selectable){
-                    console.log(item);
+                    //console.log(item);
                     $(".vue-grid-item").removeClass("selectedcolor");
                     $(event.currentTarget).addClass("selectedcolor"); //defalt color when click..                     
                     gOrderInfo.data.calendar_info.date = item.date_info.date;                    
                     gOrderInfo.data.calendar_info.week = item.date_info.week;         
                     this.time_schedules = item.order_info;
                     this.sel_time_schedule = item.order_info[0]; //as default
-                    if(this.passdata.mode !== 1){
-                        this.menu_list( this.passdata.staff_info, item.date_info.date);   
-                    }
+                    // if(this.passdata.mode !== 1){
+                    //     this.menu_list( this.passdata.staff_info, item.date_info.date);   
+                    // }
                     //console.log(this.time_schedules);
                 }
             },
@@ -327,11 +344,15 @@
                 }                    
             },
             getCalendarLayout:function(staff_info, showdays, selecteddate = null){
-                axios.post('/v1/client/canledar_info', { 'order_type':this.passdata.order_type, 'staff_info': staff_info,'weekmethod':showdays, 'selecteddate':selecteddate,'count': this.nextweek_count}).
+                //달력이 갱신될때 선택된 부분 초기화 
+                $(".vue-grid-item").removeClass("selectedcolor");
+                this.sel_time_schedule = null;
+                this.time_schedules = null;
+                axios.post('/v1/client/canledar_info', { 'order_type':this.passdata.order_type, 'staff_info': staff_info,'weekmethod':showdays, 'selecteddate':selecteddate,'count': this.nextweek_count,'menu_info': this.selectedmenu, 'rank_info': this.passdata.rank_info}).
                 then(({ data }) => {
                     this.passdata.colNum = data.layout_width;
                     this.passdata.calendar_layout = JSON.parse(JSON.stringify(data.layout));
-                    console.log(data);
+                    //console.log(data);
                 });   
             },
             formatDate(dt) {

@@ -70,8 +70,8 @@
                 <small class="font-weight-lighter">全国共通ダイヤル</small>
                 <h4 class="pl-2">0570-078-889</h4>
             </div>
-            <div><span><small>[受付時間] 月~金 9:00~21:00 / 土日祝 9:00~20:00</small></span></div>
-            <div><span><small>[受付時間] 受付クリ二 ツクによ受付クリ二 ツクによ受付クリ二 ツクによ受付クリ二 ツクによ</small></span></div>
+            <div><span><small>［受付時間］平日・土日祝 9：00～20：00</small></span></div>
+            <div><span><small>［診療時間］受付クリニックにより異なります。日・祝受付可能なクリニックもございます。</small></span></div>
           </div>
         </div>
       </div>

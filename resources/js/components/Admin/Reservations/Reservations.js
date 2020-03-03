@@ -97,7 +97,7 @@ export default {
             mail_info['content'] = this.contents[this.contentIdex];
             mail_info['clinic_email'] = this.selected_clinic.email;
             mail_info['clinic_name'] = this.item.clinic_name;
-
+            mail_info['order_history_id'] = this.item.order_history_id;
             let loader = this.$loading.show({
                 // Optional parameters
                 container: this.fullPage ? null : this.$refs.formContainer,
@@ -105,7 +105,9 @@ export default {
                 onCancel: this.onCancel,
             });
 
-            axios.post('/v1/send_mail', { 'mail_info': mail_info })
+            axios.post('/v1/send_mail', {
+                    'mail_info': mail_info
+                })
                 .then((result) => {
                     toast.fire({
                         icon: "success",
@@ -201,7 +203,9 @@ export default {
             if (this.$gate.isClinic())
                 url = '/api/clinic?email=' + this.$gate.getEmail();
             axios.get(url).
-            then(({ data }) => {
+            then(({
+                data
+            }) => {
                 this.clinics = data;
                 this.selected_clinic = this.clinics[0];
                 this.loadStaffRanksList();
@@ -209,8 +213,13 @@ export default {
         },
         loadStaffRanksList() {
             //axios.get('v1/reservation/staff_list?clinic_id=' + this.selected_clinic_id ).
-            axios.post('/v1/reservation/staff_list', { 'clinic_id': this.selected_clinic.id, 'date': moment(this.selectedDate).format("YYYY-MM-DD") }).
-            then(({ data }) => {
+            axios.post('/v1/reservation/staff_list', {
+                'clinic_id': this.selected_clinic.id,
+                'date': moment(this.selectedDate).format("YYYY-MM-DD")
+            }).
+            then(({
+                data
+            }) => {
                 this.staffs = data.staff_layout;
                 //this.timelayout = JSON.parse(JSON.stringify(timeLayout));                
                 if (data.count > 10) {
@@ -219,8 +228,13 @@ export default {
                 this.hdlayout = JSON.parse(JSON.stringify(data.staff_layout));
                 this.conlayout = JSON.parse(JSON.stringify(data.content_layout));
             });
-            axios.post('/v1/reservation/staff_rank_list', { 'clinic_id': this.selected_clinic.id, 'date': this.selectedDate }).
-            then(({ data }) => {
+            axios.post('/v1/reservation/staff_rank_list', {
+                'clinic_id': this.selected_clinic.id,
+                'date': this.selectedDate
+            }).
+            then(({
+                data
+            }) => {
                 this.staff_rank_list = data;
                 //console.log(this.staffInfo);
             });
@@ -259,8 +273,13 @@ export default {
                 $(".vue-grid-item").removeClass("selectedcolor");
                 $(event.currentTarget).addClass("selectedcolor"); //defalt color when click..                
                 // Here this variable is Reservation Vue component (Parent of modals)
-                axios.post('/v1/reservation/menu_list', { 'rank_id': item.rank_id, 'date': moment(this.selectedDate).format("YYYY-MM-DD") }).
-                then(({ data }) => {
+                axios.post('/v1/reservation/menu_list', {
+                    'rank_id': item.rank_id,
+                    'date': moment(this.selectedDate).format("YYYY-MM-DD")
+                }).
+                then(({
+                    data
+                }) => {
                     this.menus = data;
                 });
                 //이때는 상담원 목록을 얻을 필요 없어 따로 처리한다.
@@ -299,7 +318,9 @@ export default {
                     'rank_schedule_id': item.rank_schedule_id,
                     'order_history_id': item.order_history_id
                 }).
-                then(({ data }) => {
+                then(({
+                    data
+                }) => {
                     this.counselors = data;
                     console.log(data);
                     //선택된 시술자에 해당한 상담원목록을 얻고 그들의 현재 x,y좌표를 구한다. 이값은 신규인경우 상담원칸에 정보를 자동으로 채우는데 리용된다.

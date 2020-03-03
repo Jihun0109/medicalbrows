@@ -93,6 +93,7 @@
                 </div>
             </div>
         </div>
+        <p style="font-size: 13px; padding: 10px;">※この内容で登録しても宜しければ、[次へ]をクリックして下さい</p>
         <div class="confirm-btn">
             <div class="row justify-content-around">
                 <div class="col-4">
@@ -143,16 +144,18 @@
                     axios.post('/v1/client/order_update',{ 'order_info': this.order_id_info, 'user_info': gUserInfo.data.userinfo})
                     .then((result)=>{
                         if(result.data == 0){
-                            toast.fire({
-                                icon: "error",
-                                title: "予約IDが存在しません。"
-                            });
+                            // toast.fire({
+                            //     icon: "error",
+                            //     title: "予約IDが存在しません。"
+                            // });
+                            console.log('no exist order serial id');
                         }else{
-                            toast.fire({
-                                icon: "success",
-                                title: "データが更新されました。"
-                            });
-                            console.log(result.data);
+                            // toast.fire({
+                            //     icon: "success",
+                            //     title: "データが更新されました。"
+                            // });
+                            console.log('updated order data successfully');
+                            //console.log(result.data);
                             gResultID.data.mail = result.data.mail;                        
                             gResultID.data.order_serial_id = result.data.order_serial_id;                        
                             this.$emit('changeStage', 4);
@@ -167,16 +170,18 @@
                     axios.post('/v1/client/order_create',{ 'order_info': this.order_info, 'user_info': gUserInfo.data.userinfo})
                     .then((result)=>{
                         if(result.data == 0){
-                            toast.fire({
-                                icon: "error",
-                                title: "予約IDが存在しません."
-                            });
+                            // toast.fire({
+                            //     icon: "error",
+                            //     title: "予約IDが存在しません."
+                            // });
+                            console.log('no exist order serial id');
                         }else{
-                            toast.fire({
-                                icon: "success",
-                                title: "データ追加しました"
-                            });
-                            console.log(result.data);
+                            // toast.fire({
+                            //     icon: "success",
+                            //     title: "データ追加しました"
+                            // });
+                            console.log('saved order data successfully');
+                            //console.log(result.data);
                             gResultID.data.mail = result.data.mail;                        
                             gResultID.data.order_serial_id = result.data.order_serial_id;                        
                             this.$emit('changeStage', 4);

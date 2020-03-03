@@ -49,17 +49,17 @@
                 <div class="form-group row">
                     <label class="col-4 col-form-label">氏名：</label>
                     <div class="col">
-                        <input v-model="formdata.first_name" type="text" class="form-control" placeholder="麻布　花子" :class="{ 'is-invalid': submitted && $v.formdata.first_name.$error }" />
-                        <div v-if="submitted && !$v.formdata.first_name.required" class="invalid-feedback">氏名は、必ず指定してください。</div>
+                        <input v-model="formdata.first_name" type="text" class="form-control" placeholder="氏名を入力して下さい" :class="{ 'is-invalid': submitted && $v.formdata.first_name.$error }" />
+                        <div v-if="submitted && !$v.formdata.first_name.required" class="invalid-feedback">氏名を入力して下さい。</div>
                     </div>                    
                 </div>
                 <div class="form-group row">
                     <label class="col-4 col-form-label">フリガナ：</label>
                     <div class="col">
-                        <input v-model="formdata.last_name" type="text" class="form-control" placeholder="アザブ ハナコ" :class="{ 'is-invalid': submitted && $v.formdata.last_name.$error }" />
+                        <input v-model="formdata.last_name" type="text" class="form-control" placeholder="フリガナを入力して下さい" :class="{ 'is-invalid': submitted && $v.formdata.last_name.$error }" />
                         <div v-if="submitted && $v.formdata.last_name.$error" class="invalid-feedback">
-                            <span v-if="!$v.formdata.last_name.required">フリガナは、必ず指定してください。</span>
-                            <span v-if="!$v.formdata.last_name.min">フリガナは最低でも6文字必要です。</span>
+                            <span v-if="!$v.formdata.last_name.required">フリガナを入力して下さい。</span>
+                            <!-- <span v-if="!$v.formdata.last_name.max">フリガナは最大6文字でなければします。</span> -->
                         </div>                        
                     </div>
                 </div>
@@ -76,9 +76,9 @@
                 <div class="form-group row">
                     <label class="col-4 col-form-label">生年月日：</label>
                     <div class="col">
-                        <input v-model="formdata.birthday" type="date" class="form-control" placeholder="1989/12/01" :class="{ 'is-invalid': submitted && $v.formdata.birthday.$error }" />
+                        <input v-model="formdata.birthday" type="date" class="form-control" placeholder="生年月日を入力して下さい" :class="{ 'is-invalid': submitted && $v.formdata.birthday.$error }" />
                         <div v-if="submitted && $v.formdata.birthday.$error" class="invalid-feedback">
-                            <span v-if="!$v.formdata.birthday.required">生年月日は、必ず指定してください。</span>
+                            <span v-if="!$v.formdata.birthday.required">生年月日を入力して下さい。</span>
                             <!-- <span v-else-if="!$v.formdata.birthday.isDate">Enter a valid birthdate</span>
                             <span v-else-if="!$v.formdata.birthday.isLegalAge">Must be 18 Years old</span> -->
                         </div>                         
@@ -87,17 +87,17 @@
                 <div class="form-group row">
                     <label class="col-4 col-form-label">電話番号：</label>
                     <div class="col">
-                        <!-- <input v-model="form.phonenumber" type="text" class="form-control" placeholder="080-XXXX-XXXX"> -->
-                        <input v-model="formdata.phonenumber" type="tel" class="form-control" v-mask="{mask:'999-9999-9999', placeholder:'#'}" :class="{ 'is-invalid': submitted && $v.formdata.phonenumber.$error }" />
-                        <div v-if="submitted && !$v.formdata.phonenumber.required" class="invalid-feedback">電話番号は、必ず指定してください。</div>
+                        <!-- <input v-model="form.phonenumber" type="text" class="form-control" placeholder="電話番号を入力して下さい"> -->
+                        <input v-model="formdata.phonenumber" type="tel" class="form-control" placeholder="電話番号を入力して下さい" v-mask="{mask:'999-9999-9999', placeholder:'#'}" :class="{ 'is-invalid': submitted && $v.formdata.phonenumber.$error }" />
+                        <div v-if="submitted && !$v.formdata.phonenumber.required" class="invalid-feedback">電話番号を入力して下さい。</div>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-4 col-form-label">email：</label>
                     <div class="col">
-                        <input v-model="formdata.email" type="email" class="form-control" placeholder="hanako@aa.com" name="email" :class="{ 'is-invalid': submitted && $v.formdata.email.$error }" />
+                        <input v-model="formdata.email" type="email" class="form-control" placeholder="メールを入力して下さい" name="email" :class="{ 'is-invalid': submitted && $v.formdata.email.$error }" />
                         <div v-if="submitted && $v.formdata.email.$error" class="invalid-feedback">
-                            <span v-if="!$v.formdata.email.required">メールは、必ず指定してください。</span>
+                            <span v-if="!$v.formdata.email.required">メールを入力して下さい。</span>
                             <span v-if="!$v.formdata.email.email">メールの形式が無効です。</span>
                         </div> 
                     </div>
@@ -105,9 +105,9 @@
                 <div class="form-group row">
                     <label class="col-4 col-form-label">郵便番号：</label>
                     <div class="col">
-                        <input v-model="formdata.zip_code" type="text" class="form-control" placeholder="106-0031" :class="{ 'is-invalid': submitted && $v.formdata.zip_code.$error }"/>
+                        <input v-model="formdata.zip_code" type="text" class="form-control" placeholder="郵便番号を入力して下さい" :class="{ 'is-invalid': submitted && $v.formdata.zip_code.$error }"/>
                         <!-- <input v-model="formdata.zip_code" type="text" class="form-control" v-mask="{ mask: ['999-9999','9A9 A9A'], placeholder: '#' }" :class="{ 'is-invalid': submitted && $v.formdata.zip_code.$error }" /> -->
-                        <div v-if="submitted && !$v.formdata.zip_code.required" class="invalid-feedback">郵便番号は、必ず指定してください。</div>
+                        <div v-if="submitted && !$v.formdata.zip_code.required" class="invalid-feedback">郵便番号を入力して下さい。</div>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -121,15 +121,16 @@
                 <div class="form-group row">
                     <label class="col-4 col-form-label">住所1：</label>
                     <div class="col">
-                        <input v-model="formdata.address1" type="text" name="address" class="form-control" placeholder="港区西麻布" :class="{ 'is-invalid': submitted && $v.formdata.address1.$error }" />
-                        <div v-if="submitted && !$v.formdata.address1.required" class="invalid-feedback">住所1は、必ず指定してください。</div>
+                        <input v-model="formdata.address1" type="text" name="address" class="form-control" placeholder="住所1を入力して下さい" :class="{ 'is-invalid': submitted && $v.formdata.address1.$error }" />
+                        <div v-if="submitted && !$v.formdata.address1.required" class="invalid-feedback">住所1を入力して下さい。</div>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-4 col-form-label">住所2：</label>
                     <div class="col">
-                        <input v-model="formdata.address2" type="text" name="address" class="form-control" v-mask="{mask:'9-99-99', placeholder:'#'}" placeholder="1-14-17" :class="{ 'is-invalid': submitted && $v.formdata.address2.$error }" />
-                        <div v-if="submitted && !$v.formdata.address2.required" class="invalid-feedback">住所2は、必ず指定してください。</div>
+                        <input v-model="formdata.address2" type="text" name="address" class="form-control" placeholder="住所2を入力して下さい"/>
+                        <!-- <input v-model="formdata.address2" type="text" name="address" class="form-control" placeholder="住所2を入力して下さい" :class="{ 'is-invalid': submitted && $v.formdata.address2.$error }" />
+                        <div v-if="submitted && !$v.formdata.address2.required" class="invalid-feedback">住所2を入力して下さい。</div> -->
                     </div>
                 </div>
             </form>
@@ -154,7 +155,7 @@
                 array:[],  
             }          
         };
-    import { required, email, minLength, and } from "vuelidate/lib/validators";
+    import { required, email, maxLength, and } from "vuelidate/lib/validators";
 
     const isDate = (value) => moment(value, 'YYYY-MM-DD', true).isValid()
 
@@ -176,7 +177,7 @@
         validations: {
             formdata: {
                 first_name: { required },
-                last_name: { required, min: minLength(6) },
+                last_name: { required, max: maxLength(6) },
                 birthday: { required, 
                             isDate(value){
                                 return isDate(value);
@@ -292,6 +293,10 @@
                 border-bottom: 2px solid #3E3E3E;
                 padding: 5px 10px;
                 outline: none;
+                &::placeholder{
+                    font-size: 13px;
+                    letter-spacing: -0.21px;
+                }
             }
             label{
                 letter-spacing: -1.5px;
