@@ -8,7 +8,10 @@ require("./bootstrap");
 window.moment = require('moment');
 
 window.Vue = require("vue");
-import { BootstrapVue, FormCheckboxPlugin } from "bootstrap-vue";
+import {
+    BootstrapVue,
+    FormCheckboxPlugin
+} from "bootstrap-vue";
 Vue.use(BootstrapVue);
 Vue.use(FormCheckboxPlugin);
 import VueInputMask from "vue-inputmask"
@@ -109,7 +112,11 @@ const router = new VueRouter({
     routes
 });
 
-import { Form, HasError, AlertError } from "vform";
+import {
+    Form,
+    HasError,
+    AlertError
+} from "vform";
 
 window.Form = Form;
 
@@ -146,7 +153,11 @@ Vue.filter("upText", function(data) {
 });
 
 Vue.filter("isVacation", function(data) {
-    return data === 1 ? "退職" : " ";
+    return data === 1 ? "休閉鎖" : " ";
+});
+
+Vue.filter("isRestVacation", function(data) {
+    return data === 1 ? "休退職" : "";
 });
 
 Vue.filter("isActive", function(data) {

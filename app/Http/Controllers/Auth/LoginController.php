@@ -88,8 +88,8 @@ class LoginController extends Controller
         //     return redirect()->route('dashboard');
         // }
 
-        Log::info(Auth::user()->user_id);
-        TblLog::create(['log' => 'ログイン:  ユーザーID 「'.Auth::user()->user_id.'」 ユーザー名: 「'.Auth::user()->name ."」"]);
+        // Log::info(Auth::user()->user_id);
+        // TblLog::create(['log' => 'ログイン:  ユーザーID 「'.Auth::user()->user_id.'」 ユーザー名: 「'.Auth::user()->name ."」"]);
         return redirect('/admin/reservations');
     }
 

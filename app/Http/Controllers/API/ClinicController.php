@@ -41,8 +41,7 @@ class ClinicController extends Controller
                                             orWhere('tbl_clinics.id','LIKE',"%".$keyword."%")->
                                             orWhere('tbl_clinics.email','LIKE',"%".$keyword."%")->
                                             orWhere('tbl_clinics.address','LIKE',"%".$keyword."%");
-                              })->where('tbl_clinics.is_vacation', 0)->
-                                select('tbl_clinics.*','users.user_id')->get();
+                              })->select('tbl_clinics.*','users.user_id')->get();
         } else if ($clinic_email){
             return TblClinic::where('is_deleted', 0)->                            
                             where('email',$clinic_email)->get();
@@ -50,7 +49,7 @@ class ClinicController extends Controller
 
         return DB::table('tbl_clinics')->
                         join('users','users.email','tbl_clinics.email')->
-                        where(['tbl_clinics.is_deleted'=>0, 'tbl_clinics.is_vacation' => 0])->
+                        where(['tbl_clinics.is_deleted'=>0])->
                         select('tbl_clinics.*', 'users.user_id')->get();
                         
     }
