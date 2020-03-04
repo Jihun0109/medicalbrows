@@ -292,7 +292,7 @@
             },
             onClickCalItem($event, item, index){                
                 if(item.selectable){
-                    //console.log(item);
+                    console.log(item);
                     $(".vue-grid-item").removeClass("selectedcolor");
                     $(event.currentTarget).addClass("selectedcolor"); //defalt color when click..                     
                     gOrderInfo.data.calendar_info.date = item.date_info.date;                    

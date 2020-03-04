@@ -41,7 +41,6 @@
         "laravel-vue-datatable": "^0.5.7",
         "luxon": "^1.22.0",
         "moment": "^2.24.0",
-        "pdfjs-dist": "^2.2.228",
         "sweetalert2": "^9.7.1",
         "thunky": "^1.1.0",
         "v-calendar": "^1.0.1",

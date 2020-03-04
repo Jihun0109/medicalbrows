@@ -47,6 +47,7 @@ class StaffRankController extends Controller
      */
     public function store(Request $request)
     {
+        Log::info($request);
         $this->validate($request, [
             'rank_id' => 'required',
             'staff_id' => ['required',
@@ -54,10 +55,12 @@ class StaffRankController extends Controller
                                 return $query->where('is_deleted','0');
                             })
                         ],
+            'part_id' => 'required',
         ]);
         return TblStaffRank::create([
             'rank_id' => $request->rank_id,
             'staff_id' => $request->staff_id,
+            'part_id' => $request->part_id,
             'promo_date' => Carbon::parse($request->promo_date)->format('Y-m-d'),
         ]);
     }
@@ -82,6 +85,7 @@ class StaffRankController extends Controller
      */
     public function update(Request $request, $id)
     {
+        Log::info($request);
         $this->validate($request, [
             'rank_id' => 'required',
             'staff_id' => ['required',
@@ -89,6 +93,7 @@ class StaffRankController extends Controller
                                 return $query->where('is_deleted','0')->where('id',"<>", $request->id);
                             })
                         ],
+            'part_id' => 'required',
         ]);
         $values = $request;
         Log::info($request->promo_date);

@@ -28,7 +28,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="part in parts" :key="part.id">
+                    <tr v-for="(part, index) in parts" :key="index">
                       <td>{{part.id}}</td>
                       <td>{{part.name}}</td>
                       <td>

@@ -433,7 +433,7 @@ class ClientController extends Controller
                     'static' =>  true,
                     'selectable' => $selectable,
                     'order_info' => $data,
-                    'date_info' => $date_x,
+                    'date_info' => $date_array[$x - 1],
                 ]); 
             }
         }

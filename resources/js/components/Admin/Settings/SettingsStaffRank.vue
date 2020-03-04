@@ -24,7 +24,8 @@
                       <th>スタッフ ランクID</th>
                       <th>ランク名</th>
                       <th>スタッフ名</th>
-                      <th>表記名</th>                      
+                      <th>表記名</th>
+                      <th>施術可能部位</th>
                       <th>昇格日</th>
                       <th>編集する</th>
                     </tr>
@@ -47,6 +48,12 @@
                               <div v-if="d.staff_id == s.id">{{s.alias}}</div>
                           </div>
                       </td>
+                      <td>
+                          <div v-for="p in parts" :key="p.id">
+                              <div v-if="d.part_id == p.id">{{p.name}}</div>
+                          </div>
+                      </td>  
+
                       <td>{{ d.promo_date }}
                       </td>  
                       <td>
@@ -90,6 +97,13 @@
                         <div v-if="form.errors.has('staff_id')" class="invalid-feedback">{{errormsg(form.errors.get('staff_id'),"staff id","スタッフ表記名")}}</div>
                     </div>
                     <div class="form-group">
+                        <label>施術可能部位</label>
+                        <select v-model="form.part_id" class="custom-select" name="part_id" :class="{'is-invalid':form.errors.has('part_id')}">
+                          <option v-for="part in parts" :key="part.id" v-bind:value="part.id">{{ part.name }}</option>
+                        </select>
+                        <div v-if="form.errors.has('part_id')" class="invalid-feedback">{{errormsg(form.errors.get('part_id'),"part id","施術可能部位")}}</div>
+                    </div>
+                    <div class="form-group">
                         <label>昇格日</label>
                         <v-date-picker
                             locale="ja"
@@ -127,6 +141,7 @@
                 data: {},
                 ranks: {},
                 staffs : {},
+                parts:{},
                 form: new Form({
                     id : '',                    
                     rank_id : '',
@@ -162,6 +177,8 @@
                     then(({data}) => (this.ranks = data));
                 axios.get('/api/staff').
                     then(({data}) => (this.staffs = data));
+                axios.get('/api/operable-part').
+                    then(({data}) => (this.parts = data));                                    
             },
             createData(){               
                 this.form.promo_date = this.utcToLocalTime(this.form.promo_date); 

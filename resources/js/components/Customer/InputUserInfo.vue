@@ -177,7 +177,7 @@
         validations: {
             formdata: {
                 first_name: { required },
-                last_name: { required, max: maxLength(6) },
+                last_name: { required},//, max: maxLength(6) },
                 birthday: { required, 
                             isDate(value){
                                 return isDate(value);
@@ -191,7 +191,7 @@
                 email: { required, email },
                 zip_code: { required },
                 address1: { required },
-                address2: { required },
+                //address2: { required },
             }
         },
         data () {
