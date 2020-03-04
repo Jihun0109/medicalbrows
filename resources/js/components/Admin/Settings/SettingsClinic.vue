@@ -299,11 +299,9 @@ export default {
       $("#modalAddUser").modal("show");
     },
     getEmailList(targetEmail) {
-      console.log(targetEmail);
       axios.get("/v1/clinic/get-email").then(({ data }) => {
         this.users = data;
-        this.form.user_id = this.users[0].user_id;
-        this.form.email = this.users[0].email;
+
         if (targetEmail) {
           this.users.push({
             user_id: targetEmail["user_id"],
