@@ -78,7 +78,7 @@ class ClientController extends Controller
     {               
         $payLoad = json_decode(request()->getContent(), true);  
         $selected_date = $request['date'];
-        
+        //Log::info($payLoad);
         $staff_list = DB::table('tbl_staffs')            
             ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id', 'tbl_staffs.id')
             ->join('tbl_ranks', 'tbl_ranks.id', 'tbl_staff_ranks.rank_id')
@@ -151,7 +151,7 @@ class ClientController extends Controller
         $staff_id = $request['staff_info']['id'];
         $staff_name =  $request['staff_info']['name'];
         $selected_date = $request->date;//date("Y-m-d");
-        Log::info($payLoad);
+        //Log::info($payLoad);
         $rank_info = DB::table('tbl_staffs')
         ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id', 'tbl_staffs.id')     
         ->where(['tbl_staffs.is_deleted'=>0, 'tbl_staffs.id'=>$staff_id])
@@ -178,7 +178,7 @@ class ClientController extends Controller
         //     ->select('tbl_menus.id','tbl_menus.name')      
         //     ->get();
 
-        Log::info($menu_list);
+        //Log::info($menu_list);
         return $menu_list;
     }
 
@@ -742,7 +742,7 @@ class ClientController extends Controller
         $order_history = DB::table('tbl_order_histories')
         ->where([['is_deleted', 0],['order_serial_id', $order_serial_id]])
         ->get();
-        Log::info($order_history);
+        //Log::info($order_history);
         $customer = DB::table('tbl_customers')
                     ->where([['is_deleted', 0],['id', $order_history[0]->customer_id]])
                     ->select('id','email','gender','first_name','last_name','address','phonenumber','birthday')
@@ -840,7 +840,7 @@ class ClientController extends Controller
     public function generalCounInfo()
     {
         $rank_info = DB::table('tbl_ranks')
-                ->where(['tbl_ranks.is_deleted'=>0,'tbl_ranks.short_name'=>'カウゼ'])
+                ->where([['tbl_ranks.is_deleted', 0],['tbl_ranks.short_name','LIKE',"%カウ%"]])
                 ->select('tbl_ranks.id','tbl_ranks.name','tbl_ranks.short_name')
                 ->first();
         
@@ -913,7 +913,7 @@ class ClientController extends Controller
         // Log::info($file_name);
         //PDF file is stored under project/public/download/info.pdf
         $file= public_path(). "/download/info.pdf";
-
+        Log::info($file); 
         $headers = array(
                 'Content-Type: application/pdf',
                 );

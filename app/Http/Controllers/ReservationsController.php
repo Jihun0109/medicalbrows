@@ -671,7 +671,7 @@ class ReservationsController extends Controller
         $ret_array = [];
         if($payLoad['item']['order_type'] == '新規')
         {
-            if($payLoad['item']['rank_name'] == 'カウゼ')
+            if( strpos($payLoad['item']['rank_name'] ,'カウ') !== false)
             {
                 $main_staff_info = DB::table('tbl_order_histories')
                                 ->where(['tbl_order_histories.is_deleted'=>0, 'tbl_order_histories.interviewer_id'=>$payLoad['item']['staff_id'],'tbl_order_histories.order_serial_id'=>$payLoad['item']['order_serial_id']])
