@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <div class="row d-flex justify-content-center" style="width:100%"><div><h3 class="">予約管理システム (スタッフ ランク管理)</h3></div></div>
+        <div class="row d-flex justify-content-center" style="width:100%"><div><h3 class="">予約管理システム (スタッフスキル管理)</h3></div></div>
           <div class="col-12">
             <div class="card">
               <div class="card-header">

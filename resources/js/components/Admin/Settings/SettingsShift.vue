@@ -398,6 +398,10 @@ export default {
           title: "スタツフ名"
         },
         {
+          name: "short_name",
+          title: "略称"
+        },
+        {
           name: "name",
           title: "ランク"
         }
