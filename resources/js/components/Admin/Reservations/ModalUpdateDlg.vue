@@ -131,7 +131,7 @@
                         <label class="col-sm-3 col-form-label">電話番号:</label>
                         <div class="col-sm-8">
                             <!-- <input v-model="form.phonenumber" type="tel" class="form-control form-control-sm" v-mask="{mask:'999-9999-9999', placeholder:'#'}" :class="{'is-invalid':form.errors.has('phonenumber')}"> -->
-                            <input v-model="form.phonenumber" type="number" :maxlength="11" class="form-control form-control-sm" placeholder="xxxxxxxxxx" :class="{'is-invalid':form.errors.has('phonenumber')}">
+                            <input :value="form.phonenumber" type="number" @input="updatePhoneValue" class="form-control form-control-sm" placeholder="xxxxxxxxxxxx" :class="{'is-invalid':form.errors.has('phonenumber')}">
                         </div>
                     </div>
                     <div class="row">
@@ -199,6 +199,14 @@
             this.loadInfo();            
         },
         methods: {
+            updatePhoneValue(event){
+                const value = event.target.value
+                //console.log(String(value).length, this.form.phonenumber)
+                if (String(value).length <= 12) {
+                    this.form.phonenumber = value;
+                }
+                this.$forceUpdate()
+            },
             update_furigana(input){
                 this.history.push(input.target.value);
                 this.form.last_name = historykana(this.history);

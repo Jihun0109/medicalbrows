@@ -47,7 +47,7 @@ class StaffRankController extends Controller
      */
     public function store(Request $request)
     {
-        Log::info($request);
+        //Log::info($request);
         $this->validate($request, [
             'rank_id' => 'required',
             'staff_id' => ['required',
@@ -85,7 +85,7 @@ class StaffRankController extends Controller
      */
     public function update(Request $request, $id)
     {
-        Log::info($request);
+        //Log::info($request);
         $this->validate($request, [
             'rank_id' => 'required',
             'staff_id' => ['required',

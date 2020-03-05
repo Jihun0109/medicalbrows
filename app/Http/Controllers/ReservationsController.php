@@ -172,7 +172,7 @@ class ReservationsController extends Controller
         $selected_date = date('Y-m-d',strtotime($request->date)); // 현재선택된 날자 2020-02-20 형식 
         
         $staff_rank_with_schedules = [];
-
+        //Log::info($request);
         // 스타프 staff_id, full_name, rank_id, rank_name, rank_short_name, clinic_name 얻는다.
         $staff_rank_names = DB::table('tbl_staffs')
                 ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id','tbl_staffs.id')  
@@ -182,7 +182,7 @@ class ReservationsController extends Controller
                 ->where([['tbl_staffs.is_deleted', 0], ['tbl_staffs.clinic_id', $clinic_id]])
                 ->orderBy('rank_id','asc')
                 ->get();
-
+        //Log::info($staff_rank_names);
         // 매 스타프에 대해서 스타프이름, 랭크략어, 랭크스케쥴목록을 반환
         for ( $i = 0; $i < sizeof($staff_rank_names); $i++ ){
             $temp = [];
@@ -464,6 +464,7 @@ class ReservationsController extends Controller
 
     public function orderCreate(Request $request)
     {
+        //Log::info($request);
         $start_tick = microtime(true);
         $payLoad = json_decode(request()->getContent(), true);  
         $order_serial_id = $payLoad['order_serial_id'];
@@ -476,7 +477,7 @@ class ReservationsController extends Controller
                 'first_name' => 'required|string|max:30',
                 'last_name' => 'required|string|max:30',
                 'birthday' => 'required|date', 
-                'phonenumber' => 'required|max:11',
+                'phonenumber' => 'required|max:12',
                 'email' => 'required|email'
             ]); 
         } 

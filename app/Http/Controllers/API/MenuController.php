@@ -57,7 +57,7 @@ class MenuController extends Controller
             'tax_id' => 'required',
             'amount' => 'required|numeric',
             'start_time' => 'required|date',
-            'end_time' => 'nullable|date|after:start_time',
+            'end_time' => 'nullable|date|after_or_equal:start_time',
         ]);
         Log::info($request->start_time);
         return TblMenu::create([
@@ -100,7 +100,7 @@ class MenuController extends Controller
             'tax_id' => 'numeric',
             'amount' => 'required|numeric',//|min:0|not_in:0',
             'start_time' => 'required|date',
-            'end_time' => 'nullable|date|after:start_time', 
+            'end_time' => 'nullable|date|after_or_equal:start_time', 
         ]);
         Log::info( $request);
         $values = $request;
