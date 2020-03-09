@@ -199,7 +199,7 @@ export default {
             var currentDateWithFormat = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
         },
         loadClinicList() {
-            let url = '/api/clinic';
+            let url = '/api/clinic?isActive=1';
             if (this.$gate.isClinic())
                 url = '/api/clinic?email=' + this.$gate.getEmail();
             axios.get(url).
@@ -322,7 +322,7 @@ export default {
                     data
                 }) => {
                     this.counselors = data;
-                    console.log(data);
+                    //console.log(data);
                     //선택된 시술자에 해당한 상담원목록을 얻고 그들의 현재 x,y좌표를 구한다. 이값은 신규인경우 상담원칸에 정보를 자동으로 채우는데 리용된다.
                     for (var i = 0; i < this.counselors.length; i++) {
                         var rs_id = this.counselors[i].interviewer_rank_schedule_id;

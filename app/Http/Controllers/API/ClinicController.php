@@ -31,11 +31,16 @@ class ClinicController extends Controller
         // return $user;
         $keyword = \Request::get('keyword');
         $clinic_email = \Request::get('email');
-
+        $isActive = \Request::get('isActive');
+        $vacations = [0,1];
+        if ($isActive){
+            $vacations = [0];
+        }
         if ($keyword){
             return DB::table('tbl_clinics')->
                                 join('users','users.email','tbl_clinics.email')->
                                 where('tbl_clinics.is_deleted',0)->
+                                whereIn('tbl_clinics.is_vacation', $vacations)->
                                 where(function($query) use ($keyword){
                                     $query->where('tbl_clinics.name','LIKE',"%".$keyword."%")->
                                             orWhere('tbl_clinics.id','LIKE',"%".$keyword."%")->
@@ -50,6 +55,7 @@ class ClinicController extends Controller
         return DB::table('tbl_clinics')->
                         join('users','users.email','tbl_clinics.email')->
                         where(['tbl_clinics.is_deleted'=>0])->
+                        whereIn('tbl_clinics.is_vacation', $vacations)->
                         select('tbl_clinics.*', 'users.user_id')->get();
                         
     }
