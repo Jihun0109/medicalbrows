@@ -25,7 +25,7 @@ class ShiftController extends Controller
     {
         $res = [];
 
-        $ranks = DB::table('tbl_ranks')->select('short_name')->get();
+        //$ranks = DB::table('tbl_ranks')->select('short_name')->get();
         
         $filter = [];
         if ($staff_type == 1)
@@ -36,7 +36,7 @@ class ShiftController extends Controller
         $staff_rank_names = DB::table('tbl_staffs')
                 ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id','tbl_staffs.id')  
                 ->join('tbl_ranks', 'tbl_ranks.id','tbl_staff_ranks.rank_id')    
-                ->select('tbl_staffs.id as id','tbl_staffs.full_name','tbl_staff_ranks.rank_id', 'tbl_ranks.short_name','tbl_ranks.name')       
+                ->select('tbl_staffs.id as id','tbl_staffs.full_name','tbl_staffs.alias','tbl_staff_ranks.rank_id', 'tbl_ranks.short_name','tbl_ranks.name')       
                 ->where([['tbl_staffs.is_deleted', 0], ['tbl_staffs.clinic_id', $clinic_id]])
                 ->whereIn('tbl_ranks.short_name',$filter)
                 ->get();
