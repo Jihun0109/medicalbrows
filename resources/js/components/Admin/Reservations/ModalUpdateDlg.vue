@@ -155,7 +155,7 @@
           </div>
           <br />
           <div class="row">
-            <label class="col-sm-3 col-form-label">お客様名:</label>
+            <label class="col-sm-3 col-form-label">お客様名: {{form.last_name}}</label>
             <div class="col-sm-8">
               <input
                 v-model="form.first_name"
@@ -165,6 +165,7 @@
                 class="form-control form-control-sm"
                 placeholder="お客様名を入力"
                 :class="{'is-invalid':form.errors.has('first_name')}"
+                v-on:blur="handleBlur"
               />
             </div>
           </div>
@@ -301,8 +302,12 @@ export default {
       this.$forceUpdate();
     },
     update_furigana(input) {
+      this.form.last_name = $("#customerFurigana").val();
       // this.history.push(input.target.value);
       // this.form.last_name = historykana(this.history);
+    },
+    handleBlur() {
+      this.form.last_name = $("#customerFurigana").val();
     },
     isShow: function(order_type) {
       //
@@ -364,7 +369,7 @@ export default {
     },
     clearErrors() {
       this.form.first_name = "";
-      this.form.last_name = "";
+      //this.form.last_name = "";
       this.form.birthday = "";
       this.form.phonenumber = "";
       this.form.email = "";
