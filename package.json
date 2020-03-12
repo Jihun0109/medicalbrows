@@ -11,6 +11,7 @@
     },
     "devDependencies": {
         "@mdi/font": "^4.9.95",
+        "@voerro/vue-tagsinput": "^2.2.0",
         "@vue/cli-plugin-babel": "^3.4.0",
         "@vue/cli-plugin-eslint": "^3.4.0",
         "@vue/cli-plugin-pwa": "^3.4.0",

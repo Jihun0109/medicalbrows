@@ -155,7 +155,7 @@
           </div>
           <br />
           <div class="row">
-            <label class="col-sm-3 col-form-label">お客様名: {{form.last_name}}</label>
+            <label class="col-sm-3 col-form-label">お客様名:</label>
             <div class="col-sm-8">
               <input
                 v-model="form.first_name"
@@ -178,6 +178,7 @@
                 type="text"
                 class="form-control form-control-sm"
                 :class="{'is-invalid':form.errors.has('last_name')}"
+                v-on:input="handleFurigana"
               />
             </div>
           </div>
@@ -308,6 +309,11 @@ export default {
     },
     handleBlur() {
       this.form.last_name = $("#customerFurigana").val();
+    },
+    handleFurigana() {
+      this.form.last_name = $("#customerFurigana")
+        .val()
+        .replace(/[^ア-ン]+/i, "");
     },
     isShow: function(order_type) {
       //

@@ -303,10 +303,10 @@ export default {
         this.users = data;
 
         if (targetEmail) {
-          this.users.push({
-            user_id: targetEmail["user_id"],
-            email: targetEmail["email"]
-          });
+          // this.users.push({
+          //   user_id: targetEmail["user_id"],
+          //   email: targetEmail["email"]
+          // });
           this.form.user_id = targetEmail["user_id"];
           this.form.email = targetEmail["email"];
         }

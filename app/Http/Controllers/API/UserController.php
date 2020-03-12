@@ -117,7 +117,7 @@ class UserController extends Controller
         return DB::table('users')->                            
                             where('is_deleted',0)->
                             where('role_id', $clinic_role_id)->
-                            whereNotIn('email', $registered_emails)->
+                            //whereNotIn('email', $registered_emails)->
                             select('user_id','email')->get();                            
     }
 }

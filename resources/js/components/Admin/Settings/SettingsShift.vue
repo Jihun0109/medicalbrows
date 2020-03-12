@@ -22,6 +22,7 @@
             <div class="el-row">
               <button
                 v-for="c in clinics"
+                v-if="c.is_vacation !== 1"
                 :key="c.id"
                 type="button"
                 @click="clinicSelected(c)"
