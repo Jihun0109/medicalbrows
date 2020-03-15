@@ -73,15 +73,9 @@ class StaffRankController extends Controller
      */
     public function store(Request $request)
     {
-        // $rows = TblStaffRank::all();
-        // for ($i=0; $i<sizeof($rows); $i++){
-        //     $row = $rows[$i];
-        //     $row->unique_id = $row->id;
-        //     $row->save();
-        // }
         $staff_id = $request->staff_id;
         $rank_id = $request->rank_id;
-        //Log::info($request);
+
         $this->validate($request, [
             'rank_id' => ['required',
                             Rule::unique('tbl_staff_ranks')->where(function ($query) use ($staff_id, $rank_id){
