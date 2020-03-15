@@ -201,7 +201,7 @@ export default {
         loadClinicList() {
             let url = '/api/clinic?isActive=1';
             if (this.$gate.isClinic())
-                url = '/api/clinic?email=' + this.$gate.getEmail();
+                url = '/api/clinic?user_id=' + this.$gate.getUserId();
             axios.get(url).
             then(({
                 data

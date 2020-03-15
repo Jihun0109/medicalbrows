@@ -29,34 +29,55 @@ class ClinicController extends Controller
     {
         // $user = Auth::user();
         // return $user;
-        $keyword = \Request::get('keyword');
-        $clinic_email = \Request::get('email');
+        $keyword = \Request::get('keyword')??"";
+        $clinic_user_id = \Request::get('user_id');
         $isActive = \Request::get('isActive');
         $vacations = [0,1];
         if ($isActive){
             $vacations = [0];
         }
-        if ($keyword){
-            return DB::table('tbl_clinics')->
-                                join('users','users.email','tbl_clinics.email')->
-                                where('tbl_clinics.is_deleted',0)->
-                                whereIn('tbl_clinics.is_vacation', $vacations)->
-                                where(function($query) use ($keyword){
-                                    $query->where('tbl_clinics.name','LIKE',"%".$keyword."%")->
-                                            orWhere('tbl_clinics.id','LIKE',"%".$keyword."%")->
-                                            orWhere('tbl_clinics.email','LIKE',"%".$keyword."%")->
-                                            orWhere('tbl_clinics.address','LIKE',"%".$keyword."%");
-                              })->select('tbl_clinics.*','users.user_id')->get();
-        } else if ($clinic_email){
-            return TblClinic::where('is_deleted', 0)->                            
-                            where('email',$clinic_email)->get();
+        if ($clinic_user_id){
+            return DB::table('tbl_relation_clinic_user')
+                            ->join('tbl_clinics','tbl_clinics.id', 'tbl_relation_clinic_user.clinic_id')
+                            ->where(['tbl_relation_clinic_user.user_id' => $clinic_user_id, 'tbl_clinics.is_deleted'=>0])
+                            ->select('tbl_clinics.*')->get();
+        }
+    
+        $clinics  = DB::table('tbl_clinics')->
+                            //join('users','users.email','tbl_clinics.email')->
+                            where('tbl_clinics.is_deleted',0)->
+                            whereIn('tbl_clinics.is_vacation', $vacations)->
+                            where(function($query) use ($keyword){
+                                $query->where('tbl_clinics.name','LIKE',"%".$keyword."%")->
+                                        orWhere('tbl_clinics.id','LIKE',"%".$keyword."%")->
+                                        // orWhere('tbl_clinics.email','LIKE',"%".$keyword."%")->
+                                        orWhere('tbl_clinics.address','LIKE',"%".$keyword."%");
+                            //})->select('tbl_clinics.*','users.user_id')->get();
+                            })->select('tbl_clinics.*')->get()
+                            ->map(function ($item){
+                                $item->users = [];
+                                $clinic_users = DB::table('tbl_relation_clinic_user')
+                                                ->join('users','users.id','tbl_relation_clinic_user.user_id')
+                                                ->where('tbl_relation_clinic_user.clinic_id',$item->id)
+                                                ->select('tbl_relation_clinic_user.user_id as id','users.user_id','users.email')->get();
+                                $emails = [];
+                                for ($j=0; $j<sizeof($clinic_users); $j++){
+                                    array_push($item->users, array('key'=>$clinic_users[$j]->id, 'value'=>$clinic_users[$j]->user_id));
+                                    array_push($emails, $clinic_users[$j]->email);
+                                }
+
+                                $item->email = $emails;
+
+                                return $item;
+                            });
+
+        Log::info($clinics);
+
+        for ($i=0; $i<sizeof($clinics); $i++){
+            
         }
 
-        return DB::table('tbl_clinics')->
-                        join('users','users.email','tbl_clinics.email')->
-                        where(['tbl_clinics.is_deleted'=>0])->
-                        whereIn('tbl_clinics.is_vacation', $vacations)->
-                        select('tbl_clinics.*', 'users.user_id')->get();
+        return $clinics;        
                         
     }
 
@@ -71,16 +92,28 @@ class ClinicController extends Controller
         $this->validate($request, [
             'address' => 'required|string|max:50',
             'name' => 'required|string|max:50',
-            'user_id' => 'required|string|max:120',            
+            //'user_id' => 'required|string|max:120',            
             'is_vacation' => 'required|numeric|max:10',            
         ]);
-        return TblClinic::create([
+        
+        $clinic = TblClinic::create([
                             'name' => $request->name,
-                            'email' => $request->email,
+                            //'email' => $request->email,
                             'address' => $request->address,
                             'is_vacation' => $request->is_vacation,
                             'is_deleted' => 0
                             ]);
+
+        $clinic_users = [];
+        for ($i=0; $i<sizeof($request->users); $i++){
+            array_push($clinic_users, array('clinic_id'=>$clinic->id, 'user_id'=>$request->users[$i]['key']));            
+        }
+
+        if (sizeof($clinic_users)){
+            //DB::table('tbl_relation_clinic_user')->where('clinic_id', $clinic->id);
+            DB::table('tbl_relation_clinic_user')->insert($clinic_users);
+        }
+        return 1;
     }
 
     /**
@@ -103,15 +136,23 @@ class ClinicController extends Controller
      */
     public function update(Request $request, $id)
     {
-        Log::info($request);
-        Log::info($id);
         $this->validate($request, [
             'name' => 'required|string|max:50',
-            'email' => 'required|string|email|max:120',//|unique:tbl_clinics,email,'.$id,
+           // 'email' => 'required|string|email|max:120',//|unique:tbl_clinics,email,'.$id,
             'address' => 'string|max:50',
         ]);
         $clinic = TblClinic::findOrFail($id);
-        $clinic->update($request->all());
+        $clinic->update(['name'=>$request->name, 'address'=>$request->address, 'is_vacation'=>$request->is_vacation, 'password'=>$request->password]);
+        $clinic_users = [];
+        for ($i=0; $i<sizeof($request->users); $i++){
+            array_push($clinic_users, array('clinic_id'=>$clinic->id, 'user_id'=>$request->users[$i]['key']));            
+        }
+
+        if (sizeof($clinic_users)){
+            DB::table('tbl_relation_clinic_user')->where('clinic_id', $clinic->id)->delete();
+            DB::table('tbl_relation_clinic_user')->insert($clinic_users);
+        }
+        
         return $id;
     }
 

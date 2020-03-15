@@ -90,9 +90,8 @@ class ClientController extends Controller
         $ret_staff = [];
         for ( $i = 0; $i < sizeof($staff_list); $i++ ){
             //shift table
-            if (sizeof(DB::table("tbl_shift_histories")->where(['staff_id'=>$staff_list[$i]->id, 'date'=>$selected_date])->get()) > 0){
+            if (!DB::table("tbl_shift_histories")->where(['staff_id'=>$staff_list[$i]->id, 'date'=>$selected_date])->value('id'))
                 continue;
-            }  
             //이 시술자에게 예약할수 있는가 판단(order_history->rank_schedule_id 검사)
             $rank_schedule_id = DB::table('tbl_rank_schedules')
                                 ->join('tbl_ranks','tbl_ranks.id','tbl_rank_schedules.rank_id')
@@ -409,6 +408,7 @@ class ClientController extends Controller
                 $order_info = $this->getCounselor($order_type, $staff_id, $date_x);
             }
             
+            
             //for ($y = 0; $y < count($order_info); $y++)
             for ($y = 0; $y < count($first_row); $y++) //오전, 오후, 저녁 ->3
             {
@@ -447,7 +447,7 @@ class ClientController extends Controller
         $afternoon = [];
         $evening = [];
         //shift표로 staff검사,
-        if (sizeof(DB::table("tbl_shift_histories")->where(['staff_id'=>$staff_id, 'date'=>$date])->get()) > 0){
+        if (!DB::table("tbl_shift_histories")->where(['staff_id'=>$staff_id, 'date'=>$date])->value('id')){
             $order_info = array($morning, $afternoon, $evening);
             return $order_info;
         }   
@@ -569,10 +569,9 @@ class ClientController extends Controller
         
         //order_history에 예약된 상담원의 시간대를 구하고 제거한다.
         for ( $i = 0; $i < sizeof($counselor_list); $i++ ){
-            //shift table
-            if (sizeof(DB::table("tbl_shift_histories")->where(['staff_id'=>$counselor_list[$i]->interviewer_id, 'date'=>$selected_date])->get()) > 0){
+            //shift table            
+            if (!DB::table("tbl_shift_histories")->where(['staff_id'=>$counselor_list[$i]->interviewer_id, 'date'=>$selected_date])->value('id'))
                 continue;
-            }    
             $temp = [];
             // 상담원이 인터뷰어로 예약되여 있으면 그 시간을 리턴.
             $remove_time_with_order = DB::table('tbl_order_histories')

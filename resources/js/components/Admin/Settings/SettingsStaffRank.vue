@@ -61,12 +61,18 @@
                     <div v-if="d.staff_id == s.id">{{s.alias}}</div>
                   </div>
                 </td>
-                <td>
+                <!-- <td>
                   <div v-for="p in parts" :key="p.id">
                     <div v-if="d.part_id == p.id">{{p.name}}</div>
                   </div>
+                </td>-->
+                <td>
+                  <span
+                    v-for="p in d.parts"
+                    :key="p['key']"
+                    class="badge badge-primary p-1 mr-1"
+                  >{{p['value']}}</span>
                 </td>
-
                 <td>{{ d.promo_date }}</td>
                 <td>
                   <a href="#" @click="editModal(d)">
@@ -145,7 +151,7 @@
               </div>
               <div class="form-group">
                 <label>施術可能部位</label>
-                <select
+                <!-- <select
                   v-model="form.part_id"
                   class="custom-select"
                   name="part_id"
@@ -160,7 +166,17 @@
                 <div
                   v-if="form.errors.has('part_id')"
                   class="invalid-feedback"
-                >{{errormsg(form.errors.get('part_id'),"part id","施術可能部位")}}</div>
+                >{{errormsg(form.errors.get('part_id'),"part id","施術可能部位")}}</div>-->
+                <tags-input
+                  element-id="tags"
+                  v-model="selectedTags"
+                  :existing-tags="existingTags"
+                  :typeahead="true"
+                  placeholder="施術可能部位のいくつかの文字を入力します"
+                  :only-existing-tags="true"
+                  :typeahead-hide-discard="false"
+                  @tags-updated="updateTags"
+                ></tags-input>
               </div>
               <div class="form-group">
                 <label>昇格日</label>
@@ -213,7 +229,7 @@ export default {
         id: "",
         rank_id: "",
         staff_id: "",
-        part_id: "",
+        parts: "",
         promo_date: "",
         is_deleted: 0,
         unique_id: ""
@@ -227,10 +243,15 @@ export default {
           },
           dates: new Date()
         }
-      ]
+      ],
+      selectedTags: [],
+      existingTags: []
     };
   },
   methods: {
+    updateTags() {
+      this.form.parts = this.selectedTags;
+    },
     errormsg(msg, attribute, jpstr) {
       return msg.replace(attribute, jpstr);
     },
@@ -245,7 +266,12 @@ export default {
         .then(({ data }) => (this.data = data));
       axios.get("/api/rank").then(({ data }) => (this.ranks = data));
       axios.get("/api/staff").then(({ data }) => (this.staffs = data));
-      axios.get("/api/operable-part").then(({ data }) => (this.parts = data));
+      axios.get("/api/operable-part").then(({ data }) => {
+        this.existingTags = [];
+        for (let i = 0; i < data.length; i++) {
+          this.existingTags.push({ key: data[i].id, value: data[i]["name"] });
+        }
+      });
     },
     createData() {
       this.form.promo_date = this.utcToLocalTime(this.form.promo_date);
@@ -311,6 +337,7 @@ export default {
       this.form.reset();
       this.form.errors.clear();
       this.form.promo_date = new Date();
+      this.selectedTags = [];
       $("#modalAddStaffRank").modal("show");
     },
     editModal(data) {
@@ -319,6 +346,7 @@ export default {
       this.form.fill(data);
       this.form.promo_date = new Date(this.form.promo_date);
       this.form.password = "";
+      this.selectedTags = data["parts"];
       $("#modalAddStaffRank").modal("show");
     },
     utcToLocalTime(date) {

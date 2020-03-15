@@ -1,17 +1,21 @@
-export default class Gate{
-    constructor(user){
+export default class Gate {
+    constructor(user) {
         this.user = user;
     }
 
-    isAdmin(){
+    isAdmin() {
         return this.user.role_id === 1;
     }
 
-    isClinic(){
+    isClinic() {
         return this.user.role_id === 2;
     }
 
-    getEmail(){
+    getEmail() {
         return this.user.email;
+    }
+
+    getUserId() {
+        return this.user.id;
     }
 }

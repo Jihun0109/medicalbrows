@@ -50,8 +50,18 @@ class StaffRankController extends Controller
                             orWhere('tbl_staffs.alias','LIKE',"%".$keyword."%")->
                             orWhere('tbl_ranks.name','LIKE',"%".$keyword."%");
               })->latest()->get();
-              Log::info($historydata);
-              return $maindata->merge($historydata);
+              
+              return $maindata->merge($historydata)->map(function($item){
+                    $item->parts = [];
+                    $staff_parts = DB::table('tbl_relation_staff_part')
+                                    ->join('tbl_operable_parts','tbl_operable_parts.id','tbl_relation_staff_part.part_id')
+                                    ->where('tbl_relation_staff_part.staffrank_id',$item->unique_id)
+                                    ->select('tbl_operable_parts.id','tbl_operable_parts.name')->get();                    
+                    for ($j=0; $j<sizeof($staff_parts); $j++){
+                        array_push($item->parts, array('key'=>$staff_parts[$j]->id, 'value'=>$staff_parts[$j]->name));                        
+                    }
+                    return $item;
+              });
 
     }
 
@@ -81,36 +91,47 @@ class StaffRankController extends Controller
                             Rule::unique('tbl_staff_ranks')->where(function ($query) use ($staff_id, $rank_id){
                                 return $query->where('staff_id', $staff_id)->where('rank_id',$rank_id);
                             })],
-            'part_id' => 'required',
+            //'parts' => 'required',
         ]);
 
-        $main = TblStaffRank::latest()->first();
-        $history = TblStaffRankHistory::latest()->first();
-        $unique = max($main->unique_id??0, $history->unique_id??0) + 1;
+        
+        $main = TblStaffRank::max('unique_id')??0;
+        $history = TblStaffRankHistory::max('unique_id')??0;
+        $unique = max($main, $history) + 1;
 
         $old_row = TblStaffRank::where('staff_id',$staff_id)->first();
+        
         if ($old_row){
             TblStaffRankHistory::create([
                 'rank_id' => $old_row->rank_id,
                 'staff_id' => $old_row->staff_id,
-                'part_id' => $old_row->part_id,
                 'promo_date' => $old_row->promo_date,
                 'unique_id' => $old_row->unique_id
             ]);
 
             $values = $request;
             $values['unique_id'] = $unique;
-            $request['promo_date'] = Carbon::parse($request->promo_date);   
+            $values['promo_date'] = Carbon::parse($request->promo_date);
+            Log::info($values->all());
             $old_row->update($values->all());
-            return $old_row->unique_id;
+            
         } else {            
-            return TblStaffRank::create([
+            TblStaffRank::create([
                 'rank_id' => $request->rank_id,
                 'staff_id' => $request->staff_id,
-                'part_id' => $request->part_id,
                 'promo_date' => Carbon::parse($request->promo_date)->format('Y-m-d'),
                 'unique_id' => $unique
             ]);
+        }
+
+        // 한 스타프가 여러개의 Operable_part를 가질수 있다. 태그형식 ({key1: value1, key2: value2})형식의 자료로 올라온다.
+        $staff_parts = [];
+        for ($i=0; $i<sizeof($request->parts); $i++){
+            array_push($staff_parts, array('staffrank_id'=>$unique, 'part_id'=>$request->parts[$i]['key']));            
+        }
+
+        if (sizeof($staff_parts)){            
+            DB::table('tbl_relation_staff_part')->insert($staff_parts);
         }
     }
 
@@ -142,12 +163,23 @@ class StaffRankController extends Controller
             //                     return $query->where('is_deleted','0')->where('id',"<>", $request->id);
             //                 })
             //             ],
-            'part_id' => 'required',
+            // 'parts' => 'required',
         ]);
         $values = $request;        
         $request['promo_date'] = Carbon::parse($request->promo_date);        
         $staffrank = TblStaffRank::where('unique_id', $unique_id)->first()??TblStaffRankHistory::where('unique_id',$unique_id)->first();
         $staffrank->update($values->all());
+
+        $staff_parts = [];
+        for ($i=0; $i<sizeof($request->parts); $i++){
+            array_push($staff_parts, array('staffrank_id'=>$unique_id, 'part_id'=>$request->parts[$i]['key']));            
+        }
+
+        if (sizeof($staff_parts)){
+            DB::table('tbl_relation_staff_part')->where('staffrank_id', $unique_id)->delete();          
+            DB::table('tbl_relation_staff_part')->insert($staff_parts);
+        }
+
         return $unique_id;
     }
 

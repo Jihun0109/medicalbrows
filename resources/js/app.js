@@ -23,6 +23,9 @@ import VueRouter from "vue-router";
 import swal from "sweetalert2";
 window.swal = swal;
 
+import VoerroTagsInput from '@voerro/vue-tagsinput';
+Vue.component('tags-input', VoerroTagsInput);
+
 const toast = swal.mixin({
     //sweetalert2.github.io
     toast: true,

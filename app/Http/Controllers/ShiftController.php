@@ -60,12 +60,6 @@ class ShiftController extends Controller
                         ->whereBetween('tbl_order_histories.order_date', [Carbon::parse($min)->subDays(1), Carbon::parse($max)->addDays(1)])
                         ->select('tbl_order_histories.staff_id','tbl_staffs.full_name','tbl_order_histories.order_date')
                         ->get();
-
-        Log::info("Check Orders");
-        Log::info($order_histories);
-        //Log::info($dates);
-        //return Carbon::parse($request->dates[0])->tz('UTC');
-
         $isRest = false;
         $couldnot = [];
         for ($i = 0; $i < sizeof($order_histories); $i++){            
@@ -75,8 +69,6 @@ class ShiftController extends Controller
                 array_push($couldnot, array('staff_name'=>$order_histories[$i]->full_name,  'date'=>$order_histories[$i]->order_date));                
             }
         }
-        Log::info("couldnot");
-        Log::info($couldnot);
 
         if ($couldnot){
             return array("result"=>"fails", "message"=> "TakenOrder", "data"=>$couldnot);
@@ -94,7 +86,7 @@ class ShiftController extends Controller
             $data = [];
             foreach($dates as $date){
                 array_push($data, array('staff_id'=>$staff_id, 'date'=>$date));
-            }            
+            }
             TblShiftHistory::insert($data);
             //Log::error(microtime(true)-$o);
         }

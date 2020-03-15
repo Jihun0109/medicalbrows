@@ -297,7 +297,7 @@
   outline: none;
 }
 
-.active {
+.tab-btn.active {
   //border-bottom: 3px solid green;
   //background: #fcfcfc;
   background: #1bb9af;

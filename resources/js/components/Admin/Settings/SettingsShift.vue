@@ -498,7 +498,8 @@ export default {
   border: 1px solid #cccccc;
   outline: none;
 }
-.active {
+.el-button .active,
+table .active {
   //border-bottom: 3px solid green;
   //background: #fcfcfc;
   background: #38c172;

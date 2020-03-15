@@ -32,13 +32,13 @@
         </div>
         <!-- /.card-header -->
         <div class="card-body table-responsive p-0">
-          <table class="table table-hover">
+          <table class="table table-hover" style="word-wrap: break-word;">
             <thead>
               <tr>
                 <th>クリニックID</th>
                 <th>クリニック名</th>
-                <th>ユーザーID</th>
-                <th>メール</th>
+                <th style="width:20%">ユーザーID</th>
+                <th style="width:25%">メール</th>
                 <th>住所</th>
                 <th>休閉鎖</th>
                 <th>編集する</th>
@@ -48,8 +48,16 @@
               <tr v-for="d in data" :key="d.id">
                 <td>{{ d.id }}</td>
                 <td>{{ d.name }}</td>
-                <td>{{ d.user_id }}</td>
-                <td>{{ d.email }}</td>
+                <td>
+                  <span
+                    v-for="e in d.users"
+                    :key="e.value"
+                    class="badge badge-primary p-1 mr-1"
+                  >{{e.value}}</span>
+                </td>
+                <td>
+                  <span v-for="e in d.email" :key="e" class="badge badge-success p-1 mr-1">{{e}}</span>
+                </td>
                 <td>{{ d.address }}</td>
                 <td>{{ d.is_vacation | isVacation}}</td>
                 <td>
@@ -106,7 +114,7 @@
               </div>
               <div class="form-group">
                 <label>ユーザーID</label>
-                <select
+                <!-- <select
                   v-model="form.user_id"
                   @change="onUserIdChange($event)"
                   class="custom-select"
@@ -122,11 +130,29 @@
                 <div
                   v-if="form.errors.has('user_id')"
                   class="invalid-feedback"
-                >{{errormsg(form.errors.get('user_id'),"user id","ユーザーID")}}</div>
+                >{{errormsg(form.errors.get('user_id'),"user id","ユーザーID")}}</div>-->
+                <tags-input
+                  element-id="tags"
+                  v-model="selectedTags"
+                  :existing-tags="existingTags"
+                  :typeahead="true"
+                  placeholder="ユーザー名のいくつかの文字を入力します"
+                  :only-existing-tags="true"
+                  :typeahead-hide-discard="false"
+                  @tags-updated="updateTags"
+                ></tags-input>
               </div>
+
               <div class="form-group">
                 <label>メール</label>
-                <input v-model="form.email" type="text" class="form-control" :disabled="true" />
+                <!-- <input v-model="form.email" type="text" class="form-control" :disabled="true" /> -->
+                <div class>
+                  <span
+                    v-for="e in form.email"
+                    :key="e"
+                    class="badge badge-secondary p-1 mr-1"
+                  >{{e}}</span>
+                </div>
               </div>
               <div class="form-group">
                 <label>住所</label>
@@ -182,15 +208,34 @@ export default {
       form: new Form({
         id: "",
         name: "",
-        email: 0,
+        email: [],
         address: "",
-        is_vacation: 0
+        is_vacation: 0,
+        users: []
       }),
       editMode: false,
-      keyword: ""
+      keyword: "",
+      selectedTags: [],
+      existingTags: []
     };
   },
   methods: {
+    updateTags() {
+      console.log("update Tags");
+      let email_list = [];
+      if (this.selectedTags.length) {
+        for (let i = 0; i < this.selectedTags.length; i++) {
+          for (let j = 0; j < this.users.length; j++) {
+            if (this.users[j].id === this.selectedTags[i].key) {
+              email_list.push(this.users[j].email);
+              break;
+            }
+          }
+        }
+      }
+      this.form.email = email_list;
+      this.form.users = this.selectedTags;
+    },
     onUserIdChange(event) {
       if (this.users) {
         this.users.forEach(element => {
@@ -212,8 +257,6 @@ export default {
       axios.get("/api/clinic").then(({ data }) => (this.data = data));
     },
     createData() {
-      console.log(this.data);
-      console.log(this.form.user_id);
       this.users.forEach(element => {
         if (this.form.user_id === element.user_id) {
           console.log(">>>" + element.user_id);
@@ -288,6 +331,7 @@ export default {
       this.form.errors.clear();
       this.form.reset();
       this.getEmailList("");
+      this.selectedTags = [];
       $("#modalAddUser").modal("show");
     },
     editModal(data) {
@@ -298,17 +342,19 @@ export default {
       this.getEmailList(data);
       $("#modalAddUser").modal("show");
     },
-    getEmailList(targetEmail) {
+    getEmailList(targetClinic) {
       axios.get("/v1/clinic/get-email").then(({ data }) => {
         this.users = data;
+        this.existingTags = [];
 
-        if (targetEmail) {
-          // this.users.push({
-          //   user_id: targetEmail["user_id"],
-          //   email: targetEmail["email"]
-          // });
-          this.form.user_id = targetEmail["user_id"];
-          this.form.email = targetEmail["email"];
+        for (let i = 0; i < data.length; i++) {
+          this.existingTags.push({ key: data[i].id, value: data[i].user_id });
+          //email_list.push(data[i].email);
+        }
+
+        if (targetClinic) {
+          this.selectedTags = targetClinic["users"];
+          this.form.email = targetClinic["email"];
         }
       });
     }
@@ -318,3 +364,9 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.tags-input span {
+  border-radius: 5px !important;
+}
+</style>
