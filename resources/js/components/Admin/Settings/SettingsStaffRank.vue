@@ -172,10 +172,15 @@
                   v-model="selectedTags"
                   :existing-tags="existingTags"
                   :typeahead="true"
-                  placeholder="施術可能部位のいくつかの文字を入力します"
+                  placeholder="施術可能部位"
                   :only-existing-tags="true"
-                  :typeahead-hide-discard="false"
+                  :typeahead-hide-discard="true"
+                  :typeahead-show-on-focus="true"
+                  :typeahead-always-show="typeaheadAlwaysShow"
+                  :typeahead-style="'dropdown'"
                   @tags-updated="updateTags"
+                  @focus="tagboxFocused"
+                  @blur="tagboxBlured"
                 ></tags-input>
               </div>
               <div class="form-group">
@@ -245,10 +250,17 @@ export default {
         }
       ],
       selectedTags: [],
-      existingTags: []
+      existingTags: [],
+      typeaheadAlwaysShow: false
     };
   },
   methods: {
+    tagboxFocused() {
+      this.typeaheadAlwaysShow = true;
+    },
+    tagboxBlured() {
+      this.typeaheadAlwaysShow = false;
+    },
     updateTags() {
       this.form.parts = this.selectedTags;
     },

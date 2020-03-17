@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\TblCustomer;
 use App\TblOrder;
 use App\TblOrderHistory;
+use App\TblLog;
+
 use DB;
 use Log;
 
@@ -704,6 +706,11 @@ class ClientController extends Controller
                 'is_deleted' => 0
             ]);
         }
+
+        $clinic_name = DB::table('tbl_clinics')->join('tbl_staffs','tbl_staffs.clinic_id','tbl_clinics.id')->where('tbl_staffs.id',$order_info['staff_info']['id'])->value('tbl_clinics.name');
+        $log = "予約登録: 予約ID 「". $order_serial_id . "」 場所等 「". $clinic_name. "」 日時 「". $order_info['calendar_info']['date']."」";
+        TblLog::create(['log'=>$log]);
+
         $ret = array('mail'=> $customer_info['email'], 'order_serial_id' => $order_serial_id);
         return $ret;
     }

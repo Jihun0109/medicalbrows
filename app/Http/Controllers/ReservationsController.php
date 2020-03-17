@@ -572,7 +572,7 @@ class ReservationsController extends Controller
             ]);
         }
         
-        $clinic_name = DB::table('tbl_clinics')->join('tbl_staffs','tbl_staffs.clinic_id','tbl_clinics.id')->where('tbl_clinics.id',$payLoad['item']['staff_id'])->value('tbl_clinics.name');
+        $clinic_name = DB::table('tbl_clinics')->join('tbl_staffs','tbl_staffs.clinic_id','tbl_clinics.id')->where('tbl_staffs.id',$payLoad['item']['staff_id'])->value('tbl_clinics.name');
         $log = "予約登録: 予約ID 「". $order_serial_id . "」 場所等 「". $clinic_name. "」 日時 「". $payLoad['item']['date']."」";
         TblLog::create(['log'=>$log]);
         $menu_info = DB::table('tbl_menus')->where('id', $order_history->menu_id)->first();

@@ -136,10 +136,15 @@
                   v-model="selectedTags"
                   :existing-tags="existingTags"
                   :typeahead="true"
-                  placeholder="ユーザー名のいくつかの文字を入力します"
+                  placeholder="ユーザー名"
                   :only-existing-tags="true"
-                  :typeahead-hide-discard="false"
+                  :typeahead-hide-discard="true"
+                  :typeahead-show-on-focus="true"
+                  :typeahead-always-show="typeaheadAlwaysShow"
+                  :typeahead-style="'dropdown'"
                   @tags-updated="updateTags"
+                  @focus="tagboxFocused"
+                  @blur="tagboxBlured"
                 ></tags-input>
               </div>
 
@@ -216,10 +221,18 @@ export default {
       editMode: false,
       keyword: "",
       selectedTags: [],
-      existingTags: []
+      existingTags: [],
+      typeaheadAlwaysShow: false
     };
   },
   methods: {
+    tagboxFocused() {
+      this.typeaheadAlwaysShow = true;
+    },
+    tagboxBlured() {
+      this.typeaheadAlwaysShow = false;
+    },
+
     updateTags() {
       console.log("update Tags");
       let email_list = [];
