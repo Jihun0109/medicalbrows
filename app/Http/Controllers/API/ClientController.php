@@ -59,38 +59,56 @@ class ClientController extends Controller
         if($rank_id){
             $staff_list = DB::table('tbl_staff_ranks')
             ->join('tbl_staffs', 'tbl_staffs.id', 'tbl_staff_ranks.staff_id')
-            ->join('tbl_operable_parts', 'tbl_operable_parts.id', 'tbl_staff_ranks.part_id')
+            //->join('tbl_operable_parts', 'tbl_operable_parts.id', 'tbl_staff_ranks.part_id')
             ->where([['tbl_staff_ranks.is_deleted', 0],['tbl_staff_ranks.rank_id', $rank_id]])
-            ->select('tbl_staffs.id','tbl_staffs.alias as name','tbl_operable_parts.name as area')      
+            ->select('tbl_staffs.id','tbl_staffs.alias as name', 'tbl_staff_ranks.unique_id')      
             ->get();
         }
         else if($clinic_id){
             $staff_list = DB::table('tbl_staffs')            
             ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id', 'tbl_staffs.id')
             ->join('tbl_ranks', 'tbl_ranks.id', 'tbl_staff_ranks.rank_id')
-            ->join('tbl_operable_parts', 'tbl_operable_parts.id', 'tbl_staff_ranks.part_id')
+            //->join('tbl_operable_parts', 'tbl_operable_parts.id', 'tbl_staff_ranks.part_id')
             ->where([['tbl_staff_ranks.is_deleted', 0],['tbl_staffs.is_deleted', 0], ['tbl_staffs.clinic_id', $clinic_id]])
-            ->select('tbl_staffs.id','tbl_staffs.alias as name','tbl_operable_parts.name as area','tbl_ranks.id as rank_id' ,'tbl_ranks.name as rank_name')      
+            ->select('tbl_staffs.id','tbl_staffs.alias as name','tbl_ranks.id as rank_id' ,'tbl_ranks.name as rank_name', 'tbl_staff_ranks.unique_id')
             ->get();
         }
-        return $staff_list;
+        return $staff_list->map(function($item){
+            $item->area = [];
+            $item->area = DB::table('tbl_relation_staff_part')
+                                    ->join('tbl_operable_parts','tbl_operable_parts.id','tbl_relation_staff_part.part_id')
+                                    ->where('tbl_relation_staff_part.staffrank_id',$item->unique_id)
+                                    ->select('tbl_operable_parts.name')->pluck('name');
+            return $item;
+        });
     }
 
     public function staff_list_withdate(Request $request)
     {               
         $payLoad = json_decode(request()->getContent(), true);  
         $selected_date = $request['date'];
+        $order_type = $request['order_type'];
         //Log::info($payLoad);
         $staff_list = DB::table('tbl_staffs')            
             ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id', 'tbl_staffs.id')
-            ->join('tbl_ranks', 'tbl_ranks.id', 'tbl_staff_ranks.rank_id')
-            ->join('tbl_operable_parts', 'tbl_operable_parts.id', 'tbl_staff_ranks.part_id')
+            ->join('tbl_ranks', 'tbl_ranks.id', 'tbl_staff_ranks.rank_id')            
             ->where([['tbl_staff_ranks.is_deleted', 0],['tbl_staffs.is_deleted', 0]])
-            ->select('tbl_staffs.id','tbl_staffs.alias as name','tbl_operable_parts.name as area','tbl_ranks.id as rank_id' ,'tbl_ranks.name as rank_name')      
-            ->get();
+            ->select('tbl_staffs.id','tbl_staffs.alias as name', 'tbl_ranks.id as rank_id' ,'tbl_ranks.name as rank_name', 'tbl_staff_ranks.unique_id')      
+            ->get()->map(function($item){
+                $item->area = [];
+                $item->area = DB::table('tbl_relation_staff_part')
+                                        ->join('tbl_operable_parts','tbl_operable_parts.id','tbl_relation_staff_part.part_id')
+                                        ->where('tbl_relation_staff_part.staffrank_id',$item->unique_id)
+                                        ->select('tbl_operable_parts.name')->pluck('name');
+                return $item;
+            });
         
+        //Log::info($staff_list);
         $ret_staff = [];
         for ( $i = 0; $i < sizeof($staff_list); $i++ ){
+            //상담원인경우 제외
+            if($staff_list[$i]->rank_name == 'カウンセラー')
+                continue;
             //shift table
             if (!DB::table("tbl_shift_histories")->where(['staff_id'=>$staff_list[$i]->id, 'date'=>$selected_date])->value('id'))
                 continue;
@@ -107,6 +125,12 @@ class ClientController extends Controller
                 if (sizeof(DB::table("tbl_order_histories")
                             ->where(['rank_schedule_id'=>$rank_schedule_id[$j]->id, 'order_date'=>$selected_date])->get()) == 0)
                 {
+                    //재진인 경우 상담원 검사할 필요 없으므로 아래의 검사는 진행하지 않는다.
+                    if($order_type == "再診"){
+                        $b_possible_staff = true;
+                        break;
+
+                    }
                     $staff_info = DB::table('tbl_staffs')
                                 ->where(['id'=>$staff_list[$i]->id,'is_deleted'=>0])
                                 ->first();
@@ -538,6 +562,7 @@ class ClientController extends Controller
     }
 
     // 스타프에 해당한 상담원 목록 리턴
+    // There is room for improvement
     public function counselor_list($clinic_id, $selected_date, $rank_schedule_id,$order_history_id)
     {        
         $res = [];
@@ -547,11 +572,14 @@ class ClientController extends Controller
             ->select(DB::raw('HOUR(tbl_rank_schedules.start_time) as start_hour'))      
             ->get();
         //Log::Info($rank_schedule_id);
-        $cinfo = $this->generalCounInfo();
+        $cinfo = $this->generalCounInfo(); 
+        //::Info($cinfo);
         $possible_endtime_addr = $cinfo['end_hour_array'];//[ 10, 12, 15, 17 ];
         //nearest value
         $interviewer_rank_schedule_id = 13;//이미 정해진 4개 수자이다.10,11,12,13
         $min = $possible_endtime_addr[3];
+        //Log::Info("==========stat_hour=========");
+        //Log::Info($start_time[0]->start_hour);
         for($i = 0; $i < sizeof($possible_endtime_addr); $i++)
         {
             if($possible_endtime_addr[$i] > $start_time[0]->start_hour )

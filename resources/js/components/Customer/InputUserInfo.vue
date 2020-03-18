@@ -88,7 +88,8 @@
                     <label class="col-4 col-form-label">電話番号：</label>
                     <div class="col">
                         <!-- <input v-model="form.phonenumber" type="text" class="form-control" placeholder="電話番号を入力して下さい"> -->
-                        <input v-model="formdata.phonenumber" type="tel" class="form-control" placeholder="電話番号を入力して下さい" v-mask="{mask:'999-9999-9999', placeholder:'#'}" :class="{ 'is-invalid': submitted && $v.formdata.phonenumber.$error }" />
+                        <!-- <input v-model="formdata.phonenumber" type="tel" class="form-control" placeholder="電話番号を入力して下さい" v-mask="{mask:'999-9999-9999', placeholder:'#'}" :class="{ 'is-invalid': submitted && $v.formdata.phonenumber.$error }" /> -->
+                        <input  :value="formdata.phonenumber" type="number" class="form-control" placeholder="xxxxxxxxxxx" @input="updatePhoneValue" :class="{ 'is-invalid': submitted && $v.formdata.phonenumber.$error }" />
                         <div v-if="submitted && !$v.formdata.phonenumber.required" class="invalid-feedback">電話番号を入力して下さい。</div>
                     </div>
                 </div>
@@ -219,6 +220,13 @@
 
         },
         methods:{
+            updatePhoneValue(event) {
+                const value = event.target.value;
+                if (String(value).length <= 11) {
+                    this.formdata.phonenumber = value;
+                }
+                this.$forceUpdate();
+            },
             onClickNextBtn:function(){
                 this.submitted = true;
                 // stop here if form is invalid

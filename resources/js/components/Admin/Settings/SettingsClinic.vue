@@ -140,11 +140,9 @@
                   :only-existing-tags="true"
                   :typeahead-hide-discard="true"
                   :typeahead-show-on-focus="true"
-                  :typeahead-always-show="typeaheadAlwaysShow"
                   :typeahead-style="'dropdown'"
                   @tags-updated="updateTags"
-                  @focus="tagboxFocused"
-                  @blur="tagboxBlured"
+                  :typeahead-activation-threshold="0"
                 ></tags-input>
               </div>
 
@@ -221,18 +219,10 @@ export default {
       editMode: false,
       keyword: "",
       selectedTags: [],
-      existingTags: [],
-      typeaheadAlwaysShow: false
+      existingTags: []
     };
   },
   methods: {
-    tagboxFocused() {
-      this.typeaheadAlwaysShow = true;
-    },
-    tagboxBlured() {
-      this.typeaheadAlwaysShow = false;
-    },
-
     updateTags() {
       console.log("update Tags");
       let email_list = [];

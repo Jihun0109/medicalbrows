@@ -55,7 +55,7 @@
             @click="onClickArrowBtn($event, 4)"
             :class="{setbtn:stage == 4}"
           >
-            <p style>PDF出力</p>
+            <p style>同意確認</p>
           </b-button>
 
           <b-button

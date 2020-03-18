@@ -1,6 +1,6 @@
 <template>
     <div class="">
-        <form id="form" class="id-info">
+        <form id="form-zai" class="id-info">
             <div class="row">
                 <label class="col-4 col-form-label">診療区分</label>
                 <div class="col my-auto" >
@@ -16,7 +16,8 @@
             <div class="form-group row">
                 <label class="col-4 col-form-label">電話番号</label>
                 <div class="col">
-                    <input v-model="form.phonenumber" type="text" class="form-control" placeholder="電話番号">
+                    <input  :value="form.phonenumber" type="number" class="form-control" placeholder="xxxxxxxxxxx" @input="updatePhoneValue"/>
+                    <!-- <input v-model="form.phonenumber" type="text" class="form-control" placeholder="電話番号"> -->
                 </div>
             </div>            
         </form>
@@ -52,6 +53,13 @@
             }
         },
         methods:{
+            updatePhoneValue(event) {
+                const value = event.target.value;
+                if (String(value).length <= 11) {
+                    this.form.phonenumber = value;
+                }
+                this.$forceUpdate();
+            },
             onClickNextBtn:function(){
                 this.form.post('/v1/client/get_orderinfo')
                     .then((result)=>{

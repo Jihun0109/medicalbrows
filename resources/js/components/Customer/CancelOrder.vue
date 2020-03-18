@@ -24,7 +24,7 @@
         <div style="margin-top: 20px; margin-bottom: 10px; text-align: center;" v-show="complete === 0">       
             <label style="letter-spacing: -1.2px; margin-bottom: 35px;">予約キャンセル手続き</label>
             <div class="form-card" v-show="changepage === 0">
-                <form id="form" class="cancel-card ">
+                <form id="form-cancel" class="cancel-card ">
                     <div class="form-group row">
                         <label class="col-4 col-form-label">予約ID :</label>
                         <div class="col">
@@ -34,7 +34,8 @@
                     <div class="form-group row">
                         <label class="col-4 col-form-label">電話番号 :</label>
                         <div class="col">
-                            <input v-model="form.phonenumber" type="text" class="form-control" placeholder="電話番号">
+                            <!-- <input v-model="form.phonenumber" type="text" class="form-control" placeholder="電話番号"> -->
+                            <input  :value="form.phonenumber" type="number" class="form-control" placeholder="xxxxxxxxxxx" @input="updatePhoneValue"/>
                         </div>
                     </div>            
                 </form>
@@ -134,6 +135,13 @@
             }
         },
         methods:{
+            updatePhoneValue(event) {
+                const value = event.target.value;
+                if (String(value).length <= 11) {
+                    this.form.phonenumber = value;
+                }
+                this.$forceUpdate();
+            },
             onClickNextBtn:function(){
                 if(!this.changepage)
                 {
