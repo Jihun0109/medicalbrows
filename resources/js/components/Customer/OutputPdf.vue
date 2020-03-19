@@ -36,7 +36,7 @@
       <div class="help-text">
         <p>20歳未満の未成年者で施術を希望される方は、保護者の方と一緒にご来院いただくか、「親権者同意書」が必要となります。「親権者同意書」はこちらからダウンロードしていただき、ご署名頂いたものをご持参ください。また、事前に「問診票」を記入、ご持参いただくと診療がスムーズです。</p>
       </div>
-      <div class="card" @click="onClickPdf('pdf/22.pdf'), outputName = 'スタッフ区分.pdf'">
+      <div class="card" @click="onClickPdf('pdf/スタッフ区分.pdf'), outputName = 'スタッフ区分.pdf'">
         <div class="card-body row" style="cursor: pointer;">
           <div class="col-3 my-auto pdf-btn">
             <a href="#">
@@ -53,7 +53,7 @@
       </div>
       <div
         class="card"
-        @click="onClickPdf('pdf/11.pdf'), outputName = '表参道メディカルクリニック問診票.pdf'"
+        @click="onClickPdf('pdf/表参道メディカルクリニック問診票.pdf'), outputName = '表参道メディカルクリニック問診票.pdf'"
         style="cursor: pointer;"
       >
         <div class="card-body row">

@@ -158,14 +158,14 @@ class ClientController extends Controller
         if($staff_id){
             $clinic_info = DB::table('tbl_staffs')
                         ->join('tbl_clinics','tbl_clinics.id','tbl_staffs.clinic_id')
-                        ->where([['tbl_staffs.is_deleted', 0],['tbl_staffs.id', $staff_id]])
+                        ->where([['tbl_staffs.is_deleted', 0],['tbl_staffs.id', $staff_id],['tbl_clinics.is_vacation', 0]])
                         ->select('tbl_clinics.id','tbl_clinics.name')      
                         ->get();
             //Log::info($clinic_info);            
             return $clinic_info;
         }
         $clinic_list = DB::table('tbl_clinics')
-            ->where('tbl_clinics.is_deleted', 0)
+            ->where([['tbl_clinics.is_deleted', 0],['tbl_clinics.is_vacation', 0]])
             ->select('id','name')      
             ->get();
         return $clinic_list;
@@ -790,12 +790,14 @@ class ClientController extends Controller
         $order_serial_id = $payLoad['order_serial_id'];
         $phonenumber = $payLoad['phonenumber'];
         //get order info
+        //Log::info($payLoad);
         $order_history = DB::table('tbl_order_histories')
                     ->where([['is_deleted', 0],['order_serial_id', $order_serial_id]])
                     ->get();
         //Log::info($order_history);
         if($order_history->isEmpty())
             return 'wrongID';
+        
         $customer = DB::table('tbl_customers')
                     ->where([['is_deleted', 0], ['phonenumber', $phonenumber],['id', $order_history[0]->customer_id]])
                     ->select('id','email','gender','first_name','last_name','address','phonenumber','birthday')
@@ -831,7 +833,7 @@ class ClientController extends Controller
         else{
             $temp_history = $order_history[0];
         }
-
+        $order_info['order_status'] = $temp_history->status;
         $order_info['order_type'] = $order_type;
         $order_info['customer_id'] = $customer->id;
         $order_info['order_serial_id'] = $temp_history->order_serial_id;
@@ -843,9 +845,11 @@ class ClientController extends Controller
         $menu_info = DB::table('tbl_menus')->where(['is_deleted'=>0,'id'=>$temp_history->menu_id])
                         ->select('id','name')->first();
         $staff_info = DB::table('tbl_staffs')->where(['is_deleted'=>0,'id'=>$temp_history->staff_id])
-                        ->select('id','alias')->first();
-        $clinic_info = DB::table('tbl_clinics')->where(['is_deleted'=>0,'id'=>$temp_history->clinic_id])
+                        ->select('id','alias','clinic_id')->first();
+        $clinic_info = DB::table('tbl_clinics')->where(['is_deleted'=>0,'id'=>$staff_info->clinic_id])
                         ->select('id','name')->first();      
+        // $clinic_info = DB::table('tbl_clinics')->where(['is_deleted'=>0,'id'=>$temp_history->clinic_id])
+        //                 ->select('id','name')->first();   
         $rank_info = DB::table('tbl_ranks')->where(['is_deleted'=>0,'id'=>$temp_history->rank_id])
                         ->select('id','name')->first();      
         $rs_info =  DB::table('tbl_rank_schedules')->where(['is_deleted'=>0,'id'=>$temp_history->rank_schedule_id])

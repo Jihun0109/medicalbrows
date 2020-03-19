@@ -109,7 +109,7 @@
             <output-pdf @changeStage="changeStageTab"></output-pdf>
           </div>
           <div v-show="stage === 5" class="tab-content-div">
-            <complete-order @changeStage="changeStageTab"></complete-order>
+            <complete-order @changeStage="changeFirstStageTab"></complete-order>
           </div>
         </div>
       </div>
@@ -171,6 +171,11 @@ export default {
     },
     changeStageTab: function(index) {
       this.stage = index;
+    },
+    changeFirstStageTab: function(index) {
+      this.stage = 0;
+      this.cancelmode = 0;
+      this.existId = false;
     },
     changeExistIdPage: function(index) {
       this.existId = index;

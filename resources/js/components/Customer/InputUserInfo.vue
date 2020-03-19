@@ -24,7 +24,7 @@
                 <div class="row">
                     <label class="col-4 col-form-label">場所：</label>
                     <div class="col" >
-                        <p>{{order_id_info.old_order_info.clinic_info.name}}</p>
+                        <p v-if="order_id_info.old_order_info.clinic_info != null">{{order_id_info.old_order_info.clinic_info.name}}</p>
                     </div>
                 </div>
                 <div class="row">
@@ -49,14 +49,16 @@
                 <div class="form-group row">
                     <label class="col-4 col-form-label">氏名：</label>
                     <div class="col">
-                        <input v-model="formdata.first_name" type="text" class="form-control" placeholder="氏名を入力して下さい" :class="{ 'is-invalid': submitted && $v.formdata.first_name.$error }" />
+                        <input v-model="formdata.first_name" id="customerName" v-on:input="update_furigana" type="text" class="form-control" placeholder="氏名を入力して下さい" :class="{ 'is-invalid': submitted && $v.formdata.first_name.$error }" v-on:blur="handleBlur" />
+                        <!-- <input v-model="formdata.first_name" type="text" class="form-control" placeholder="氏名を入力して下さい" :class="{ 'is-invalid': submitted && $v.formdata.first_name.$error }" /> -->
                         <div v-if="submitted && !$v.formdata.first_name.required" class="invalid-feedback">氏名を入力して下さい。</div>
                     </div>                    
                 </div>
                 <div class="form-group row">
                     <label class="col-4 col-form-label">フリガナ：</label>
                     <div class="col">
-                        <input v-model="formdata.last_name" type="text" class="form-control" placeholder="フリガナを入力して下さい" :class="{ 'is-invalid': submitted && $v.formdata.last_name.$error }" />
+                        <input v-model="formdata.last_name" id="customerFurigana" type="text" class="form-control" :class="{ 'is-invalid': submitted && $v.formdata.last_name.$error }" v-on:input="handleFurigana"/>
+                        <!-- <input v-model="formdata.last_name" type="text" class="form-control" placeholder="フリガナを入力して下さい" :class="{ 'is-invalid': submitted && $v.formdata.last_name.$error }" /> -->
                         <div v-if="submitted && $v.formdata.last_name.$error" class="invalid-feedback">
                             <span v-if="!$v.formdata.last_name.required">フリガナを入力して下さい。</span>
                             <!-- <span v-if="!$v.formdata.last_name.max">フリガナは最大6文字でなければします。</span> -->
@@ -219,7 +221,23 @@
             }
 
         },
+        mounted() {
+            $.fn.autoKana("#customerName", "#customerFurigana", { katakana: true });
+        },
         methods:{
+            update_furigana(input) {
+                this.formdata.last_name = $("#customerFurigana").val();
+                // this.history.push(input.target.value);
+                // this.form.last_name = historykana(this.history);
+            },
+            handleBlur() {
+                this.formdata.last_name = $("#customerFurigana").val();
+            },
+            handleFurigana() {
+                this.formdata.last_name = $("#customerFurigana")
+                    .val()
+                    .replace(/[^ア-ン]+/i, "");
+            },
             updatePhoneValue(event) {
                 const value = event.target.value;
                 if (String(value).length <= 11) {
@@ -278,9 +296,7 @@
                 return formattedDate;
             },
         },
-        mounted() {
 
-        }
     }
 </script>
 

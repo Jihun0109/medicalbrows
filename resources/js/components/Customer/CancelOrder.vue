@@ -163,6 +163,14 @@
                                 });
                             }
                             else{
+                                if(result.data.order_info.order_status == 4)
+                                {
+                                    toast.fire({
+                                        icon: "error",
+                                        title: "該当の予約IDは既にキャンセルされています。"
+                                    });
+                                    return;
+                                }
                                 this.order_info = result.data.order_info;
                                 this.customer_info = result.data.customer_info;
                                 this.changepage = 1;   
