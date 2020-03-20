@@ -85,7 +85,7 @@ class StaffRankController extends Controller
                             Rule::unique('tbl_staff_ranks')->where(function ($query) use ($staff_id, $rank_id){
                                 return $query->where('staff_id', $staff_id)->where('rank_id',$rank_id);
                             })],
-            //'parts' => 'required',
+            'parts' => 'required',
         ]);
 
         
@@ -157,7 +157,7 @@ class StaffRankController extends Controller
             //                     return $query->where('is_deleted','0')->where('id',"<>", $request->id);
             //                 })
             //             ],
-            // 'parts' => 'required',
+            'parts' => 'required',
         ]);
         $values = $request;        
         $request['promo_date'] = Carbon::parse($request->promo_date);        

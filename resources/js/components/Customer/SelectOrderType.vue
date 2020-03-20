@@ -164,7 +164,7 @@
         <div class="row justify-content-around">
           <div class="col-4">
             <button
-              v-show="true"
+              v-show="false"
               @click="onClickCancelBtn"
               type="button"
               class="btn btn-secondary"
@@ -355,7 +355,11 @@ export default {
         gOrderTypeInfo.data.staff_info.id = "";
         gOrderTypeInfo.data.clinic_info.id = "";
         gOrderTypeInfo.data.calendar_layout = []; //이전에 현시되여있는 표를 삭제
-        axios.post("/v1/client/staff_list_withdate", {'date': gOrderTypeInfo.data.date, 'order_type': gOrderTypeInfo.data.order_type})     
+        axios
+          .post("/v1/client/staff_list_withdate", {
+            date: gOrderTypeInfo.data.date,
+            order_type: gOrderTypeInfo.data.order_type
+          })
           .then(({ data }) => {
             gOrderTypeInfo.data.staffs = data;
             this.$emit("changeStage", 1);
@@ -436,6 +440,10 @@ export default {
   },
   created() {
     this.selecteddate = new Date();
+    let _this = this;
+    $("#btnCancelOrder").on("click", function() {
+      _this.onClickCancelBtn();
+    });
   },
   watch: {
     selecteddate(val) {
@@ -454,11 +462,29 @@ export default {
 </script>
 
 <style lang="scss">
-  .custom-radio {
-    margin-bottom: 8px;
-  }
+.custom-radio {
+  margin-bottom: 8px;
+}
 
-  .help-icon {
-    font-size: 20px;
+.help-icon {
+  font-size: 20px;
+}
+
+.order-cancelbtn{
+      position: absolute; 
+      background:rgb(0, 162, 232); 
+      border-radius: 20px; 
+      margin-top:9px; 
+      margin-left: 32px;
   }
+@media (max-width: 768px) {
+    .order-cancelbtn{
+        font-size: 11px;
+        padding: 3px 7px;
+        margin-top: 0;
+        margin-left: 0;
+        margin: -5px 9px;
+      }
+}
+
 </style>

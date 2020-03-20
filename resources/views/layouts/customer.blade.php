@@ -38,8 +38,23 @@
       </div>
     </nav>
     <div class="content-wrapper  d-flex flex-column">
-      <!-- Content Header (Page header) -->
+          <!-- Content Header (Page header) -->
       <div class="content-header">
+        <div class="container">
+          <div class="row mb-2" > 
+            <div class="col-sm-12 d-flex flex-column" style="position: relative;"> 
+              <a id="btnCancelOrder" class="btn btn-primary order-cancelbtn" style="color:white;">キャンセルはこちら</a>             
+              <div class="d-flex justify-content-center">Clinic</div>
+              <div class="d-flex justify-content-center">
+                <h3 class="m-0 text-dark">メディカルブロ一のご予約</h3>
+              </div>
+            </div>
+          </div>
+        </div><!-- /.container-fluid -->
+      </div>
+      <!-- /.content-header -->
+      <!-- Content Header (Page header) -->
+      <!-- <div class="content-header">
         <div class="container">
           <div class="row mb-2">
             <div class="col-sm-12 d-flex flex-column">
@@ -56,8 +71,8 @@
               </ol>
             </div> --}}
           </div>
-        </div><!-- /.container-fluid -->
-      </div>
+        </div>
+      </div> -->
       <!-- /.content-header -->
 
       <!-- Main content -->

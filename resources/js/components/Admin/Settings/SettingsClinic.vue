@@ -144,6 +144,10 @@
                   @tags-updated="updateTags"
                   :typeahead-activation-threshold="0"
                 ></tags-input>
+                <div
+                  v-if="form.errors.has('users')"
+                  class="invalid-feedback"
+                >{{errormsg(form.errors.get('users'),"users","ユーザーID")}}</div>
               </div>
 
               <div class="form-group">
@@ -295,7 +299,11 @@ export default {
           $("#modalAddUser").modal("hide");
           this.loadList();
         })
-        .catch(() => {});
+        .catch(error => {
+          if (error.response.data.errors.users) {
+            $(".tags-input-wrapper-default").addClass("is-invalid");
+          }
+        });
     },
     deleteData(id) {
       let _this = this;
@@ -368,7 +376,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .tags-input span {
   border-radius: 5px !important;
 }

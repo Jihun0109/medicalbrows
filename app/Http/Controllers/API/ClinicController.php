@@ -139,6 +139,7 @@ class ClinicController extends Controller
         $this->validate($request, [
             'name' => 'required|string|max:50',
            // 'email' => 'required|string|email|max:120',//|unique:tbl_clinics,email,'.$id,
+            'users' => 'required',
             'address' => 'string|max:50',
         ]);
         $clinic = TblClinic::findOrFail($id);

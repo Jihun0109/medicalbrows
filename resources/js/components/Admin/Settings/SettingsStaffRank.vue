@@ -151,22 +151,6 @@
               </div>
               <div class="form-group">
                 <label>施術可能部位</label>
-                <!-- <select
-                  v-model="form.part_id"
-                  class="custom-select"
-                  name="part_id"
-                  :class="{'is-invalid':form.errors.has('part_id')}"
-                >
-                  <option
-                    v-for="part in parts"
-                    :key="part.id"
-                    v-bind:value="part.id"
-                  >{{ part.name }}</option>
-                </select>
-                <div
-                  v-if="form.errors.has('part_id')"
-                  class="invalid-feedback"
-                >{{errormsg(form.errors.get('part_id'),"part id","施術可能部位")}}</div>-->
                 <tags-input
                   element-id="tags"
                   v-model="selectedTags"
@@ -180,6 +164,10 @@
                   @tags-updated="updateTags"
                   :typeahead-activation-threshold="0"
                 ></tags-input>
+                <div
+                  v-if="form.errors.has('parts')"
+                  class="invalid-feedback"
+                >{{errormsg(form.errors.get('parts'),"parts","施術可能部位")}}</div>
               </div>
               <div class="form-group">
                 <label>昇格日</label>
@@ -288,7 +276,13 @@ export default {
           $("#modalAddStaffRank").modal("hide");
           this.loadList();
         })
-        .catch(() => {});
+        .catch(error => {
+          if (error.response.data.errors.parts) {
+            console.log("ERROR", error.response.data.errors.parts);
+            console.log($(".tags-input-wrapper-default"));
+            $(".tags-input-wrapper-default").addClass("is-invalid");
+          }
+        });
     },
     updateRank() {
       this.form.promo_date = this.utcToLocalTime(this.form.promo_date);
@@ -302,7 +296,13 @@ export default {
           $("#modalAddStaffRank").modal("hide");
           this.loadList();
         })
-        .catch(() => {});
+        .catch(error => {
+          if (error.response.data.errors.parts) {
+            console.log("ERROR", error.response.data.errors.parts);
+            console.log($(".tags-input-wrapper-default"));
+            $(".tags-input-wrapper-default").addClass("is-invalid");
+          }
+        });
     },
     deleteData(unique_id) {
       let _this = this;
@@ -362,3 +362,9 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+.is-invalid {
+  border-color: #e3342f;
+}
+</style>
