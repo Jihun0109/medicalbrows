@@ -60,7 +60,8 @@ class ClientController extends Controller
             $staff_list = DB::table('tbl_staff_ranks')
             ->join('tbl_staffs', 'tbl_staffs.id', 'tbl_staff_ranks.staff_id')
             //->join('tbl_operable_parts', 'tbl_operable_parts.id', 'tbl_staff_ranks.part_id')
-            ->where([['tbl_staff_ranks.is_deleted', 0],['tbl_staff_ranks.rank_id', $rank_id]])
+            ->join('tbl_clinics', 'tbl_clinics.id', 'tbl_staffs.clinic_id')
+            ->where([['tbl_staff_ranks.is_deleted', 0],['tbl_staff_ranks.rank_id', $rank_id],['tbl_clinics.is_vacation', 0],['tbl_staffs.is_vacation', 0]])
             ->select('tbl_staffs.id','tbl_staffs.alias as name', 'tbl_staff_ranks.unique_id')      
             ->get();
         }
@@ -69,10 +70,10 @@ class ClientController extends Controller
             ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id', 'tbl_staffs.id')
             ->join('tbl_ranks', 'tbl_ranks.id', 'tbl_staff_ranks.rank_id')
             //->join('tbl_operable_parts', 'tbl_operable_parts.id', 'tbl_staff_ranks.part_id')
-            ->where([['tbl_staff_ranks.is_deleted', 0],['tbl_staffs.is_deleted', 0], ['tbl_staffs.clinic_id', $clinic_id]])
+            ->where([['tbl_staff_ranks.is_deleted', 0],['tbl_staffs.is_deleted', 0],['tbl_staffs.is_vacation', 0], ['tbl_staffs.clinic_id', $clinic_id]])
             ->select('tbl_staffs.id','tbl_staffs.alias as name','tbl_ranks.id as rank_id' ,'tbl_ranks.name as rank_name', 'tbl_staff_ranks.unique_id')
             ->get();
-        }
+        }        
         return $staff_list->map(function($item){
             $item->area = [];
             $item->area = DB::table('tbl_relation_staff_part')
@@ -154,11 +155,11 @@ class ClientController extends Controller
     {                       
         $payLoad = json_decode(request()->getContent(), true);  
         $staff_id = $request['staff_info']['id'];
-        //Log::Info($payLoad);
+        Log::Info("#############################");
         if($staff_id){
             $clinic_info = DB::table('tbl_staffs')
                         ->join('tbl_clinics','tbl_clinics.id','tbl_staffs.clinic_id')
-                        ->where([['tbl_staffs.is_deleted', 0],['tbl_staffs.id', $staff_id],['tbl_clinics.is_vacation', 0]])
+                        ->where([['tbl_staffs.is_deleted', 0],['tbl_staffs.id', $staff_id],['tbl_clinics.is_vacation', 0]])                        
                         ->select('tbl_clinics.id','tbl_clinics.name')      
                         ->get();
             //Log::info($clinic_info);            
@@ -492,7 +493,7 @@ class ClientController extends Controller
         for($i = 0; $i < sizeof($rank_schedule); $i++)
         {
             //이때 스타프의 order_history 에 있는 랭크스케줄 제거한다.  
-            if(sizeof(DB::table("tbl_order_histories")->where(['staff_id'=>$staff_id, 'order_date'=>$date, 'rank_schedule_id'=>$rank_schedule[$i]->id])->get()) > 0)
+            if(sizeof(DB::table("tbl_order_histories")->where([['staff_id',$staff_id], ['status', '!=', 4] ,['order_date',$date], ['rank_schedule_id',$rank_schedule[$i]->id]])->get()) > 0)
                 continue;            
             //랭크스케쥴로부터 오전 오후 점심을 갈라서 보관한다            
             //이 경우는 상담원이 필요없다.
@@ -606,7 +607,7 @@ class ClientController extends Controller
             // 상담원이 인터뷰어로 예약되여 있으면 그 시간을 리턴.
             $remove_time_with_order = DB::table('tbl_order_histories')
                             ->join('tbl_rank_schedules','tbl_rank_schedules.id','tbl_order_histories.rank_schedule_id')
-                            ->where([['tbl_order_histories.staff_id',$counselor_list[$i]->interviewer_id],['tbl_order_histories.order_date', $selected_date],['tbl_order_histories.is_deleted', 0]])
+                            ->where([['tbl_order_histories.staff_id',$counselor_list[$i]->interviewer_id],['tbl_order_histories.order_date', $selected_date],['tbl_order_histories.is_deleted', 0], ['tbl_order_histories.status','!=', 4]])
                             ->select('tbl_order_histories.id', DB::raw('HOUR(tbl_rank_schedules.end_time) as end_hour'))
                             ->get();
             $bflag = false;
@@ -773,12 +774,26 @@ class ClientController extends Controller
                         'status' =>  4,
                     ]);
         
-        $order_history = DB::table('tbl_order_histories')
-        ->where([['is_deleted', 0],['order_serial_id', $order_serial_id]])
-        ->get();
-        //Log::info($order_history);
+        $order_histories = TblOrderHistory::where([['is_deleted', 0],['order_serial_id', $order_serial_id]])->get();
+        $order_history = NULL;
+
+        if (sizeof($order_histories) == 1)
+            $order_history = $order_histories[0];
+        else if (sizeof($order_histories) > 1) {
+            for ($i=0; $i<sizeof($order_histories); $i++){
+                if ($order_histories[$i]->interviewer_id)
+                    $order_history = $order_histories[$i];
+            }
+        }
+
+        if ($order_history){
+            $clinic_name = DB::table('tbl_clinics')->join('tbl_staffs','tbl_staffs.clinic_id','tbl_clinics.id')->where('tbl_staffs.id',$order_history->staff_id)->value('tbl_clinics.name');
+            $log = "予約キャンセル: 予約ID 「". $order_history->order_serial_id . "」 場所 「". $clinic_name. "」 日時 「". $order_history->order_date."」";
+            TblLog::create(['log'=>$log]);
+        }        
+
         $customer = DB::table('tbl_customers')
-                    ->where([['is_deleted', 0],['id', $order_history[0]->customer_id]])
+                    ->where([['is_deleted', 0],['id', $order_histories[0]->customer_id]])
                     ->select('id','email','gender','first_name','last_name','address','phonenumber','birthday')
                     ->first();
         

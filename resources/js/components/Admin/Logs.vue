@@ -2,7 +2,7 @@
   <div class="row">
     <div class="row d-flex justify-content-center" style="width:100%">
       <div>
-        <h3 class>予約管理システム (ロク管理)</h3>
+        <h3 class>予約管理システム (ログ管理)</h3>
       </div>
     </div>
     <div class="col-12">
@@ -32,8 +32,8 @@
           <table class="table table-hover">
             <thead>
               <tr>
-                <th>ロクID</th>
-                <th>ロク</th>
+                <th>ログID</th>
+                <th>ログ</th>
                 <th>日付</th>
               </tr>
             </thead>
@@ -63,8 +63,8 @@
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 v-show="editMode" class="modal-title" id="exampleModalLabel">ロク更新</h5>
-            <h5 v-show="!editMode" class="modal-title" id="exampleModalLabel">ロク追加</h5>
+            <h5 v-show="editMode" class="modal-title" id="exampleModalLabel">ログ更新</h5>
+            <h5 v-show="!editMode" class="modal-title" id="exampleModalLabel">ログ追加</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -72,7 +72,7 @@
           <form @submit.prevent="editMode ? updateLog() : createLog()">
             <div class="modal-body">
               <div class="form-group">
-                <label>ロク</label>
+                <label>ログ</label>
                 <input
                   v-model="form.name"
                   type="text"

@@ -342,8 +342,7 @@ export default {
         axios
           .post("/v1/client/clinic_list", { staff_info: this.selectedstaff })
           .then(({ data }) => {
-            var clinic_info = data;
-            gOrderTypeInfo.data.clinic_info = clinic_info[0];
+            gOrderTypeInfo.data.clinic_info = data[0];
             this.$emit("changeStage", 1);
           });
       } else if (this.selecteddate) {

@@ -29,9 +29,9 @@ class ShiftController extends Controller
         
         $filter = [];
         if ($staff_type == 1)
-            $filter = DB::table('tbl_ranks')->where('short_name', '<>', 'カウゼ')->pluck('short_name');
+            $filter = DB::table('tbl_ranks')->where('short_name', '<>', 'カウセ')->pluck('short_name');
         else
-            $filter = DB::table('tbl_ranks')->where('short_name', '=', 'カウゼ')->pluck('short_name');
+            $filter = DB::table('tbl_ranks')->where('short_name', '=', 'カウセ')->pluck('short_name');
                 
         $staff_rank_names = DB::table('tbl_staffs')
                 ->join('tbl_staff_ranks', 'tbl_staff_ranks.staff_id','tbl_staffs.id')  

@@ -287,7 +287,7 @@ class ReservationsController extends Controller
                 // 공백쎌은 0 아니면 1
                 for ($k=0; $k<$h; $k++) $total_height_arr[$y+$k] = 1;
                 $order_history; // 지정된 날자의 해당 schedule타임에 설정된 order_history정보를 검사하고 있으면 필요한 자료 뽑는다.
-                if($staff_rank_with_schedules[$i]['rank_name'] == 'カウゼ')
+                if($staff_rank_with_schedules[$i]['rank_name'] == 'カウセ')
                 {
                     // order_history 변수에 order_history정보와 customer정보 order_serial_id정보를 
                     
@@ -340,7 +340,7 @@ class ReservationsController extends Controller
                     $interviewer = TblStaff::where('id', $order_history->interviewer_id)->first();
 
                 if(is_null($order_history)){
-                    if($staff_rank_with_schedules[$i]['rank_name'] == 'カウゼ')
+                    if($staff_rank_with_schedules[$i]['rank_name'] == 'カウセ')
                     {
                         $content = '新';
                         $order_type = 'カウンセ';
@@ -355,7 +355,7 @@ class ReservationsController extends Controller
                     if($order_history->order_type != "再診")
                     {
                         // 상담원인경우 해당 정보를 입력
-                        if($staff_rank_with_schedules[$i]['rank_name'] == 'カウゼ')
+                        if($staff_rank_with_schedules[$i]['rank_name'] == 'カウセ')
                         {
                             $content = '<div>【'.$order_history->order_type.'】</div><div>'.$order_history->order_serial_id.'</div><div>'.$order_history->first_name.'</div><div>';
                         }
@@ -367,7 +367,7 @@ class ReservationsController extends Controller
                             }
                             else{ // 나머지 시술은 상담원정보를 뽑아야 한다.
                                 $counselor_name = $interviewer?$interviewer->full_name:'';
-                                $content = '<div>【'.$order_history->order_type.'】</div><div>'.$order_history->order_serial_id.'</div><div>'.$order_history->first_name.'</div><div>指名:'.$order_history->staff_choosed.'</div><div>'.$order_history->menu_name.'</div><br><div>カウゼ</div><div>'.date('H:i', strtotime($order_history->interview_start)).'~'.date('H:i', strtotime($order_history->interview_end)).'</div><div>'.$counselor_name.'</div>';
+                                $content = '<div>【'.$order_history->order_type.'】</div><div>'.$order_history->order_serial_id.'</div><div>'.$order_history->first_name.'</div><div>指名:'.$order_history->staff_choosed.'</div><div>'.$order_history->menu_name.'</div><br><div>カウセ</div><div>'.date('H:i', strtotime($order_history->interview_start)).'~'.date('H:i', strtotime($order_history->interview_end)).'</div><div>'.$counselor_name.'</div>';
                             }
                             $menu_id = $order_history->menu_id;
                             $menu_name = $order_history->menu_name;
@@ -617,12 +617,12 @@ class ReservationsController extends Controller
                 {
                     $ret['i'] =  '<div>【新規】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><div>';
                 }else{
-                    $ret['i'] =  '<div>【'.$order_history->order_type.'】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><br><div>カウゼ</div><div>'.$payLoad['counselor']['interview_start'].'~'.$payLoad['counselor']['interview_end'].'</div><div>'.$payLoad['counselor']['counselor_name'].'</div>';
+                    $ret['i'] =  '<div>【'.$order_history->order_type.'】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><br><div>カウセ</div><div>'.$payLoad['counselor']['interview_start'].'~'.$payLoad['counselor']['interview_end'].'</div><div>'.$payLoad['counselor']['counselor_name'].'</div>';
 
                     $ret_new = $ret;
                     $ret_new['x'] = $payLoad['counselor']['x'];
                     $ret_new['y'] = $payLoad['counselor']['y'];
-                    $ret_new['i'] = '<div>【'.$order_history->order_type.'】</div><div>'.$order_serial_id.'</div><div>カウゼ</div><div>';
+                    $ret_new['i'] = '<div>【'.$order_history->order_type.'】</div><div>'.$order_serial_id.'</div><div>カウセ</div><div>';
                     array_push($ret_array, $ret_new);
 
                     $ret['interviewer_id'] = $payLoad['counselor']['interviewer_id'];
@@ -828,7 +828,7 @@ class ReservationsController extends Controller
         $ret['order_route'] = $order_history->order_route;
         $ret['note'] = $payLoad['note'];
         //$ret['i'] = $order_serial_id.$ret['customer_first_name'];
-        $ret['i'] =  '<div>【'.$order_history->order_type.'】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><br><div>カウゼ</div><div>'.$ret['time'].'</div><div>'.$ret['staff_choosed'].'</div>' ;
+        $ret['i'] =  '<div>【'.$order_history->order_type.'】</div><div>'.$order_serial_id.'</div><div>'.$ret['customer_first_name'].'</div><div>指名:'.$ret['staff_choosed'].'</div><div>'.$ret['menu_name'].'</div><br><div>カウセ</div><div>'.$ret['time'].'</div><div>'.$ret['staff_choosed'].'</div>' ;
 
         $ret_array = [];
 

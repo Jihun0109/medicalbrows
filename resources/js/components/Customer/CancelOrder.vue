@@ -51,7 +51,8 @@
               <!-- <input v-model="form.phonenumber" type="text" class="form-control" placeholder="電話番号"> -->
               <input
                 :value="form.phonenumber"
-                type="number"
+                type="text"
+                onkeypress='return event.charCode >= 48 && event.charCode <= 57' 
                 class="form-control"
                 placeholder="xxxxxxxxxxx"
                 @input="updatePhoneValue"

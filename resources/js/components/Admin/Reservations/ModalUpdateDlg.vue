@@ -52,7 +52,7 @@
                     name="order_type"
                     value="新規"
                     v-model="form.order_type"
-                    :disabled="item.rank_name === 'カウゼ' || counselors.length <= 0"
+                    :disabled="item.rank_name === 'カウセ' || counselors.length <= 0"
                   />
                   <label class="form-check-label">新規</label>
                 </div>
@@ -63,7 +63,7 @@
                     name="order_type"
                     value="再診"
                     v-model="form.order_type"
-                    :disabled="item.rank_name === 'カウゼ'"
+                    :disabled="item.rank_name === 'カウセ'"
                   />
                   <label class="form-check-label">再診</label>
                 </div>
@@ -74,7 +74,7 @@
                     name="order_type"
                     value="カウンセ"
                     v-model="form.order_type"
-                    :disabled="item.rank_name !== 'カウゼ'"
+                    :disabled="item.rank_name !== 'カウセ'"
                   />
                   <label class="form-check-label">カウンセリング</label>
                 </div>
@@ -82,7 +82,7 @@
             </div>
           </fieldset>
           <div class="row" style="letter-spacing:-1.8px;">
-            <label class="col-sm-3 col-form-label" v-if="item.rank_name === 'カウゼ'">カウンセラー:</label>
+            <label class="col-sm-3 col-form-label" v-if="item.rank_name === 'カウセ'">カウンセラー:</label>
             <label class="col-sm-3 col-form-label" v-else>施術者:</label>
             <div class="col-sm-8" style="padding-top: 7px;">
               <!-- <select v-model="staff_rank" class="form-control form-control-sm" data-width="fit" id="exampleFormControlSelect1">
@@ -123,7 +123,7 @@
           </fieldset>
           <div class="row">
             <label class="col-sm-3 col-form-label">メニュー:</label>
-            <div class="col-sm-8" style="padding-top: 7px;" v-show="item.rank_name !== 'カウゼ'">
+            <div class="col-sm-8" style="padding-top: 7px;" v-show="item.rank_name !== 'カウセ'">
               <select
                 v-model="form.menu_id"
                 name="menu_id"
@@ -135,12 +135,12 @@
               </select>
             </div>
           </div>
-          <div class="row" v-show="item.rank_name !== 'カウゼ'">
+          <div class="row" v-show="item.rank_name !== 'カウセ'">
             <label class="col-sm-3 col-form-label" style="letter-spacing: -1.8px;">カウンセラー:</label>
             <label
               class="col-form-label pl-3 text-red"
-              v-show="item.rank_name !== 'カウゼ' && counselors.length ===0"
-            >可能なカウゼはありません。</label>
+              v-show="item.rank_name !== 'カウセ' && counselors.length ===0"
+            >可能なカウセはありません。</label>
             <div class="col-sm-8" style="padding-top: 7px;" v-show="isShow(form.order_type)">
               <select
                 v-model="form.counselor"
@@ -211,7 +211,8 @@
               <!-- <input v-model="form.phonenumber" type="tel" class="form-control form-control-sm" v-mask="{mask:'999-9999-9999', placeholder:'#'}" :class="{'is-invalid':form.errors.has('phonenumber')}"> -->
               <input
                 :value="form.phonenumber"
-                type="number"
+                type="text"
+                onkeypress='return event.charCode >= 48 && event.charCode <= 57' 
                 @input="updatePhoneValue"
                 class="form-control form-control-sm"
                 placeholder="xxxxxxxxxxx"
@@ -317,7 +318,7 @@ export default {
     },
     isShow: function(order_type) {
       //
-      if (this.item.rank_name !== "カウゼ" && this.counselors.length <= 0)
+      if (this.item.rank_name !== "カウセ" && this.counselors.length <= 0)
         this.form.order_type = "再診";
       if (order_type == "再診") return false;
       if (this.item.rank_name == "T" || this.item.rank_name == "NA")
@@ -398,7 +399,7 @@ export default {
           : "経験 : \n妊娠・授乳・不妊治療 : \n通院歴・薬 : \n金アレ・アトピー・ケロイド確認 : \n眉ブリーチ・炎症・傷跡確認 : \n美容サービス・美容整形確認 : \n料金・所要時間 : \nHP : \nキャンセル規約 : ";
       //상담원인 경우 그에 해당한 시술자를 넘겨준다(cancel상태인경우 재 예약에 리용된다.이것은 상담원으로 예약되는경우 이전에 할당된 시술자 정보를 지우기 위해서이다.)
       this.form.old_staff_info = "";
-      if (this.item.order_type == "新規" && this.item.rank_name == "カウゼ") {
+      if (this.item.order_type == "新規" && this.item.rank_name == "カウセ") {
         this.form.old_staff_info = this.item.old_staff_info;
       }
       for (var i = 0; i < this.counselors.length; i++) {

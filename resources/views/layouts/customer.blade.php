@@ -38,7 +38,7 @@
       </div>
     </nav>
     <div class="content-wrapper  d-flex flex-column">
-          <!-- Content Header (Page header) -->
+      <!-- Content Header (Page header) -->
       <div class="content-header">
         <div class="container">
           <div class="row mb-2" > 
@@ -52,28 +52,7 @@
           </div>
         </div><!-- /.container-fluid -->
       </div>
-      <!-- /.content-header -->
-      <!-- Content Header (Page header) -->
-      <!-- <div class="content-header">
-        <div class="container">
-          <div class="row mb-2">
-            <div class="col-sm-12 d-flex flex-column">
-              <div class="d-flex justify-content-center">Clinic</div>
-              <div class="d-flex justify-content-center">
-                <h3 class="m-0 text-dark">メディカルブロ一のご予約</h3>
-              </div>
-            </div>
-            {{-- <div class="col-sm-6">
-              <ol class="breadcrumb float-sm-right">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Layout</a></li>
-                <li class="breadcrumb-item active">Top Navigation</li>
-              </ol>
-            </div> --}}
-          </div>
-        </div>
-      </div> -->
-      <!-- /.content-header -->
+      <!-- /.content-header -->     
 
       <!-- Main content -->
       <div class="content" style="background-color:white;">

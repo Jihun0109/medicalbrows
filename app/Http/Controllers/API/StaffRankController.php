@@ -76,6 +76,8 @@ class StaffRankController extends Controller
         $staff_id = $request->staff_id;
         $rank_id = $request->rank_id;
 
+        $counselor_id = DB::table('tbl_ranks')->where('short_name','カウセ')->value('id');
+
         $this->validate($request, [
             'rank_id' => ['required',
                             Rule::unique('tbl_staff_ranks')->where(function ($query) use ($staff_id, $rank_id){
@@ -85,7 +87,7 @@ class StaffRankController extends Controller
                             Rule::unique('tbl_staff_ranks')->where(function ($query) use ($staff_id, $rank_id){
                                 return $query->where('staff_id', $staff_id)->where('rank_id',$rank_id);
                             })],
-            'parts' => 'required',
+            'parts' => 'required_unless:rank_id,'.$counselor_id
         ]);
 
         
@@ -149,7 +151,7 @@ class StaffRankController extends Controller
      */
     public function update(Request $request, $unique_id)
     {
-        //Log::info($request);
+        $counselor_id = DB::table('tbl_ranks')->where('short_name','カウセ')->value('id');
         $this->validate($request, [
             'rank_id' => 'required',
             // 'staff_id' => ['required',
@@ -157,7 +159,7 @@ class StaffRankController extends Controller
             //                     return $query->where('is_deleted','0')->where('id',"<>", $request->id);
             //                 })
             //             ],
-            'parts' => 'required',
+            'parts' => 'required_unless:rank_id,'.$counselor_id
         ]);
         $values = $request;        
         $request['promo_date'] = Carbon::parse($request->promo_date);        

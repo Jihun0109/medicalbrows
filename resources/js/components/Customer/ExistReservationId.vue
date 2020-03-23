@@ -16,7 +16,7 @@
             <div class="form-group row">
                 <label class="col-4 col-form-label">電話番号</label>
                 <div class="col">
-                    <input  :value="form.phonenumber" type="number" class="form-control" placeholder="xxxxxxxxxxx" @input="updatePhoneValue"/>
+                    <input  :value="form.phonenumber" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57'  class="form-control" placeholder="xxxxxxxxxxx" @input="updatePhoneValue"/>
                     <!-- <input v-model="form.phonenumber" type="text" class="form-control" placeholder="電話番号"> -->
                 </div>
             </div>            

@@ -203,7 +203,7 @@ return [
     //'required'              => ':attributeは、必ず指定してください。',
     'required'              => ':attributeを入力してください。',
     'required_if'           => ':otherが:valueの場合、:attributeを指定してください。',
-    'required_unless'       => ':otherが:values以外の場合、:attributeを指定してください。',
+    'required_unless'       => ':attributeを指定してください。',
     'required_with'         => ':valuesが指定されている場合、:attributeも指定してください。',
     'required_with_all'     => ':valuesが全て指定されている場合、:attributeも指定してください。',
     'required_without'      => ':valuesが指定されていない場合、:attributeを指定してください。',

@@ -163,6 +163,7 @@
                   :typeahead-style="'dropdown'"
                   @tags-updated="updateTags"
                   :typeahead-activation-threshold="0"
+                  :class="{'is-invalid':form.errors.has('staff_id')}"
                 ></tags-input>
                 <div
                   v-if="form.errors.has('parts')"
@@ -278,8 +279,6 @@ export default {
         })
         .catch(error => {
           if (error.response.data.errors.parts) {
-            console.log("ERROR", error.response.data.errors.parts);
-            console.log($(".tags-input-wrapper-default"));
             $(".tags-input-wrapper-default").addClass("is-invalid");
           }
         });
@@ -298,8 +297,6 @@ export default {
         })
         .catch(error => {
           if (error.response.data.errors.parts) {
-            console.log("ERROR", error.response.data.errors.parts);
-            console.log($(".tags-input-wrapper-default"));
             $(".tags-input-wrapper-default").addClass("is-invalid");
           }
         });
@@ -342,6 +339,7 @@ export default {
       this.form.promo_date = new Date();
       this.selectedTags = [];
       $("#modalAddStaffRank").modal("show");
+      $(".tags-input-wrapper-default").removeClass("is-invalid");
     },
     editModal(data) {
       this.editMode = true;
@@ -351,6 +349,7 @@ export default {
       this.form.password = "";
       this.selectedTags = data["parts"];
       $("#modalAddStaffRank").modal("show");
+      $(".tags-input-wrapper-default").removeClass("is-invalid");
     },
     utcToLocalTime(date) {
       var userTimezoneOffset = new Date().getTimezoneOffset() * 60000;

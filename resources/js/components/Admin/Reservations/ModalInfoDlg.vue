@@ -51,7 +51,7 @@
                         </div>
                     </div>
                     <div class="row" style="letter-spacing:-1.8px;">
-                        <label class="col-sm-3 col-form-label" v-if="data.rank_name === 'カウゼ'">カウンセラー:</label>
+                        <label class="col-sm-3 col-form-label" v-if="data.rank_name === 'カウセ'">カウンセラー:</label>
                         <label class="col-sm-3 col-form-label" v-else>施術者:</label>
                         <div class="col-sm-8" >
                             <p style="letter-spacing:-1.5px">{{data.staff_name + '【' + data.rank_full_name + '】'}}</p>

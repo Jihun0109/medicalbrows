@@ -34,7 +34,7 @@
             <form class="update">
               <div class="row">
                 <label class="col-sm-3 col-form-label">送信区分:</label>
-                <div class="col-sm-8" style="padding-top: 7px;" v-show="item.rank_name !== 'カウゼ'">
+                <div class="col-sm-8" style="padding-top: 7px;" v-show="item.rank_name !== 'カウセ'">
                   <select name="send_type" class="custom-select custom-select-sm form-control-sm">
                     <option value>メール</option>
                     <option value>SMS</option>
