@@ -25,10 +25,9 @@ class TaxController extends Controller
                                             orWhere('start_time','LIKE BINARY',"%".$keyword."%")->
                                             orWhere('end_time','LIKE BINARY',"%".$keyword."%")->
                                             orWhere('id','LIKE',"%".$keyword."%");
-                              })->latest()->get();
+                              })->get();
         }
         return TblTaxRate::where('is_deleted', 0)->
-                        latest()->
                         get();
     }
 

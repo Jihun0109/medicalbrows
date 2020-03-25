@@ -30,11 +30,10 @@ class RankScheduleController extends Controller
                                         orWhere('tbl_rank_schedules.start_time','LIKE BINARY',"%".$keyword."%")->
                                         orWhere('tbl_rank_schedules.end_time','LIKE BINARY',"%".$keyword."%")->
                                         orWhere('tbl_operable_parts.name','LIKE',"%".$keyword."%");
-                          })->latest()->get();
+                          })->orderBy('tbl_rank_schedules.id','asc')->get();
         }
         return TblRankSchedule::where('is_deleted', 0)
-                    ->latest()
-                    ->get();
+                    ->orderBy('id','asc')->get();
 
     }
 

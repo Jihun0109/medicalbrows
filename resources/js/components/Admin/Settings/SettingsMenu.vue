@@ -283,14 +283,12 @@ export default {
     },
     searchit() {
       axios.get("/api/menu?keyword=" + this.keyword).then(({ data }) => {
-        this.data = data.data;
-        console.log(this.data);
+        this.data = data;
       });
     },
     loadList() {
       axios.get("/api/menu").then(({ data }) => {
-        this.data = data.data;
-        console.log(this.data);
+        this.data = data;
       });
 
       axios.get("/api/rank").then(({ data }) => (this.ranks = data));

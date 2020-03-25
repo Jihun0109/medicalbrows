@@ -35,11 +35,9 @@ class MenuController extends Controller
                                         orWhere('tbl_menus.end_time','LIKE BINARY',"%".$keyword."%")->
                                         orWhere('tbl_ranks.name','LIKE BINARY',"%".$keyword."%")->
                                         orWhere('tbl_tax_rates.name','LIKE BINARY',"%".$keyword."%");
-                          })->latest()->paginate(100);
+                          })->get();
         }
-        return TblMenu::where('is_deleted', 0)
-                    ->latest()                    
-                    ->paginate(100);
+        return TblMenu::where('is_deleted', 0)->get();
     }
 
     /**
@@ -101,14 +99,11 @@ class MenuController extends Controller
             'amount' => 'required|numeric',//|min:0|not_in:0',
             'start_time' => 'required|date',
             'end_time' => 'nullable|date|after_or_equal:start_time', 
-        ]);
-        Log::info( $request);
+        ]);        
         $values = $request;
         $values['start_time'] = $request->start_time;
         $values['end_time'] = is_null($request->end_time)?null:$request->end_time;
-        Log::info($values);
         $item = TblMenu::findOrFail($id);
-        Log::info($item);
         $item->update($values->all());
         return $id;
     }

@@ -61,7 +61,7 @@ class StaffRankController extends Controller
                         array_push($item->parts, array('key'=>$staff_parts[$j]->id, 'value'=>$staff_parts[$j]->name));                        
                     }
                     return $item;
-              });
+              })->sortBy('unique_id')->values()->all();
 
     }
 
@@ -171,8 +171,9 @@ class StaffRankController extends Controller
             array_push($staff_parts, array('staffrank_id'=>$unique_id, 'part_id'=>$request->parts[$i]['key']));            
         }
 
-        if (sizeof($staff_parts)){
-            DB::table('tbl_relation_staff_part')->where('staffrank_id', $unique_id)->delete();          
+        DB::table('tbl_relation_staff_part')->where('staffrank_id', $unique_id)->delete();
+
+        if (sizeof($staff_parts)){            
             DB::table('tbl_relation_staff_part')->insert($staff_parts);
         }
 
@@ -187,8 +188,11 @@ class StaffRankController extends Controller
      */
     public function destroy($unique_id)
     {
-        $staffrank = TblStaffRank::where('unique_id', $unique_id)->first()??TblStaffRankHistory::where('unique_id',$unique_id);
+        Log::info($unique_id);
+        $staffrank = TblStaffRank::where('unique_id', $unique_id)->first()??TblStaffRankHistory::where('unique_id',$unique_id)->first();
         
+        Log::info($staffrank);
+
         $staffrank->is_deleted = 1;
         $staffrank->save();
         return ['message' => 'staffrank deleted'];

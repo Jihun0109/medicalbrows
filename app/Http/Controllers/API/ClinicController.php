@@ -71,12 +71,6 @@ class ClinicController extends Controller
                                 return $item;
                             });
 
-        Log::info($clinics);
-
-        for ($i=0; $i<sizeof($clinics); $i++){
-            
-        }
-
         return $clinics;        
                         
     }

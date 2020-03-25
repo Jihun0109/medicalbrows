@@ -78,7 +78,7 @@
                   <a href="#" @click="editModal(d)">
                     <i class="fa fa-edit"></i>
                   </a> &nbsp;&nbsp;
-                  <a href="#" @click="deleteData(d.deleteData)">
+                  <a href="#" @click="deleteData(d.unique_id)">
                     <i class="fa fa-trash"></i>
                   </a>
                 </td>
