@@ -11,7 +11,7 @@
           <!-- dialog body -->
           <div class="modal-body justify-content-center" style="padding-left: 8px;">
             <div style="font-weight:blod; padding-left: 10px;">
-              <label class="col-sm-5 col-form-label">{{order_type}}とは:</label>
+              <label class="col-sm-5 col-form-label">{{order_help_type}}とは:</label>
             </div>
             <div class="form-group">
               <div class="textarea-placeholder">
@@ -231,6 +231,7 @@ export default {
     return {
       //Option variables(Radio Button)
       order_type: "新規",
+      order_help_type:  "新規",
       order_method: "staff",
 
       selectedrank: null,
@@ -342,6 +343,7 @@ export default {
         axios
           .post("/v1/client/clinic_list", { staff_info: this.selectedstaff })
           .then(({ data }) => {
+            console.log(data);
             gOrderTypeInfo.data.clinic_info = data[0];
             this.$emit("changeStage", 1);
           });
@@ -391,10 +393,10 @@ export default {
       this.$emit("toCancelPage", 1);
     },
     onNewHelp: function() {
-      this.order_type = "新規";
+      this.order_help_type = "新規";
     },
     onOldHelp: function() {
-      this.order_type = "再診";
+      this.order_help_type = "再診";
     },
     pageChange(page) {
       console.log(page);

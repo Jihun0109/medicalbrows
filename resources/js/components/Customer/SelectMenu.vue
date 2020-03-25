@@ -56,9 +56,13 @@
         </div>
       </div>
       <div class="row" v-show="passdata.staff_info.id !== '' && passdata.mode === 0">
-        <label class="col-sm-4 col-form-label">施術可能部位：</label>
+        <label class="col-sm-3 col-form-label">施術可能部位：</label>
         <div class="col-sm-6">
-          <p style="letter-spacing: -2.5px;">{{passdata.staff_info.area}}</p>
+          <span
+            v-for="(a,i) in passdata.staff_info.area"
+            :key="i"
+            class="badge badge-secondary p-2 m-1"
+          >{{a}}</span>
         </div>
       </div>
 

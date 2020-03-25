@@ -290,7 +290,6 @@ class ReservationsController extends Controller
                 if($staff_rank_with_schedules[$i]['rank_name'] == 'カウセ')
                 {
                     // order_history 변수에 order_history정보와 customer정보 order_serial_id정보를 
-                    
                     $order_history = DB::table('tbl_order_histories')->
                     join('tbl_customers','tbl_customers.id','tbl_order_histories.customer_id')->
                     select('tbl_order_histories.*',
@@ -350,7 +349,6 @@ class ReservationsController extends Controller
                         $order_type = '新規';
                     }
                 }else{
-                    Log::info($order_history->id);
                     $order_type = $order_history->order_type;
                     if($order_history->order_type != "再診")
                     {
@@ -380,12 +378,13 @@ class ReservationsController extends Controller
                         $menu_name = $order_history->menu_name;
                     }
                 }
+                $cancel_state_str = $order_history?($order_history->status==4?"<div>「キャンセル」</div>":""):"";
                 array_push($layout, (object)[
                     'x' => ($i + 1) * $cell_width,
                     'y' => $y,
                     'w' => $cell_width,
                     'h' => $h,
-                    'i' => $content,
+                    'i' => $cancel_state_str.$content,
                     'static' =>  true,
                     'selectable' => true,
                     'time' => $time,                   
