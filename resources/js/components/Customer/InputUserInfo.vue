@@ -50,7 +50,6 @@
                     <label class="col-4 col-form-label">氏名：</label>
                     <div class="col">
                         <input v-model="formdata.first_name" id="customerName" v-on:input="update_furigana" type="text" class="form-control" placeholder="氏名を入力して下さい" :class="{ 'is-invalid': submitted && $v.formdata.first_name.$error }" v-on:blur="handleBlur" />
-                        <!-- <input v-model="formdata.first_name" type="text" class="form-control" placeholder="氏名を入力して下さい" :class="{ 'is-invalid': submitted && $v.formdata.first_name.$error }" /> -->
                         <div v-if="submitted && !$v.formdata.first_name.required" class="invalid-feedback">氏名を入力して下さい。</div>
                     </div>                    
                 </div>
@@ -58,10 +57,8 @@
                     <label class="col-4 col-form-label">フリガナ：</label>
                     <div class="col">
                         <input v-model="formdata.last_name" id="customerFurigana" type="text" class="form-control" :class="{ 'is-invalid': submitted && $v.formdata.last_name.$error }" v-on:input="handleFurigana"/>
-                        <!-- <input v-model="formdata.last_name" type="text" class="form-control" placeholder="フリガナを入力して下さい" :class="{ 'is-invalid': submitted && $v.formdata.last_name.$error }" /> -->
                         <div v-if="submitted && $v.formdata.last_name.$error" class="invalid-feedback">
-                            <span v-if="!$v.formdata.last_name.required">フリガナを入力して下さい。</span>
-                            <!-- <span v-if="!$v.formdata.last_name.max">フリガナは最大6文字でなければします。</span> -->
+                            <span v-if="!$v.formdata.last_name.required">フリガナを入力して下さい。</span>                            
                         </div>                        
                     </div>
                 </div>

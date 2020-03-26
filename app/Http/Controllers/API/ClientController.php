@@ -641,9 +641,11 @@ class ClientController extends Controller
         $payLoad = json_decode(request()->getContent(), true);
         $order_info = $payLoad['order_info'];
         $customer_info = $payLoad['user_info'];
-         //Log::Info($payLoad);
-         //return;
+        // Log::Info($payLoad);
+        // return;
         $order_serial_id = $request->order_serial_id;
+
+        //만일 취소상태에 대한 새로운 예약이라면 표를 갱신해준다. 
 
         //create customer: zipcode, city_name, address2 non-used
         $customer = TblCustomer::create([
@@ -675,7 +677,7 @@ class ClientController extends Controller
                     'rank_schedule_id' => $order_info['time_schedule_info']['counselor_info']['interviewer_rank_schedule_id'],
                     'order_type' => $order_info['order_type'],
                     'order_date' => $order_info['calendar_info']['date'],
-                    'order_route' => '電話',//$order_info['order_route'],
+                    'order_route' => 'システム',//$order_info['order_route'],
                     'note' => $customer_info['note'],
                     'order_serial_id' => $order_serial_id,
                     'customer_id' => $customer->id,
@@ -705,7 +707,7 @@ class ClientController extends Controller
                 'order_type' => $order_info['order_type'],
                 'order_date' => $order_info['calendar_info']['date'],
                 'menu_id' => $order_info['menu_info']['id'],
-                'order_route' => '電話',//$order_info['order_route'],
+                'order_route' => 'システム',//$order_info['order_route'],
                 'order_serial_id' => $order_serial_id,
                 'customer_id' => $customer->id,
                 'note' => $customer_info['note'],
@@ -728,7 +730,7 @@ class ClientController extends Controller
                 'order_type' => $order_info['order_type'],
                 'order_date' => $order_info['calendar_info']['date'],
                 'menu_id' => $order_info['menu_info']['id'],
-                'order_route' => '電話',//$order_info['order_route'],
+                'order_route' => 'システム',//$order_info['order_route'],
                 'order_serial_id' => $order_serial_id,
                 'customer_id' => $customer->id,
                 'note' => $customer_info['note'],

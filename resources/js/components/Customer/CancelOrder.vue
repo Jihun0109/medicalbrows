@@ -31,11 +31,11 @@
       </div>
     </div>
     <div style="margin-top: 20px; margin-bottom: 10px; text-align: center;" v-show="complete === 0">
-      <label style="letter-spacing: -1.2px; margin-bottom: 35px;">予約キャンセル手続き</label>
+      <label style="letter-spacing: -1.2px; margin-bottom: 35px; ">予約キャンセル手続き</label>
       <div class="form-card" v-show="changepage === 0">
         <form id="form-cancel" class="cancel-card">
           <div class="form-group row">
-            <label class="col-4 col-form-label">予約ID :</label>
+            <label class="col-4  col-form-label">予約ID :</label>
             <div class="col">
               <input
                 v-model="form.order_serial_id"
@@ -46,7 +46,7 @@
             </div>
           </div>
           <div class="form-group row">
-            <label class="col-4 col-form-label">電話番号 :</label>
+            <label class="col-4  col-form-label">電話番号 :</label>
             <div class="col">
               <!-- <input v-model="form.phonenumber" type="text" class="form-control" placeholder="電話番号"> -->
               <input
@@ -62,49 +62,49 @@
         </form>
       </div>
       <div class="orderinfo-card" v-show="changepage === 1 " v-if="order_info != null">
-        <label class="col-8">＜予約情報＞</label>
-        <div class="info">
+        <label class="col-8" style="text-align: center;">＜予約情報＞</label>
+        <div class="cancel-info">
           <div class="row">
-            <label class="col-4 col-form-label">予約ID：</label>
+            <label class="col-4">予約ID：</label>
             <div class="col">
               <p>{{form.order_serial_id}}</p>
             </div>
           </div>
           <div class="row">
-            <label class="col-4 col-form-label">指名スタッフ：</label>
+            <label class="col-4" style="letter-spacing: -2.3px;">指名スタッフ：</label>
             <div class="col">
               <p>{{order_info.staff_info.alias}}【{{order_info.rank_info.name}}】</p>
             </div>
           </div>
           <div class="row">
-            <label class="col-4 col-form-label">日付：</label>
+            <label class="col-4">日付：</label>
             <div class="col">
               <p>{{formatDate(order_info.order_date)}}({{order_info.week}})</p>
             </div>
           </div>
           <div class="row">
-            <label class="col-4 col-form-label">区分：</label>
+            <label class="col-4">区分：</label>
             <div class="col">
               <p>{{order_info.order_type}}</p>
             </div>
           </div>
           <div class="row">
-            <label class="col-4 col-form-label">時間：</label>
+            <label class="col-4">時間：</label>
             <div class="col">
               <p>{{order_info.time_schedule}}</p>
             </div>
           </div>
           <div class="row">
-            <label class="col-4 col-form-label">施術部位：</label>
+            <label class="col-4">施術部位：</label>
             <div class="col">
               <p>{{order_info.part_info.name}}</p>
             </div>
           </div>
         </div>
-        <label class="col-8">＜お客様情報＞</label>
-        <div class="info">
+        <label class="col-8" style="text-align: center;">＜お客様情報＞</label>
+        <div class="customer-info">
           <div class="row">
-            <label class="col-4 col-form-label">電話番号：</label>
+            <label class="col-4">電話番号：</label>
             <div class="col">
               <p>{{form.phonenumber}}</p>
             </div>
@@ -210,9 +210,8 @@ export default {
           .post("/v1/client/order_cancel", {
             order_serial_id: this.form.order_serial_id
           })
-          .then(result => {
-            console.log(result.data);
-            this.email = result.data.email;
+          .then(result => {            
+            this.email = result.data;
             this.complete = 1;
             this.sendmail();
           })
@@ -291,6 +290,7 @@ export default {
     label {
       letter-spacing: -1.5px;
       margin-top: 2px;
+      text-align: right;
     }
     [placeholder]:focus::-webkit-input-placeholder {
       transition: text-indent 0.4s 0.4s ease;
@@ -299,9 +299,19 @@ export default {
     }
   }
 }
-.orderinfo-card .info {
-  div {
-    margin-bottom: 10px;
+.orderinfo-card{
+    .cancel-info,
+    .customer-info{
+    div {
+      margin-bottom: 10px;
+    }
+    label{
+      text-align: right;
+    } 
+    p{
+      text-align: left;
+      margin-bottom: 0px;
+    }
   }
-}
+} 
 </style>

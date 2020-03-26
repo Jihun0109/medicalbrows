@@ -296,7 +296,7 @@ class ReservationsController extends Controller
                             'tbl_customers.id as customer_id','tbl_customers.first_name', 'tbl_customers.last_name', 'tbl_customers.email',
                             'tbl_customers.phonenumber','tbl_customers.birthday')->
                     where(['tbl_order_histories.is_deleted'=> 0, 'staff_id' => $staff_rank_with_schedules[$i]['staff_id'],'rank_schedule_id'=>$cur_schedule['id'],['tbl_order_histories.order_date', $selected_date]])->
-                    first();
+                    latest()->first();
 
                 }else{ // 상담원이 아닌 의사인경우 메뉴정보도 같이 얻는다,
                     $order_history = DB::table('tbl_order_histories')->                    
@@ -306,7 +306,7 @@ class ReservationsController extends Controller
                             'tbl_customers.id as customer_id','tbl_customers.first_name', 'tbl_customers.last_name', 'tbl_customers.email',
                             'tbl_customers.phonenumber','tbl_customers.birthday')->
                     where(['tbl_order_histories.is_deleted'=> 0,'staff_id' => $staff_rank_with_schedules[$i]['staff_id'],'rank_schedule_id'=>$cur_schedule['id'],['tbl_order_histories.order_date', $selected_date]])->
-                    first();
+                    latest()->first();
                 }
                 $start_minute = $cur_schedule['start_minute'];
                 $end_minute = $cur_schedule['end_minute'];
@@ -474,7 +474,7 @@ class ReservationsController extends Controller
                 'menu_id' => 'required',
                 'counselor' => 'required',
                 'first_name' => 'required|string|max:30',
-                'last_name' => 'required|string|max:30',
+                'last_name' => 'required',
                 'birthday' => 'required|date', 
                 'phonenumber' => 'required|max:12',
                 'email' => 'required|email'
@@ -482,7 +482,7 @@ class ReservationsController extends Controller
         } 
         $this->validate($request, [
             'first_name' => 'required|string|max:30',
-            'last_name' => 'required|string|max:30',
+            'last_name' => 'required',
             'birthday' => 'required|date', 
             'phonenumber' => 'required|max:11',
             'email' => 'required|email'
@@ -642,7 +642,7 @@ class ReservationsController extends Controller
     public function orderStatusUpdate(Request $request)
     {
         $payLoad = json_decode(request()->getContent(), true);
-        //Log::Info($payLoad);
+        Log::Info($payLoad);
         $order_history_id = $payLoad['item']['order_history_id'];
 
         $idx = $payLoad['statusIdx'] + 1;
@@ -654,7 +654,7 @@ class ReservationsController extends Controller
         Log::info($order_history_ret);
 
         //
-        if ($idx == 4){ // Log for order cancelled 
+        if ($idx == 4 || $idx == 0 ){ // Log for order cancelled 
             $clinic_name = DB::table('tbl_clinics')->join('tbl_staffs','tbl_staffs.clinic_id','tbl_clinics.id')->where('tbl_staffs.id',$order_history_ret->staff_id)->value('tbl_clinics.name');
             $log = "予約キャンセル: 予約ID 「". $order_history_ret->order_serial_id . "」 場所 「". $clinic_name. "」 日時 「". $order_history_ret->order_date."」";
             TblLog::create(['log'=>$log]);
@@ -714,7 +714,7 @@ class ReservationsController extends Controller
         $this->validate($request, [
             'first_name' => 'string|max:30',
             'last_name' => 'string|max:30',
-            'last_name' => 'string|max:60|min:6',
+            'last_name' => 'string|max:60',
             'birthday' => 'required|date', 
             'phonenumber' => 'string|max:30',
             'email' => 'string|max:30',
