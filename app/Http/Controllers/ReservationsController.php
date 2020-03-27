@@ -68,7 +68,6 @@ class ReservationsController extends Controller
     // 해당한 상담원 목록 리턴
     public function counselor_list(Request $request)
     {        
-        Log::Info($request);
         $clinic_id = $request->clinic_id;
         $selected_date = date('Y-m-d',strtotime($request->date));
         $rank_schedule_id = $request->rank_schedule_id;
@@ -112,8 +111,10 @@ class ReservationsController extends Controller
             $remove_time_with_order = DB::table('tbl_order_histories')
                             ->join('tbl_rank_schedules','tbl_rank_schedules.id','tbl_order_histories.rank_schedule_id')
                             ->where([['tbl_order_histories.staff_id',$counselor_list[$i]->interviewer_id],['tbl_order_histories.order_date', $selected_date],['tbl_order_histories.is_deleted', 0]])
+                            ->where('tbl_order_histories.status','<>',4)
                             ->select('tbl_order_histories.id', DB::raw('HOUR(tbl_rank_schedules.end_time) as end_hour'))
                             ->get();
+            Log::info($remove_time_with_order);
             $bflag = false;
             //Log::info($remove_time_with_order);
             for( $j = 0; $j < sizeof($remove_time_with_order); $j++ ){

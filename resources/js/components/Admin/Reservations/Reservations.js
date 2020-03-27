@@ -134,7 +134,20 @@ export default {
         },
         confirmUpdateBtn: function() {
             $('#modalUpdateMessageBox').modal('hide');
+            console.log("init order form");
             this.changeMode = false;
+            this.item.order_history_id = ""
+            this.item.order_serial_id = ""
+            this.item.order_status = 'static'
+            this.item.customer_birthday = ""
+            this.item.customer_email = ""
+            this.item.customer_first_name = ""
+            this.item.customer_last_name = ""
+            this.item.customer_phonenumber = ""
+            this.item.interviewer_id = ""
+            this.item.menu_id = ""
+            this.item.note = "経験 : \n妊娠・授乳・不妊治療 : \n通院歴・薬 : \n金アレ・アトピー・ケロイド確認 : \n眉ブリーチ・炎症・傷跡確認 : \n美容サービス・美容整形確認 : \n料金・所要時間 : \nHP : \nキャンセル規約 : "
+            this.$refs.modalUpdateDlg.loadInfo();
             $('#modalUpdateDlg').modal('show');
 
         },
@@ -322,8 +335,6 @@ export default {
                     data
                 }) => {
                     this.counselors = data;
-                    //console.log(data);
-                    //선택된 시술자에 해당한 상담원목록을 얻고 그들의 현재 x,y좌표를 구한다. 이값은 신규인경우 상담원칸에 정보를 자동으로 채우는데 리용된다.
                     for (var i = 0; i < this.counselors.length; i++) {
                         var rs_id = this.counselors[i].interviewer_rank_schedule_id;
                         var staff_id = this.counselors[i].interviewer_id;
