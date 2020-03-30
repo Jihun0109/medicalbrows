@@ -396,7 +396,7 @@ export default {
         },
         {
           name: "full_name",
-          title: "スタツフ名"
+          title: "スタッフ名"
         },
         {
           name: "alias",
