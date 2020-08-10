@@ -2,10 +2,11 @@
 
 ## Install
 
-# composer update
-# npm install
+`composer update`
+
+`npm install`
 
 ## Build Clent
 
-# npm run prod
+`npm run prod`
 
