@@ -6,7 +6,7 @@
 
 `npm install`
 
-## Build Clent
+## Build Client
 
 `npm run prod`
 
