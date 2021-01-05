@@ -16,7 +16,7 @@
         "@vue/cli-plugin-eslint": "^3.4.0",
         "@vue/cli-plugin-pwa": "^3.4.0",
         "@vue/cli-service": "^3.4.0",
-        "axios": "^0.19",
+        "axios": "^0.21",
         "cross-env": "^6.0.3",
         "deepmerge": "^4.2.2",
         "fibers": "^4.0.2",
